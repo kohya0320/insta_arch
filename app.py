@@ -40,9 +40,13 @@ SCENARIOS = [
 
 def generate_prompt_with_gemini(scenario):
     """Geminiで超詳細なプロンプトを生成"""
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=f"""You are a professional architectural photographer who shoots for Wallpaper*, Dezeen, and Architectural Digest. Your Instagram (@stylarc / @minimal_architectures style) gets millions of likes because your images look like REAL photographs, not AI renders.
+    import time
+    for model in ["gemini-2.0-flash", "gemini-1.5-flash"]:
+        for attempt in range(3):
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=f"""You are a professional architectural photographer who shoots for Wallpaper*, Dezeen, and Architectural Digest. Your Instagram (@stylarc / @minimal_architectures style) gets millions of likes because your images look like REAL photographs, not AI renders.
 
 Create a photorealistic image generation prompt for this building concept:
 "{scenario['desc']}"
@@ -59,8 +63,13 @@ CRITICAL — to avoid AI-generated look:
 - End with: "editorial architectural photograph, photorealistic, natural colors, film grain, 8K"
 
 Output ONLY the prompt text. ~110 words."""
-    )
-    return response.text.strip()
+                )
+                return response.text.strip()
+            except Exception as e:
+                print(f"[Gemini] {model} attempt {attempt+1} failed: {e}")
+                time.sleep(5)
+    return f"Luxury architectural exterior, concrete and glass, natural landscape, professional photography, 8K photorealistic"
+
 
 def generate_image(prompt):
     """Hugging Face FLUX.1-schnell で画像生成"""
@@ -103,10 +112,13 @@ def generate_image(prompt):
 
 def generate_caption(name, prompt):
     """英語キャプション生成"""
-    try:
-        response = client.models.generate_content(
-            model="gemini-2.5-flash",
-            contents=f"""Write a short Instagram caption in English for this AI architecture image.
+    import time
+    for model in ["gemini-2.0-flash", "gemini-1.5-flash"]:
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=f"""Write a short Instagram caption in English for this AI architecture image.
 Concept: {name}
 Visual: {prompt[:150]}
 
@@ -117,10 +129,12 @@ Rules:
 - Add 6 relevant hashtags on a new line at the end
 
 Output only caption + hashtags."""
-        )
-        return response.text.strip()
-    except:
-        return f"Where architecture meets nature in perfect harmony.\n\n#aiarchitecture #architecture #luxurydesign #architecturephotography #design #interiordesign"
+                )
+                return response.text.strip()
+            except Exception as e:
+                print(f"[Caption] {model} attempt {attempt+1} failed: {e}")
+                time.sleep(3)
+    return f"Where architecture meets nature in perfect harmony.\n\n#aiarchitecture #architecture #luxurydesign #architecturephotography #design #interiordesign"
 
 def process_one(job_id, i, scenario):
     """1枚を処理してjobsに追加"""
@@ -218,9 +232,8 @@ EXPAND_ANGLES = [
 
 def generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note):
     """アングルごとの詳細プロンプトを生成"""
-    response = client.models.generate_content(
-        model="gemini-2.5-flash",
-        contents=f"""You are a professional architectural photographer shooting for @stylarc, @minimal_architectures, @matitectura. Your work looks like REAL photographs — not AI, not renders. Editors at Wallpaper* and Dezeen publish your shots.
+    import time
+    contents = f"""You are a professional architectural photographer shooting for @stylarc, @minimal_architectures, @matitectura. Your work looks like REAL photographs — not AI, not renders. Editors at Wallpaper* and Dezeen publish your shots.
 
 Original building (keep SAME architectural style, materials, exterior form):
 \"\"\"{original_prompt[:350]}\"\"\"
@@ -239,8 +252,15 @@ RULES FOR PHOTOREALISM (critical):
 - End with: "editorial architectural photograph, photorealistic, natural film grain, 8K"
 
 Output ONLY the prompt, ~110 words."""
-    )
-    return response.text.strip()
+    for model in ["gemini-2.0-flash", "gemini-1.5-flash"]:
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(model=model, contents=contents)
+                return response.text.strip()
+            except Exception as e:
+                print(f"[ExpandPrompt] {model} attempt {attempt+1} failed: {e}")
+                time.sleep(5)
+    return f"{angle_name} of luxury architectural building, photorealistic, 8K"
 
 def run_expand_job(job_id, original_prompt, total):
     """10アングルを順番に生成"""
