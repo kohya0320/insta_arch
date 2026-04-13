@@ -70,14 +70,14 @@ Create a photorealistic exterior image generation prompt for this building:
 RULES:
 - EXTERIOR shot — full building visible showing its UNIQUE SHAPE and form
 - Describe the architectural SHAPE explicitly and precisely first: "a bridge-shaped building spanning the gorge", "a ring of cabins encircling the crater rim", "cascading concrete terraces down the cliff face" — the unusual form must be clear
-- Building is RESORT SCALE — large enough for 15-20 guests, multiple wings or units visible
+- Building is MASSIVE RESORT SCALE — large enough for 15 people to stay comfortably, multiple wings or units visible, sprawling footprint, grand entrance
+- 3-4 human silhouettes visible to make the enormous scale undeniable
 - Nature and weather are ACTIVE — stormy sky, mist rolling in, snow falling, aurora, golden sunset — weather surrounds the building
 - Architecture obeys gravity and physics — no floating
 - Wide establishing shot (16-24mm) showing building fully in its landscape context
-- 2-3 human silhouettes visible to show massive scale
 - Specific materials, lighting, atmosphere
 - NO generic rectangular houses — the shape must be distinctive and memorable
-- End with: "architectural photography, Iwan Baan style, photorealistic, natural film grain, 8K"
+- End with: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, ISO 200, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
 Output ONLY the prompt. ~120 words."""
                 )
@@ -99,8 +99,8 @@ def generate_image(prompt):
     payload = {
         "prompt": clean,
         "image_size": {"width": 832, "height": 1040},
-        "num_inference_steps": 28,
-        "guidance_scale": 3.5,
+        "num_inference_steps": 35,
+        "guidance_scale": 5.0,
         "num_images": 1,
         "enable_safety_checker": False,
     }
@@ -218,23 +218,23 @@ EXPAND_ANGLES = [
     ),
     (
         "Interior — Grand Living Room",
-        "vast double-height living room, 6-meter ceilings, entire wall of floor-to-ceiling glass opening to dramatic landscape, Minotti sectional sofa in bouclé, Patagonia quartzite floor, mature indoor olive tree 3m tall in stone planter, custom bronze shelving, afternoon light casting long shadows, abstract sculpture on stone plinth, extreme sense of space and silence",
-        "ultra-wide 16mm, afternoon light raking across floor, billionaire residence"
+        "vast triple-height grand living hall, 8-meter ceilings, 25-meter long room, entire wall of floor-to-ceiling glass opening to dramatic landscape, multiple Minotti sectional sofas in bouclé arranged in clusters, Patagonia quartzite floor, two mature indoor olive trees 4m tall in stone planters, custom bronze shelving spanning full wall, afternoon light casting long diagonal shadows across the enormous floor, abstract sculpture on stone plinth, 15 people could gather here with space to spare",
+        "ultra-wide 14mm, afternoon light raking across enormous floor, private resort scale"
     ),
     (
         "Interior — Master Suite at Dawn",
-        "enormous master bedroom, 5-meter ceilings, full glass wall with misty dawn landscape beyond, floating platform king bed with Dedar linen and cashmere throw, warm aged walnut floor, mature 3m fiddle-leaf fig in corner, recessed warm lighting, silk curtains drifting, sheepskin bench, everything whispers extreme wealth and restraint",
-        "wide 24mm, soft diffused dawn light, negative space, calm luxury"
+        "enormous master suite, 6-meter ceilings, 15-meter wide room, full glass wall spanning the entire width with misty dawn landscape beyond, floating platform king bed centred in the vast space with Dedar linen and cashmere throw, warm aged walnut floor stretching 12 meters, mature 4m fiddle-leaf fig in corner, recessed warm lighting, silk curtains drifting, a daybed and seating area at the far end of the room, everything whispers extreme wealth and restraint",
+        "wide 20mm, soft diffused dawn light, vast negative space, private resort scale"
     ),
     (
         "Interior — Chef's Kitchen & Dining",
-        "vast open-plan kitchen and 12-seat dining, 5m ceilings, Poliform island in Calacatta marble, Gaggenau appliances concealed behind flush stone panels, Bocci chandelier hanging 4m, full glass wall to terrace, enormous bird-of-paradise in concrete planter, warm oak and bronze, evening light, sense of a private gallery",
-        "wide 24mm, warm layered lighting, lush indoor plant, museum-like scale"
+        "vast open-plan kitchen and 20-seat dining hall, 7m ceilings, 20-meter long room, Poliform island in Calacatta marble large enough for 6 chefs, Gaggenau appliances concealed behind flush stone panels, cluster of Bocci pendants hanging 5m over the dining table, full glass wall spanning the entire length to terrace, two enormous bird-of-paradise plants in concrete planters flanking the table, warm oak and bronze, evening light, sense of a private Michelin-starred restaurant",
+        "wide 20mm, warm layered lighting, massive indoor plants, restaurant-in-a-private-estate scale"
     ),
     (
         "Interior — Spa Bathroom",
-        "enormous private spa bathroom, 5m ceiling, entire glass wall facing untouched nature, 2m freestanding stone bath centred like a sculpture, Nero Marquina marble walls, private hammam visible behind glass, hanging eucalyptus, single tall beeswax candle, morning mist outside, absolute silence and luxury",
-        "wide 20mm, soft spa light, misty nature beyond glass, indoor botanicals"
+        "monumental private spa, 7m ceiling, 18-meter long room, entire glass wall facing untouched nature, two freestanding Nero Marquina stone baths centred like sculptures 5 meters apart, marble walls floor to ceiling, private hammam for 8 people visible through glass partition, plunge pool inset in the floor, hanging eucalyptus bundles and 3m palm, morning mist visible outside, two beeswax candles half-burned on stone ledge, absolute silence and extreme luxury",
+        "wide 18mm, soft spa light, misty nature beyond glass, grand hotel spa scale"
     ),
     (
         "Terrace & Pool — Dusk",
@@ -264,10 +264,11 @@ RULES FOR PHOTOREALISM (critical):
 - SAME building and materials — consistency across all views
 - EXACT camera specs: body (Hasselblad X2D or Phase One XF), lens mm, aperture, time of day, natural light direction
 - Specific imperfect real-world details: a water glass on a side table, a linen throw slightly crumpled, a candle half-burned, slight dust on a beam — makes it feel lived-in and real
-- Interiors: VAST proportions (5–6m ceilings), named furniture (Minotti, Poliform, B&B Italia, Cassina), honed stone (travertine, Calacatta, Nero Marquina), mature indoor plants as sculpture, warm layered light
+- MASSIVE SCALE: interiors sized for 15 people — grand halls, 7-8m ceilings, 20m+ long rooms, multiple seating areas, triple-height volumes, gallery-scale proportions
+- Named furniture brands at grand scale (Minotti, Poliform, B&B Italia, Cassina), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees (not just plants), warm layered light
 - Color: restrained, natural — warm beige, raw concrete grey, aged oak, muted stone — NO oversaturation
 - NO words like "stunning", "dramatic", "breathtaking" — describe visually instead
-- End with: "editorial architectural photograph, photorealistic, natural film grain, 8K"
+- End with: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, ISO 200, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
 Output ONLY the prompt, ~110 words."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
