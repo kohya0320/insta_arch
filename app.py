@@ -18,27 +18,39 @@ os.makedirs(os.path.join(_base_dir, "static", "images"), exist_ok=True)
 # ジョブ管理
 jobs = {}
 
-# ━━━ 現実的・高級建築プロンプトパターン ━━━
+# ━━━ 地形・自然に溶け込む超高級建築パターン ━━━
 SCENARIOS = [
     {
         "name": "Mediterranean Cliff Villa",
-        "desc": "地中海の断崖絶壁に張り付くように建てられたコンクリートとガラスのヴィラ。Casa Malaparteを現代化したイメージ。"
+        "desc": "イタリア・アマルフィ海岸の垂直の断崖に水平に張り出したコンクリートとガラスのヴィラ。崖の岩盤から直接生えたように見え、眼下100mにコバルトブルーの海が広がる。プールが崖の縁でそのまま海に溶け込む。Peter Zumthor設計イメージ。"
     },
     {
         "name": "Norwegian Fjord Retreat",
-        "desc": "ノルウェーフィヨルドの岩肌に埋め込まれた石とガラスのスパ施設。周囲の断崖と水面との対比が美しい。"
+        "desc": "ノルウェーの氷河が削った峡湾の岸壁に、黒錆びたコルテン鋼と現地産石材で作られたロッジが岩と一体化して建つ。氷河水の深いグリーンのフィヨルドが建物の鏡面ガラスに映り込む。Snøhetta設計イメージ。"
     },
     {
-        "name": "Tropical Forest Sanctuary",
-        "desc": "熱帯雨林の樹冠レベルに建つ竹とガラスのリトリート。无边泳池が森と溶け込む。"
+        "name": "Patagonia Glacier House",
+        "desc": "パタゴニアの氷河湖畔、風に磨かれた花崗岩の上に建つ低く水平な黒いヴォリュームの邸宅。氷河と雪山が直接背景を成し、風雨にさらされた木材と粗い石積みが地形の一部に見える。Luis Laplace設計イメージ。"
     },
     {
-        "name": "Desert Courtyard Compound",
-        "desc": "モロッコの砂漠に建つ砂岩と白漆喰の大型コンパウンド。深い影のロッジアと中庭が続く。"
+        "name": "Japanese Mountain Retreat",
+        "desc": "日本・北海道の白樺林と火山性の黒い岩場に建つ、薄い鉄板屋根と木格子のパビリオン群。建物が地形の等高線に沿って段々に配置され、霧と雪に包まれる。Kengo Kuma設計イメージ。"
     },
     {
-        "name": "Alpine Ridge Pavilion",
-        "desc": "アルプスの稜線に建つ石とガラスのパビリオン。山岳地帯の雄大なパノラマを正面に捉える。"
+        "name": "Desert Canyon Residence",
+        "desc": "アメリカ・ユタ州の赤砂岩の渓谷壁に埋め込まれた、砂岩の色と質感に合わせた打ち放しコンクリートの邸宅。巨大な一枚ガラスの開口が渓谷の岩壁を額縁のように切り取る。Rick Joy設計イメージ。"
+    },
+    {
+        "name": "Coastal Bluff House",
+        "desc": "ニュージーランド南島の荒削りな海岸断崖に張り出した、波に侵食された岩盤の上の木とガラスの邸宅。南極から来る荒波と空が建物の大きなガラス面に映り込み、家が空中に浮いているように見える。"
+    },
+    {
+        "name": "Volcanic Island Villa",
+        "desc": "ギリシャ・サントリーニの白い火山灰の崖に掘り込まれた洞窟ヴィラ。白漆喰と青いドームではなく、火山岩の黒と白の大理石だけの極限まで洗練されたミニマル建築。カルデラの海が正面に広がる。"
+    },
+    {
+        "name": "Amazon Canopy Pavilion",
+        "desc": "アマゾン川上流域の熱帯雨林、樹高40mの樹冠レベルに吊り橋で繋がれた透明ガラスと錆鉄のパビリオン。足元は密林、頭上は青空、三方は360度の緑の海。Jean Nouvel設計イメージ。"
     },
 ]
 
@@ -50,23 +62,24 @@ def generate_prompt_with_gemini(scenario):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""You are a professional architectural photographer who shoots for Wallpaper*, Dezeen, and Architectural Digest. Your Instagram (@stylarc / @minimal_architectures style) gets millions of likes because your images look like REAL photographs, not AI renders.
+                    contents=f"""You are a world-class architectural photographer. Your work appears on @amazing.architecture, @stylarc, @minimal_architectures, Dezeen, and Wallpaper*. You are known for capturing how extraordinary buildings emerge FROM their landscape — the terrain is always the co-star.
 
-Create a photorealistic image generation prompt for this building concept:
+Create a photorealistic exterior image generation prompt for this building:
 "{scenario['desc']}"
 
-CRITICAL — to avoid AI-generated look:
-- Describe SPECIFIC imperfect real-world details: slight material weathering, a leaf on the pool, a book left on a chair, condensation on glass
-- Use EXACT camera specs: "shot on Hasselblad X2D 100C, 28mm lens, f/5.6, ISO 200, 1/125s"
-- Lighting must be specific and natural: "3pm winter sun from south-west, soft shadows, slight haze on horizon"
-- Materials must be tactile and specific: "honed Pietra Serena stone, slightly rough to touch", "raw board-formed concrete showing wood grain imprints"
-- Color palette must be restrained: warm neutrals, natural stone tones, no oversaturation
-- One or two human-scale objects to anchor the scene (a towel on a sun lounger, an open book, a glass of water)
-- NO words like "dramatic", "stunning", "breathtaking", "luxurious" — SHOW it, don't describe it
-- Architecture obeys gravity, could actually be built
-- End with: "editorial architectural photograph, photorealistic, natural colors, film grain, 8K"
+RULES — exterior landscape shot:
+- EXTERIOR view showing full building in context with its dramatic natural landscape — no interior shots
+- The terrain, geology, sky, water, or vegetation must be the emotional core — building grows FROM the land
+- Architecture obeys gravity, physically possible, no floating
+- EXACT camera specs: body, lens (wide 16-24mm preferred), aperture, time of day, natural light angle
+- Specific geology and materials: exact rock type, concrete texture, wood species, patina, weathering
+- Specific sky and atmosphere: cloud type, haze, humidity, wind effect on vegetation
+- One human-scale detail to show scale (a parked car half-visible, a single lounger, a person silhouette)
+- Color restrained and natural — no oversaturation, muted earthy palette
+- NO adjectives like "stunning", "dramatic", "breathtaking" — describe what the camera SEES
+- End with: "editorial architectural photograph, Iwan Baan style, photorealistic, natural film grain, 8K"
 
-Output ONLY the prompt text. ~110 words."""
+Output ONLY the prompt. ~120 words."""
                 )
                 return response.text.strip()
             except Exception as e:
