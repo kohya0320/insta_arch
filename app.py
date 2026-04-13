@@ -138,9 +138,12 @@ def process_one(job_id, i, scenario):
             })
             print(f"[Job {job_id}] {i+1}/5 DONE")
         else:
-            print(f"[Job {job_id}] {i+1}/5 FAILED")
+            err = "generate_image returned None"
+            print(f"[Job {job_id}] {i+1}/5 FAILED: {err}")
+            jobs[job_id].setdefault("errors", []).append(err)
     except Exception as e:
         print(f"[Job {job_id}] {i+1} error: {e}")
+        jobs[job_id].setdefault("errors", []).append(str(e))
 
 def run_job(job_id, scenarios):
     """5枚を順番に生成"""
@@ -296,6 +299,7 @@ def status(job_id):
         "current": job.get("current", 0),
         "avg_duration": job.get("avg_duration", 0),
         "started_at": job.get("started_at", 0),
+        "errors": job.get("errors", []),
     })
 
 @app.route("/api/expand", methods=["POST"])
