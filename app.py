@@ -18,39 +18,39 @@ os.makedirs(os.path.join(_base_dir, "static", "images"), exist_ok=True)
 # ジョブ管理
 jobs = {}
 
-# ━━━ 地形・自然に溶け込む超高級・大規模建築パターン ━━━
+# ━━━ 20人規模・奇抜な形状・自然融合建築パターン ━━━
 SCENARIOS = [
     {
-        "name": "Amalfi Cliff Mega-Villa",
-        "desc": "イタリア・アマルフィ海岸の断崖に水平に張り出した6層・全長120mのコンクリートとガラスの超大型ヴィラ複合体。各フロアがテラスとプールを持ち、崖の岩盤から直接生えた階段状のヴォリュームが海へ向かって降りていく。夕日に照らされた崖面とコバルトブルーの海が背景。Bjarke Ingels設計イメージ。"
+        "name": "Cliff-Hanging Bridge Resort",
+        "desc": "ノルウェーの峡湾を横断するように岩壁と岩壁の間に架けられた橋状の巨大リゾート建築。長さ150m・幅30mの橋型の建物が水面100m上に宙吊りになり、両端が崖に食い込む。ガラス床、吊り橋構造、霧と滝が建物を包む。20室以上。"
     },
     {
-        "name": "Norwegian Fjord Lodge Complex",
-        "desc": "ノルウェーの峡湾沿いに100m以上にわたって横断する、黒いコルテン鋼と粗い花崗岩の大型リゾート複合施設。水面から直接立ち上がる岸壁に張り付き、キャンチレバーのウィングが水面上に突き出す。フィヨルドの深い緑の水面が正面に広がり、背後に雪を抱いた絶壁。Snøhetta設計イメージ。"
+        "name": "Volcanic Crater Retreat",
+        "desc": "休火山のクレーター内壁に沿って螺旋状に配置されたリング型リゾート。円形の建物群がクレーターの内側をぐるりと囲み、中央の火口湖を見下ろす。黒い溶岩石と錆鉄の外壁。噴気と霧がクレーターに立ち込める。20棟のヴィラ群。"
     },
     {
-        "name": "Patagonia Mountain Resort",
-        "desc": "パタゴニアのトレス・デル・パイネの麓、氷河湖を見下ろす丘陵に広がる石と黒鉄と大ガラスの大型山岳リゾート。複数の棟が岩盤の地形に沿って展開し、総延長200m。荒天の空と氷河湖のターコイズブルーが対比する。David Chipperfield設計イメージ。"
+        "name": "Underwater-Cliff Glass Resort",
+        "desc": "地中海の海岸断崖に半分埋め込まれ、半分が海面上に突き出た巨大なガラスと白コンクリートのリゾート。海側の全面がガラスウォールで海中と空が同時に見え、建物が波に洗われる。複数フロア、大型プール、20室規模。"
     },
     {
-        "name": "Utah Canyon Estate",
-        "desc": "アメリカ・ユタ州の赤砂岩渓谷を見渡す台地に建つ、砂岩と打ち放しコンクリートの大型邸宅群。メインハウスとゲストウィング・プールハウスが渓谷の縁に沿って配置され、全体が岩盤の色に溶け込む。夕日で全体が赤く燃え上がる。Rick Joy設計イメージ。"
+        "name": "Forest Canopy Mega-Treehouse",
+        "desc": "スウェーデンの針葉樹林、樹高25mの樹冠レベルに網目状の歩道橋で繋がれた20棟のキャビン群。各棟は樹木の幹に絡みつくような有機的な形状で、木の皮のような外壁。雪が積もる冬の森、靄がかかる早朝の光。"
     },
     {
-        "name": "Maldives Over-Water Estate",
-        "desc": "モルディブの環礁に建てられた、珊瑚礁の海上に桟橋で繋がれた大型水上ヴィラ群。白いコンクリートと熱帯木材の複数棟が透明度40mのインド洋の上に張り出し、無限大のラグーンと空が建物を包む。Jean Nouvel設計イメージ。"
+        "name": "Desert Rock-Carved Complex",
+        "desc": "ヨルダン・ペトラの砂岩渓谷に、岩盤を直接彫り込んで作られた現代的な大型リゾート。建物の半分が地下の洞窟、半分が砂岩の崖から突き出たコンクリートとガラスのヴォリューム。朝日で岩が赤く燃える。20室以上の複合施設。"
     },
     {
-        "name": "Japanese Volcanic Spa Resort",
-        "desc": "日本・九州の火山地帯、硫黄噴気が立ち上る溶岩台地に建つ大型温泉リゾート。黒い玄武岩と薄い鉄板屋根の建物群が等高線に沿って段々に展開。温泉の湯気と霧が建物を包み、背後に活火山がそびえる。隈研吾設計イメージ。"
+        "name": "Arctic Ice-Edge Lodge",
+        "desc": "グリーンランドの氷河末端、氷と海の境界線上に建てられた黒い鉄とガラスの大型ロッジ。氷河の青白い壁面が建物の背後に迫り、前面はオーロラが映る北極海。吹雪と強風の中で室内から暖かい光が漏れる。20人収容。"
     },
     {
-        "name": "Scottish Highlands Castle-Hotel",
-        "desc": "スコットランドの荒野、ロッホ（湖）の畔に建つ現代的な大型城郭ホテル。地元産砂岩と鉄骨ガラスを組み合わせた100室規模の施設が、ヒースの荒野と灰色の空を背景に堂々とそびえる。長い石積みの壁が湖岸線に沿って続く。Zaha Hadid設計イメージ。"
+        "name": "Cascading Waterfall Villa",
+        "desc": "アイスランドの滝の横、玄武岩の柱状節理の崖面に段々に張り付いた白いコンクリートの大型別荘群。各フロアのテラスに小さな滝が流れ落ち、建物と水が一体化。荒天の空と緑の苔に覆われた溶岩原が広がる。Frank Lloyd Wrightのカウフマン邸を10倍スケールに。"
     },
     {
-        "name": "Santorini Caldera Mega-Villa",
-        "desc": "サントリーニ島のカルデラ崖に掘り込まれた、白漆喰ではなく黒い火山岩と白大理石だけで構成された大型崖面ヴィラ複合体。崖の垂直面から水平ヴォリュームが何層にも張り出し、各層に無辺縁プールを持つ。エーゲ海のカルデラが眼下360度に広がる。"
+        "name": "Floating Lagoon Resort",
+        "desc": "タヒチのターコイズブルーのラグーンに、水上に浮かぶ星型の大型リゾート島。中央に熱帯植物の中庭、外周に20棟の水上ヴィラが放射状に伸びる。環礁と外洋の色の差がくっきりと見え、夕焼けが水面を金色に染める。"
     },
 ]
 
@@ -67,18 +67,17 @@ def generate_prompt_with_gemini(scenario):
 Create a photorealistic exterior image generation prompt for this building:
 "{scenario['desc']}"
 
-RULES — exterior landscape shot:
-- EXTERIOR view showing full building or large portion in context with its dramatic natural landscape — no interior shots
-- Building must feel LARGE and expensive — multi-wing compounds, resort scale, landmark architecture are welcome
-- The terrain, geology, sky, water, or vegetation must be the emotional core — building grows FROM the land
-- Architecture obeys gravity, physically possible, no floating
-- EXACT camera specs: body, lens (wide 16-24mm preferred), aperture, time of day, natural light angle
-- Specific geology and materials: exact rock type, concrete texture, wood species, patina, weathering
-- Specific sky and atmosphere: cloud type, haze, humidity, wind effect on vegetation
-- One human-scale detail to show scale (a parked car half-visible, a single lounger, a person silhouette)
-- Color restrained and natural — no oversaturation, muted earthy palette
-- NO adjectives like "stunning", "dramatic", "breathtaking" — describe what the camera SEES
-- End with: "editorial architectural photograph, Iwan Baan style, photorealistic, natural film grain, 8K"
+RULES:
+- EXTERIOR shot — full building visible showing its UNIQUE SHAPE and form
+- Describe the architectural SHAPE explicitly and precisely first: "a bridge-shaped building spanning the gorge", "a ring of cabins encircling the crater rim", "cascading concrete terraces down the cliff face" — the unusual form must be clear
+- Building is RESORT SCALE — large enough for 15-20 guests, multiple wings or units visible
+- Nature and weather are ACTIVE — stormy sky, mist rolling in, snow falling, aurora, golden sunset — weather surrounds the building
+- Architecture obeys gravity and physics — no floating
+- Wide establishing shot (16-24mm) showing building fully in its landscape context
+- 2-3 human silhouettes visible to show massive scale
+- Specific materials, lighting, atmosphere
+- NO generic rectangular houses — the shape must be distinctive and memorable
+- End with: "architectural photography, Iwan Baan style, photorealistic, natural film grain, 8K"
 
 Output ONLY the prompt. ~120 words."""
                 )
