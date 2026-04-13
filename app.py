@@ -22,35 +22,43 @@ jobs = {}
 SCENARIOS = [
     {
         "name": "Cliff-Hanging Bridge Resort",
-        "desc": "ノルウェーの峡湾を横断するように岩壁と岩壁の間に架けられた橋状の巨大リゾート建築。長さ150m・幅30mの橋型の建物が水面100m上に宙吊りになり、両端が崖に食い込む。ガラス床、吊り橋構造、霧と滝が建物を包む。20室以上。"
+        "desc": "ノルウェーの峡湾を横断するように岩壁と岩壁の間に架けられた橋状の巨大リゾート建築。長さ150m・幅30mの橋型の建物が水面100m上に宙吊りになり、両端が崖に食い込む。ガラス床、吊り橋構造。WEATHER: heavy snowfall, snowflakes visible mid-air, pristine white snow on the bridge deck, deep blue fjord far below.",
+        "weather": "heavy snowfall, thick snow on surfaces, snowflakes in the air, no clouds — deep navy blue sky above the snow"
     },
     {
         "name": "Volcanic Crater Retreat",
-        "desc": "休火山のクレーター内壁に沿って螺旋状に配置されたリング型リゾート。円形の建物群がクレーターの内側をぐるりと囲み、中央の火口湖を見下ろす。黒い溶岩石と錆鉄の外壁。噴気と霧がクレーターに立ち込める。20棟のヴィラ群。"
+        "desc": "休火山のクレーター内壁に沿って螺旋状に配置されたリング型リゾート。らせん状に降りていく有機的な曲線形の建物群がクレーターの内側をぐるりと囲み、中央の火口湖を見下ろす。黒い溶岩石と錆鉄の外壁。各棟が弧を描くように連結。20棟。WEATHER: blazing clear blue sky, intense tropical sun, steam vents rising from the crater floor.",
+        "weather": "crystal clear deep blue sky, harsh sun, dramatic shadows, zero clouds"
     },
     {
         "name": "Underwater-Cliff Glass Resort",
-        "desc": "地中海の海岸断崖に半分埋め込まれ、半分が海面上に突き出た巨大なガラスと白コンクリートのリゾート。海側の全面がガラスウォールで海中と空が同時に見え、建物が波に洗われる。複数フロア、大型プール、20室規模。"
+        "desc": "地中海の海岸断崖に半分埋め込まれ、半分が海面上に突き出た巨大なガラスと白コンクリートのリゾート。S字カーブを描く平面形状、各フロアが海に向かって前に張り出すカンチレバー構造。大型プール、20室規模。WEATHER: fiery sunset, sky burning orange and deep magenta, reflections on the calm sea.",
+        "weather": "blazing golden sunset, sky pure orange and magenta gradient, no clouds, golden light on all surfaces"
     },
     {
         "name": "Forest Canopy Mega-Treehouse",
-        "desc": "スウェーデンの針葉樹林、樹高25mの樹冠レベルに網目状の歩道橋で繋がれた20棟のキャビン群。各棟は樹木の幹に絡みつくような有機的な形状で、木の皮のような外壁。雪が積もる冬の森、靄がかかる早朝の光。"
+        "desc": "スウェーデンの針葉樹林、樹高25mの樹冠レベルに網目状の歩道橋で繋がれた20棟のキャビン群。各棟は樹木の幹に絡みつくような有機的な卵形・雫形のフォルムで、木の皮のような外壁。WEATHER: steady forest rain, rain visible as diagonal streaks, wet glistening bark, mist rising between trees.",
+        "weather": "forest rain, diagonal rain streaks visible, every surface wet and glistening, low mist between the trees, no open sky visible — only forest canopy"
     },
     {
         "name": "Desert Rock-Carved Complex",
-        "desc": "ヨルダン・ペトラの砂岩渓谷に、岩盤を直接彫り込んで作られた現代的な大型リゾート。建物の半分が地下の洞窟、半分が砂岩の崖から突き出たコンクリートとガラスのヴォリューム。朝日で岩が赤く燃える。20室以上の複合施設。"
+        "desc": "ヨルダン・ペトラの砂岩渓谷に、岩盤を直接彫り込んで作られた現代的な大型リゾート。建物の半分が地下の洞窟、半分が砂岩の崖から突き出た円弧状・波状のコンクリートとガラスのヴォリューム。直線なし。20室以上。WEATHER: golden hour morning sun, sandstone glowing deep amber and crimson, sharp shadows.",
+        "weather": "golden hour sunrise, sandstone lit deep amber-red, razor-sharp shadows, pure clear blue sky"
     },
     {
         "name": "Arctic Ice-Edge Lodge",
-        "desc": "グリーンランドの氷河末端、氷と海の境界線上に建てられた黒い鉄とガラスの大型ロッジ。氷河の青白い壁面が建物の背後に迫り、前面はオーロラが映る北極海。吹雪と強風の中で室内から暖かい光が漏れる。20人収容。"
+        "desc": "グリーンランドの氷河末端、氷と海の境界線上に建てられた黒い鉄とガラスの大型ロッジ。菱形・多角形を組み合わせた結晶のような幾何学フォルム、一切の直角なし。氷河の青白い壁面が建物の背後に迫り、前面は北極海。20人収容。WEATHER: blizzard with heavy snow, snowflakes thick in the air, warm amber glow from every window.",
+        "weather": "blizzard, thick snowfall, snow driven sideways, warm light glowing from windows, dramatic contrast of cold white and warm amber, clear sky above the storm"
     },
     {
         "name": "Cascading Waterfall Villa",
-        "desc": "アイスランドの滝の横、玄武岩の柱状節理の崖面に段々に張り付いた白いコンクリートの大型別荘群。各フロアのテラスに小さな滝が流れ落ち、建物と水が一体化。荒天の空と緑の苔に覆われた溶岩原が広がる。Frank Lloyd Wrightのカウフマン邸を10倍スケールに。"
+        "desc": "アイスランドの滝の横、玄武岩の柱状節理の崖面に段々に張り付いた白いコンクリートの大型別荘群。各フロアが滝と平行に斜めに傾いたカンチレバーで張り出し、水平ではなく傾斜した屋根面が重なる。Frank Lloyd Wrightのカウフマン邸を10倍スケールに。WEATHER: crisp clear sunny day, bright blue sky, waterfall mist catching sunlight as rainbows.",
+        "weather": "brilliant clear sunny sky, deep blue, waterfall mist creating small rainbows, bright midday light"
     },
     {
         "name": "Floating Lagoon Resort",
-        "desc": "タヒチのターコイズブルーのラグーンに、水上に浮かぶ星型の大型リゾート島。中央に熱帯植物の中庭、外周に20棟の水上ヴィラが放射状に伸びる。環礁と外洋の色の差がくっきりと見え、夕焼けが水面を金色に染める。"
+        "desc": "タヒチのターコイズブルーのラグーンに、水上に浮かぶ花びら形の大型リゾート島。花弁状に広がる5つのウィングが放射状に伸び、各ウィングが曲線を描きながら水面上に張り出す。20棟以上の水上ヴィラ。WEATHER: golden sunset, sky blazing orange fading to deep violet, perfect mirror reflection in the lagoon.",
+        "weather": "burning sunset, sky pure orange to deep violet gradient, perfect glassy reflection in the turquoise lagoon, zero clouds"
     },
 ]
 
@@ -67,17 +75,18 @@ def generate_prompt_with_gemini(scenario):
 Create a photorealistic exterior image generation prompt for this building:
 "{scenario['desc']}"
 
+WEATHER (use exactly this, do not change): {scenario.get('weather', 'clear blue sky, golden light')}
+
 RULES:
 - EXTERIOR shot — full building visible showing its UNIQUE SHAPE and form
-- Describe the architectural SHAPE explicitly and precisely first: "a bridge-shaped building spanning the gorge", "a ring of cabins encircling the crater rim", "cascading concrete terraces down the cliff face" — the unusual form must be clear
-- Building is MASSIVE RESORT SCALE — large enough for 15 people to stay comfortably, multiple wings or units visible, sprawling footprint, grand entrance
-- 3-4 human silhouettes visible to make the enormous scale undeniable
-- Nature and weather are ACTIVE — stormy sky, mist rolling in, snow falling, aurora, golden sunset — weather surrounds the building
-- Architecture obeys gravity and physics — no floating
-- Wide establishing shot (16-24mm) showing building fully in its landscape context
-- Specific materials, lighting, atmosphere
-- NO generic rectangular houses — the shape must be distinctive and memorable
-- End with: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, ISO 200, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
+- Describe the architectural SHAPE explicitly: curves, spirals, cantilevers, organic forms, angled volumes — NEVER a box or rectangle. The shape must be instantly recognizable as extraordinary.
+- NO overcast sky, NO grey clouds, NO flat diffuse light — ONLY the exact weather specified above
+- Landscape reference: @peaktylerr style — epic, cinematic, the natural terrain is as powerful as the building
+- Building is MASSIVE RESORT SCALE — large enough for 15 people, multiple wings visible, sprawling footprint
+- 3-4 human silhouettes visible to show enormous scale
+- Wide establishing shot (16-24mm), building fully in its landscape context
+- Specific materials, lighting, shadows
+- End with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
 Output ONLY the prompt. ~120 words."""
                 )
@@ -202,9 +211,9 @@ EXPAND_ANGLES = [
         "wide-angle exterior, f/8, golden hour, dramatic sky"
     ),
     (
-        "Exterior — Storm & Drama",
-        "same building exterior in stormy or snowy weather, dark brooding sky, warm interior glow visible through glass, moody atmosphere",
-        "dramatic weather, moody, medium shot"
+        "Exterior — Snow & Glow",
+        "same building exterior in heavy snowfall, thick snowflakes falling mid-air, snow blanketing every surface, warm amber interior glow visible through glass, deep navy blue sky — NO grey overcast clouds",
+        "snowfall medium shot, warm vs cold contrast, Hasselblad X2D, 35mm"
     ),
     (
         "Night Exterior — Illuminated",
@@ -262,6 +271,8 @@ Camera note: {camera_note}
 
 RULES FOR PHOTOREALISM (critical):
 - SAME building and materials — consistency across all views
+- EXTERIOR weather: ONLY clear blue sky, snow, golden sunset, or forest rain — NO overcast grey sky, NO flat cloudy light ever
+- Landscape: @peaktylerr style — epic, cinematic nature, terrain is as powerful as the building
 - EXACT camera specs: body (Hasselblad X2D or Phase One XF), lens mm, aperture, time of day, natural light direction
 - Specific imperfect real-world details: a water glass on a side table, a linen throw slightly crumpled, a candle half-burned, slight dust on a beam — makes it feel lived-in and real
 - MASSIVE SCALE: interiors sized for 15 people — grand halls, 7-8m ceilings, 20m+ long rooms, multiple seating areas, triple-height volumes, gallery-scale proportions
