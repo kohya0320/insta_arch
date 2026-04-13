@@ -70,25 +70,39 @@ def generate_prompt_with_gemini(scenario):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""You are a world-class architectural photographer. Your work appears on @amazing.architecture, @stylarc, @minimal_architectures, Dezeen, and Wallpaper*. You are known for capturing how extraordinary buildings emerge FROM their landscape — the terrain is always the co-star.
+                    contents=f"""You are a world-class architectural photographer. Your editorial work appears on @matitectura, @amazing.architecture, @stylarc, Dezeen, and Wallpaper*.
 
-Create a photorealistic exterior image generation prompt for this building:
+@matitectura style analysis — apply ALL of these:
+- RAW CONTRAST: the building is a hard geometric form against soft, wild, or vast nature — the tension between man-made and natural is the entire composition
+- MINIMALIST FRAMING: negative space is as important as the building — sky, water, rock face, or forest fills at least 50% of the frame
+- MATERIAL HONESTY: raw concrete, weathered corten steel, aged timber, stone — textures you can feel
+- LIGHT AS SCULPTURE: one strong directional light source — golden hour, harsh midday, or pre-dawn blue — never flat
+- HUMAN ABSENCE (usually): the building feels discovered, not posed
+
+World architecture references to draw from (mix elements):
+- Tadao Ando: raw concrete, silence, water reflection, spiritual emptiness
+- Peter Zumthor: atmosphere, thermal stone baths, material depth
+- BIG Architects: bold geometric forms integrated into landscape
+- Casa Brutale (OPA): cliff-embedded pools, building as cave
+- Adjaye Associates: black mass against bright landscape
+- SANAA: transparent floating volumes, lightness
+- Herzog & de Meuron: material transformation, facade as texture
+
+Create a photorealistic exterior prompt for this building:
 "{scenario['desc']}"
 
-WEATHER (use exactly this, do not change): {scenario.get('weather', 'clear blue sky, golden light')}
+WEATHER (do not change): {scenario.get('weather', 'clear blue sky, golden light')}
 
 RULES:
-- EXTERIOR shot — full building visible showing its UNIQUE SHAPE and form
-- Describe the architectural SHAPE explicitly: bold cantilevers, dramatic overhangs, offset stacked volumes, geometric precision, or organic curves — the shape must be architecturally distinctive and stylish. Clean geometric forms are fine if they have strong proportions and character.
-- NO overcast sky, NO grey clouds, NO flat diffuse light — ONLY the exact weather specified above
-- Landscape reference: @peaktylerr style — epic, cinematic, the natural terrain is as powerful as the building
-- Building is MASSIVE RESORT SCALE — large enough for 15 people, multiple wings visible, sprawling footprint
-- 3-4 human silhouettes visible to show enormous scale
-- Wide establishing shot (16-24mm), building fully in its landscape context
-- Specific materials, lighting, shadows
-- End with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
+- NATURE VS ARCHITECTURE: the landscape is equally the subject — @peaktylerr scale epic terrain
+- Strong directional light creates hard shadows — NO flat overcast light, NO grey sky
+- Architectural SHAPE described precisely — cantilevers, mass, voids, proportions
+- MASSIVE SCALE — resort for 15 people, multiple wings, 2-3 tiny human silhouettes to prove scale
+- Wide shot (16-24mm), building in full landscape context
+- Specific worn real-world details: moss on concrete, water stain, a light left on inside
+- End: "editorial photograph @matitectura style, Hasselblad X2D, 24mm f/8, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
-Output ONLY the prompt. ~120 words."""
+Output ONLY the prompt. ~130 words."""
                 )
                 return response.text.strip()
             except Exception as e:
@@ -260,28 +274,29 @@ EXPAND_ANGLES = [
 def generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note):
     """アングルごとの詳細プロンプトを生成"""
     import time
-    contents = f"""You are a professional architectural photographer shooting for @stylarc, @minimal_architectures, @matitectura. Your work looks like REAL photographs — not AI, not renders. Editors at Wallpaper* and Dezeen publish your shots.
+    contents = f"""You are a world-class architectural photographer. Your work appears on @matitectura, @stylarc, @minimal_architectures, Dezeen, Wallpaper*. Your images look like REAL photographs — never AI, never renders.
 
-Original building (keep SAME architectural style, materials, exterior form):
+@matitectura style: raw contrast between hard architecture and wild nature, minimalist framing, material honesty (concrete, stone, corten, timber), one strong directional light source, human absence makes it feel discovered.
+World references: Tadao Ando (silence, water, raw concrete), Peter Zumthor (atmosphere, material depth), BIG (bold forms in landscape), Casa Brutale (cliff-embedded), SANAA (transparency).
+
+Original building (keep SAME style, materials, exterior form):
 \"\"\"{original_prompt[:350]}\"\"\"
 
 Create a prompt for: "{angle_name}"
 Scene direction: {angle_hint}
 Camera note: {camera_note}
 
-RULES FOR PHOTOREALISM (critical):
-- SAME building and materials — consistency across all views
-- EXTERIOR weather: ONLY clear blue sky, snow, golden sunset, or forest rain — NO overcast grey sky, NO flat cloudy light ever
-- Landscape: @peaktylerr style — epic, cinematic nature, terrain is as powerful as the building
-- EXACT camera specs: body (Hasselblad X2D or Phase One XF), lens mm, aperture, time of day, natural light direction
-- Specific imperfect real-world details: a water glass on a side table, a linen throw slightly crumpled, a candle half-burned, slight dust on a beam — makes it feel lived-in and real
-- MASSIVE SCALE: interiors sized for 15 people — grand halls, 7-8m ceilings, 20m+ long rooms, multiple seating areas, triple-height volumes, gallery-scale proportions
-- Named furniture brands at grand scale (Minotti, Poliform, B&B Italia, Cassina), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees (not just plants), warm layered light
-- Color: restrained, natural — warm beige, raw concrete grey, aged oak, muted stone — NO oversaturation
-- NO words like "stunning", "dramatic", "breathtaking" — describe visually instead
-- End with: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, ISO 200, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
+RULES:
+- SAME building — same materials, same character, new angle
+- EXTERIOR: nature vs architecture contrast — @peaktylerr epic terrain, ONLY clear sky / snow / sunset / forest rain — NO grey overcast ever
+- INTERIORS: @matitectura style — raw concrete or stone walls, floor-to-ceiling glass framing wild landscape, one strong oblique light shaft, material textures visible
+- MASSIVE SCALE for 15 people — 7-8m ceilings, 20m+ rooms, multiple zones, gallery proportions
+- Named furniture (Minotti, Poliform, Cassina, B&B Italia), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees
+- Lived-in details: a half-burned candle, a crumpled linen throw, a book left open — NOT sterile
+- Color: restrained — raw concrete grey, warm oak, muted stone, deep shadow — NO oversaturation
+- End: "editorial photograph @matitectura style, Hasselblad X2D, 35mm f/5.6, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
-Output ONLY the prompt, ~110 words."""
+Output ONLY the prompt, ~120 words."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(2):
             try:
