@@ -11,6 +11,10 @@ IG_USER_ID = os.environ.get("IG_USER_ID", "")
 
 client = genai.Client(api_key=GEMINI_API_KEY)
 
+# static/images ディレクトリを確実に作成（gunicorn起動時も対応）
+_base_dir = os.path.dirname(os.path.abspath(__file__))
+os.makedirs(os.path.join(_base_dir, "static", "images"), exist_ok=True)
+
 # ジョブ管理
 jobs = {}
 
