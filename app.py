@@ -85,12 +85,12 @@ def generate_image(prompt):
         },
     }
     api_url = "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell"
-
+    last_error = ""
     for attempt in range(3):
         try:
             print(f"[Image] attempt {attempt+1}")
             res = requests.post(api_url, headers=headers, json=payload, timeout=120)
-            print(f"[Image] status={res.status_code} size={len(res.content)}")
+            print(f"[Image] status={res.status_code} size={len(res.content)} body={res.text[:300]}")
             if res.status_code == 200:
                 base_dir = os.path.dirname(os.path.abspath(__file__))
                 filename = f"{uuid.uuid4().hex}.jpg"
@@ -100,15 +100,18 @@ def generate_image(prompt):
                 print(f"[Image OK] {filename}")
                 return filename
             elif res.status_code == 503:
+                last_error = f"503: {res.text[:200]}"
                 print(f"[Image] model loading, wait 20s...")
                 time.sleep(20)
             else:
-                print(f"[Image] error body: {res.text[:200]}")
+                last_error = f"HTTP {res.status_code}: {res.text[:200]}"
+                print(f"[Image] error: {last_error}")
                 time.sleep(10)
         except Exception as e:
+            last_error = str(e)
             print(f"[Image Error] {e}")
             time.sleep(10)
-    return None
+    raise RuntimeError(f"generate_image failed: {last_error}")
 
 def generate_caption(name, prompt):
     """英語キャプション生成"""
@@ -152,9 +155,7 @@ def process_one(job_id, i, scenario):
             })
             print(f"[Job {job_id}] {i+1}/5 DONE")
         else:
-            err = "generate_image returned None"
-            print(f"[Job {job_id}] {i+1}/5 FAILED: {err}")
-            jobs[job_id].setdefault("errors", []).append(err)
+            print(f"[Job {job_id}] {i+1}/5 FAILED")
     except Exception as e:
         print(f"[Job {job_id}] {i+1} error: {e}")
         jobs[job_id].setdefault("errors", []).append(str(e))
