@@ -80,7 +80,8 @@ def generate_image(prompt):
     import time, urllib.parse
     clean = re.sub(r'--ar \S+', '', prompt).strip()
     encoded = urllib.parse.quote(clean)
-    api_url = f"https://image.pollinations.ai/prompt/{encoded}?width=832&height=1040&model=flux&nologo=true&enhance=true"
+    seed = random.randint(1, 999999)
+    api_url = f"https://image.pollinations.ai/prompt/{encoded}?width=832&height=1040&model=flux&nologo=true&enhance=true&seed={seed}"
 
     for attempt in range(3):
         try:
