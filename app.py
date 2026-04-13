@@ -76,32 +76,45 @@ Output ONLY the prompt text. ~110 words."""
 
 
 def generate_image(prompt):
-    """Pollinations.ai flux-realism で画像生成"""
-    import time, urllib.parse
+    """fal.ai FLUX.1-dev で画像生成"""
+    import time
     clean = re.sub(r'--ar \S+', '', prompt).strip()
-    encoded = urllib.parse.quote(clean)
-    seed = random.randint(1, 999999)
-    api_url = f"https://image.pollinations.ai/prompt/{encoded}?width=832&height=1040&model=flux-realism&nologo=true&enhance=true&seed={seed}"
+    headers = {
+        "Authorization": f"Key {FAL_KEY}",
+        "Content-Type": "application/json",
+    }
+    payload = {
+        "prompt": clean,
+        "image_size": {"width": 832, "height": 1040},
+        "num_inference_steps": 28,
+        "guidance_scale": 3.5,
+        "num_images": 1,
+        "enable_safety_checker": False,
+    }
+    api_url = "https://fal.run/fal-ai/flux/dev"
 
     for attempt in range(3):
         try:
-            print(f"[Image] attempt {attempt+1} seed={seed}")
-            res = requests.get(api_url, timeout=180)
-            print(f"[Image] status={res.status_code} size={len(res.content)}")
-            if res.status_code == 200 and len(res.content) > 10000:
+            print(f"[Image] attempt {attempt+1}")
+            res = requests.post(api_url, headers=headers, json=payload, timeout=180)
+            print(f"[Image] status={res.status_code}")
+            if res.status_code == 200:
+                data = res.json()
+                img_url = data["images"][0]["url"]
+                img_res = requests.get(img_url, timeout=60)
                 base_dir = os.path.dirname(os.path.abspath(__file__))
                 filename = f"{uuid.uuid4().hex}.jpg"
                 path = os.path.join(base_dir, "static", "images", filename)
                 with open(path, "wb") as f:
-                    f.write(res.content)
+                    f.write(img_res.content)
                 print(f"[Image OK] {filename}")
                 return filename
             else:
-                print(f"[Image] unexpected response, retry...")
-                time.sleep(15)
+                print(f"[Image] error: {res.text[:300]}")
+                time.sleep(10)
         except Exception as e:
             print(f"[Image Error] {e}")
-            time.sleep(15)
+            time.sleep(10)
     raise RuntimeError(f"generate_image failed after 3 attempts")
 
 def generate_caption(name, prompt):
