@@ -18,39 +18,39 @@ os.makedirs(os.path.join(_base_dir, "static", "images"), exist_ok=True)
 # ジョブ管理
 jobs = {}
 
-# ━━━ 地形・自然に溶け込む超高級建築パターン ━━━
+# ━━━ 地形・自然に溶け込む超高級・大規模建築パターン ━━━
 SCENARIOS = [
     {
-        "name": "Mediterranean Cliff Villa",
-        "desc": "イタリア・アマルフィ海岸の垂直の断崖に水平に張り出したコンクリートとガラスのヴィラ。崖の岩盤から直接生えたように見え、眼下100mにコバルトブルーの海が広がる。プールが崖の縁でそのまま海に溶け込む。Peter Zumthor設計イメージ。"
+        "name": "Amalfi Cliff Mega-Villa",
+        "desc": "イタリア・アマルフィ海岸の断崖に水平に張り出した6層・全長120mのコンクリートとガラスの超大型ヴィラ複合体。各フロアがテラスとプールを持ち、崖の岩盤から直接生えた階段状のヴォリュームが海へ向かって降りていく。夕日に照らされた崖面とコバルトブルーの海が背景。Bjarke Ingels設計イメージ。"
     },
     {
-        "name": "Norwegian Fjord Retreat",
-        "desc": "ノルウェーの氷河が削った峡湾の岸壁に、黒錆びたコルテン鋼と現地産石材で作られたロッジが岩と一体化して建つ。氷河水の深いグリーンのフィヨルドが建物の鏡面ガラスに映り込む。Snøhetta設計イメージ。"
+        "name": "Norwegian Fjord Lodge Complex",
+        "desc": "ノルウェーの峡湾沿いに100m以上にわたって横断する、黒いコルテン鋼と粗い花崗岩の大型リゾート複合施設。水面から直接立ち上がる岸壁に張り付き、キャンチレバーのウィングが水面上に突き出す。フィヨルドの深い緑の水面が正面に広がり、背後に雪を抱いた絶壁。Snøhetta設計イメージ。"
     },
     {
-        "name": "Patagonia Glacier House",
-        "desc": "パタゴニアの氷河湖畔、風に磨かれた花崗岩の上に建つ低く水平な黒いヴォリュームの邸宅。氷河と雪山が直接背景を成し、風雨にさらされた木材と粗い石積みが地形の一部に見える。Luis Laplace設計イメージ。"
+        "name": "Patagonia Mountain Resort",
+        "desc": "パタゴニアのトレス・デル・パイネの麓、氷河湖を見下ろす丘陵に広がる石と黒鉄と大ガラスの大型山岳リゾート。複数の棟が岩盤の地形に沿って展開し、総延長200m。荒天の空と氷河湖のターコイズブルーが対比する。David Chipperfield設計イメージ。"
     },
     {
-        "name": "Japanese Mountain Retreat",
-        "desc": "日本・北海道の白樺林と火山性の黒い岩場に建つ、薄い鉄板屋根と木格子のパビリオン群。建物が地形の等高線に沿って段々に配置され、霧と雪に包まれる。Kengo Kuma設計イメージ。"
+        "name": "Utah Canyon Estate",
+        "desc": "アメリカ・ユタ州の赤砂岩渓谷を見渡す台地に建つ、砂岩と打ち放しコンクリートの大型邸宅群。メインハウスとゲストウィング・プールハウスが渓谷の縁に沿って配置され、全体が岩盤の色に溶け込む。夕日で全体が赤く燃え上がる。Rick Joy設計イメージ。"
     },
     {
-        "name": "Desert Canyon Residence",
-        "desc": "アメリカ・ユタ州の赤砂岩の渓谷壁に埋め込まれた、砂岩の色と質感に合わせた打ち放しコンクリートの邸宅。巨大な一枚ガラスの開口が渓谷の岩壁を額縁のように切り取る。Rick Joy設計イメージ。"
+        "name": "Maldives Over-Water Estate",
+        "desc": "モルディブの環礁に建てられた、珊瑚礁の海上に桟橋で繋がれた大型水上ヴィラ群。白いコンクリートと熱帯木材の複数棟が透明度40mのインド洋の上に張り出し、無限大のラグーンと空が建物を包む。Jean Nouvel設計イメージ。"
     },
     {
-        "name": "Coastal Bluff House",
-        "desc": "ニュージーランド南島の荒削りな海岸断崖に張り出した、波に侵食された岩盤の上の木とガラスの邸宅。南極から来る荒波と空が建物の大きなガラス面に映り込み、家が空中に浮いているように見える。"
+        "name": "Japanese Volcanic Spa Resort",
+        "desc": "日本・九州の火山地帯、硫黄噴気が立ち上る溶岩台地に建つ大型温泉リゾート。黒い玄武岩と薄い鉄板屋根の建物群が等高線に沿って段々に展開。温泉の湯気と霧が建物を包み、背後に活火山がそびえる。隈研吾設計イメージ。"
     },
     {
-        "name": "Volcanic Island Villa",
-        "desc": "ギリシャ・サントリーニの白い火山灰の崖に掘り込まれた洞窟ヴィラ。白漆喰と青いドームではなく、火山岩の黒と白の大理石だけの極限まで洗練されたミニマル建築。カルデラの海が正面に広がる。"
+        "name": "Scottish Highlands Castle-Hotel",
+        "desc": "スコットランドの荒野、ロッホ（湖）の畔に建つ現代的な大型城郭ホテル。地元産砂岩と鉄骨ガラスを組み合わせた100室規模の施設が、ヒースの荒野と灰色の空を背景に堂々とそびえる。長い石積みの壁が湖岸線に沿って続く。Zaha Hadid設計イメージ。"
     },
     {
-        "name": "Amazon Canopy Pavilion",
-        "desc": "アマゾン川上流域の熱帯雨林、樹高40mの樹冠レベルに吊り橋で繋がれた透明ガラスと錆鉄のパビリオン。足元は密林、頭上は青空、三方は360度の緑の海。Jean Nouvel設計イメージ。"
+        "name": "Santorini Caldera Mega-Villa",
+        "desc": "サントリーニ島のカルデラ崖に掘り込まれた、白漆喰ではなく黒い火山岩と白大理石だけで構成された大型崖面ヴィラ複合体。崖の垂直面から水平ヴォリュームが何層にも張り出し、各層に無辺縁プールを持つ。エーゲ海のカルデラが眼下360度に広がる。"
     },
 ]
 
@@ -68,7 +68,8 @@ Create a photorealistic exterior image generation prompt for this building:
 "{scenario['desc']}"
 
 RULES — exterior landscape shot:
-- EXTERIOR view showing full building in context with its dramatic natural landscape — no interior shots
+- EXTERIOR view showing full building or large portion in context with its dramatic natural landscape — no interior shots
+- Building must feel LARGE and expensive — multi-wing compounds, resort scale, landmark architecture are welcome
 - The terrain, geology, sky, water, or vegetation must be the emotional core — building grows FROM the land
 - Architecture obeys gravity, physically possible, no floating
 - EXACT camera specs: body, lens (wide 16-24mm preferred), aperture, time of day, natural light angle
