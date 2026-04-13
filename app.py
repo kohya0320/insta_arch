@@ -70,37 +70,27 @@ def generate_prompt_with_gemini(scenario):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""You are a world-class architectural photographer. Your editorial work appears on @matitectura, @amazing.architecture, @stylarc, Dezeen, and Wallpaper*.
+                    contents=f"""You are a world-class architectural photographer known for one thing: capturing the conversation between a building and its landscape — not copying either, but finding the tension and harmony between them.
 
-@matitectura style analysis — apply ALL of these:
-- RAW CONTRAST: the building is a hard geometric form against soft, wild, or vast nature — the tension between man-made and natural is the entire composition
-- MINIMALIST FRAMING: negative space is as important as the building — sky, water, rock face, or forest fills at least 50% of the frame
-- MATERIAL HONESTY: raw concrete, weathered corten steel, aged timber, stone — textures you can feel
-- LIGHT AS SCULPTURE: one strong directional light source — golden hour, harsh midday, or pre-dawn blue — never flat
-- HUMAN ABSENCE (usually): the building feels discovered, not posed
-
-World architecture references to draw from (mix elements):
-- Tadao Ando: raw concrete, silence, water reflection, spiritual emptiness
-- Peter Zumthor: atmosphere, thermal stone baths, material depth
-- BIG Architects: bold geometric forms integrated into landscape
-- Casa Brutale (OPA): cliff-embedded pools, building as cave
-- Adjaye Associates: black mass against bright landscape
-- SANAA: transparent floating volumes, lightness
-- Herzog & de Meuron: material transformation, facade as texture
+The core visual idea: CONTRAST AND HARMONY
+- CONTRAST: the building is man-made, precise, intentional — the landscape is wild, vast, indifferent. This opposition creates visual electricity.
+- HARMONY: yet the building belongs there. It shares materials with the ground beneath it, its geometry echoes the horizon line, its openings frame exactly the right view. It could not exist anywhere else.
+- Never let one dominate — nature and architecture are equals in the frame.
 
 Create a photorealistic exterior prompt for this building:
 "{scenario['desc']}"
 
 WEATHER (do not change): {scenario.get('weather', 'clear blue sky, golden light')}
 
-RULES:
-- NATURE VS ARCHITECTURE: the landscape is equally the subject — @peaktylerr scale epic terrain
-- Strong directional light creates hard shadows — NO flat overcast light, NO grey sky
-- Architectural SHAPE described precisely — cantilevers, mass, voids, proportions
-- MASSIVE SCALE — resort for 15 people, multiple wings, 2-3 tiny human silhouettes to prove scale
-- Wide shot (16-24mm), building in full landscape context
-- Specific worn real-world details: moss on concrete, water stain, a light left on inside
-- End: "editorial photograph @matitectura style, Hasselblad X2D, 24mm f/8, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
+VISUAL RULES:
+- Landscape fills at least 50% of the frame — sky, terrain, water, forest — epic and untamed (@peaktylerr scale)
+- One strong directional light source — hard shadows, deep blacks — NO flat overcast, NO grey sky
+- Describe the building's SHAPE and MASS precisely: how it sits on, into, or above the terrain
+- Raw real materials visible: concrete texture, stone grain, weathered metal, aged timber
+- Small imperfection makes it real: a moss patch, a water stain on the facade, one window with warm light on inside
+- 2-3 tiny human silhouettes at the entrance — prove the enormous scale
+- MASSIVE resort scale — 15 people, multiple wings visible, wide establishing shot 16-24mm
+- End: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
 Output ONLY the prompt. ~130 words."""
                 )
@@ -274,10 +264,12 @@ EXPAND_ANGLES = [
 def generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note):
     """アングルごとの詳細プロンプトを生成"""
     import time
-    contents = f"""You are a world-class architectural photographer. Your work appears on @matitectura, @stylarc, @minimal_architectures, Dezeen, Wallpaper*. Your images look like REAL photographs — never AI, never renders.
+    contents = f"""You are a world-class architectural photographer. Your images look like REAL photographs — never AI, never renders. Your signature: every shot shows the conversation between a building and its landscape.
 
-@matitectura style: raw contrast between hard architecture and wild nature, minimalist framing, material honesty (concrete, stone, corten, timber), one strong directional light source, human absence makes it feel discovered.
-World references: Tadao Ando (silence, water, raw concrete), Peter Zumthor (atmosphere, material depth), BIG (bold forms in landscape), Casa Brutale (cliff-embedded), SANAA (transparency).
+Core concept — CONTRAST AND HARMONY:
+- The building is precise, intentional, man-made. The landscape is wild, vast, indifferent. That tension is the shot.
+- Yet they belong together — materials echo the ground, geometry mirrors the horizon, openings frame the exact right view.
+- Neither dominates. They are equals.
 
 Original building (keep SAME style, materials, exterior form):
 \"\"\"{original_prompt[:350]}\"\"\"
@@ -287,14 +279,14 @@ Scene direction: {angle_hint}
 Camera note: {camera_note}
 
 RULES:
-- SAME building — same materials, same character, new angle
-- EXTERIOR: nature vs architecture contrast — @peaktylerr epic terrain, ONLY clear sky / snow / sunset / forest rain — NO grey overcast ever
-- INTERIORS: @matitectura style — raw concrete or stone walls, floor-to-ceiling glass framing wild landscape, one strong oblique light shaft, material textures visible
+- SAME building — same materials, same character, new angle only
+- EXTERIOR: landscape fills 50%+ of frame, epic and untamed. ONLY clear sky / snow / golden sunset / forest rain — NO grey overcast ever
+- INTERIORS: floor-to-ceiling glass frames the wild landscape outside — nature is always visible, always present. One strong oblique light shaft cuts across the room. Raw material textures: concrete grain, stone surface, aged wood.
 - MASSIVE SCALE for 15 people — 7-8m ceilings, 20m+ rooms, multiple zones, gallery proportions
-- Named furniture (Minotti, Poliform, Cassina, B&B Italia), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees
-- Lived-in details: a half-burned candle, a crumpled linen throw, a book left open — NOT sterile
-- Color: restrained — raw concrete grey, warm oak, muted stone, deep shadow — NO oversaturation
-- End: "editorial photograph @matitectura style, Hasselblad X2D, 35mm f/5.6, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
+- Quality furniture at grand scale (Minotti, Poliform, Cassina), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees
+- Lived-in imperfections: a half-burned candle, a crumpled linen throw, a book face-down — NOT sterile
+- Color: restrained — concrete grey, warm oak, muted stone, deep shadow — NO oversaturation
+- End: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
 Output ONLY the prompt, ~120 words."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
