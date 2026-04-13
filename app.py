@@ -42,7 +42,7 @@ SCENARIOS = [
     },
     {
         "name": "Desert Rock-Carved Complex",
-        "desc": "ヨルダン・ペトラの砂岩渓谷に、岩盤を直接彫り込んで作られた現代的な大型リゾート。建物の半分が地下の洞窟、半分が砂岩の崖から突き出た円弧状・波状のコンクリートとガラスのヴォリューム。直線なし。20室以上。WEATHER: golden hour morning sun, sandstone glowing deep amber and crimson, sharp shadows.",
+        "desc": "ヨルダン・ペトラの砂岩渓谷に、岩盤を直接彫り込んで作られた現代的な大型リゾート。建物の半分が地下の洞窟、半分が砂岩の崖から突き出た大胆なコンクリートとガラスのヴォリューム。20室以上。WEATHER: golden hour morning sun, sandstone glowing deep amber and crimson, sharp shadows.",
         "weather": "golden hour sunrise, sandstone lit deep amber-red, razor-sharp shadows, pure clear blue sky"
     },
     {
@@ -79,7 +79,7 @@ WEATHER (use exactly this, do not change): {scenario.get('weather', 'clear blue 
 
 RULES:
 - EXTERIOR shot — full building visible showing its UNIQUE SHAPE and form
-- Describe the architectural SHAPE explicitly: curves, spirals, cantilevers, organic forms, angled volumes — NEVER a box or rectangle. The shape must be instantly recognizable as extraordinary.
+- Describe the architectural SHAPE explicitly: bold cantilevers, dramatic overhangs, offset stacked volumes, geometric precision, or organic curves — the shape must be architecturally distinctive and stylish. Clean geometric forms are fine if they have strong proportions and character.
 - NO overcast sky, NO grey clouds, NO flat diffuse light — ONLY the exact weather specified above
 - Landscape reference: @peaktylerr style — epic, cinematic, the natural terrain is as powerful as the building
 - Building is MASSIVE RESORT SCALE — large enough for 15 people, multiple wings visible, sprawling footprint
