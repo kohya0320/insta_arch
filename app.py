@@ -41,7 +41,7 @@ SCENARIOS = [
 def generate_prompt_with_gemini(scenario):
     """Geminiで超詳細なプロンプトを生成"""
     import time
-    for model in ["gemini-2.0-flash", "gemini-1.5-flash"]:
+    for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(3):
             try:
                 response = client.models.generate_content(
@@ -72,26 +72,18 @@ Output ONLY the prompt text. ~110 words."""
 
 
 def generate_image(prompt):
-    """Hugging Face FLUX.1-schnell で画像生成"""
-    import time
+    """Pollinations.ai で画像生成（無料・無制限）"""
+    import time, urllib.parse
     clean = re.sub(r'--ar \S+', '', prompt).strip()
-    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
-    payload = {
-        "inputs": clean,
-        "parameters": {
-            "width": 832,
-            "height": 1040,
-            "num_inference_steps": 12,
-        },
-    }
-    api_url = "https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell"
-    last_error = ""
+    encoded = urllib.parse.quote(clean)
+    api_url = f"https://image.pollinations.ai/prompt/{encoded}?width=832&height=1040&model=flux&nologo=true&enhance=true"
+
     for attempt in range(3):
         try:
             print(f"[Image] attempt {attempt+1}")
-            res = requests.post(api_url, headers=headers, json=payload, timeout=120)
-            print(f"[Image] status={res.status_code} size={len(res.content)} body={res.text[:300]}")
-            if res.status_code == 200:
+            res = requests.get(api_url, timeout=120)
+            print(f"[Image] status={res.status_code} size={len(res.content)}")
+            if res.status_code == 200 and len(res.content) > 10000:
                 base_dir = os.path.dirname(os.path.abspath(__file__))
                 filename = f"{uuid.uuid4().hex}.jpg"
                 path = os.path.join(base_dir, "static", "images", filename)
@@ -99,24 +91,18 @@ def generate_image(prompt):
                     f.write(res.content)
                 print(f"[Image OK] {filename}")
                 return filename
-            elif res.status_code == 503:
-                last_error = f"503: {res.text[:200]}"
-                print(f"[Image] model loading, wait 20s...")
-                time.sleep(20)
             else:
-                last_error = f"HTTP {res.status_code}: {res.text[:200]}"
-                print(f"[Image] error: {last_error}")
-                time.sleep(10)
+                print(f"[Image] unexpected response, retry...")
+                time.sleep(15)
         except Exception as e:
-            last_error = str(e)
             print(f"[Image Error] {e}")
-            time.sleep(10)
-    raise RuntimeError(f"generate_image failed: {last_error}")
+            time.sleep(15)
+    raise RuntimeError(f"generate_image failed after 3 attempts")
 
 def generate_caption(name, prompt):
     """英語キャプション生成"""
     import time
-    for model in ["gemini-2.0-flash", "gemini-1.5-flash"]:
+    for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(2):
             try:
                 response = client.models.generate_content(
@@ -253,7 +239,7 @@ RULES FOR PHOTOREALISM (critical):
 - End with: "editorial architectural photograph, photorealistic, natural film grain, 8K"
 
 Output ONLY the prompt, ~110 words."""
-    for model in ["gemini-2.0-flash", "gemini-1.5-flash"]:
+    for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(2):
             try:
                 response = client.models.generate_content(model=model, contents=contents)
