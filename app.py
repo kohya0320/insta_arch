@@ -92,7 +92,7 @@ VISUAL RULES:
 - MASSIVE resort scale — 15 people, multiple wings visible, wide establishing shot 16-24mm
 - End: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
-Output ONLY the prompt. ~130 words."""
+Output ONLY the prompt. 200-250 words. More detail = more realism."""
                 )
                 return response.text.strip()
             except Exception as e:
@@ -288,7 +288,7 @@ RULES:
 - Color: restrained — concrete grey, warm oak, muted stone, deep shadow — NO oversaturation
 - End: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
 
-Output ONLY the prompt, ~120 words."""
+Output ONLY the prompt. 200-250 words. More detail = more realism."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(2):
             try:
