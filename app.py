@@ -23,42 +23,42 @@ SCENARIOS = [
     {
         "name": "Cliff-Hanging Bridge Resort",
         "desc": "ノルウェーの峡湾を横断するように岩壁と岩壁の間に架けられた橋状の巨大リゾート建築。長さ150m・幅30mの橋型の建物が水面100m上に宙吊りになり、両端が崖に食い込む。ガラス床、吊り橋構造。WEATHER: heavy snowfall, snowflakes visible mid-air, pristine white snow on the bridge deck, deep blue fjord far below.",
-        "weather": "heavy snowfall, thick snow on surfaces, snowflakes in the air, no clouds — deep navy blue sky above the snow"
+        "weather": "heavy snowfall, thick snow on surfaces, snowflakes in the air, no clouds — deep saturated navy blue sky above the snow, properly exposed, no white blown-out sky"
     },
     {
         "name": "Volcanic Crater Retreat",
         "desc": "休火山のクレーター内壁に沿って螺旋状に配置されたリング型リゾート。らせん状に降りていく有機的な曲線形の建物群がクレーターの内側をぐるりと囲み、中央の火口湖を見下ろす。黒い溶岩石と錆鉄の外壁。各棟が弧を描くように連結。20棟。WEATHER: blazing clear blue sky, intense tropical sun, steam vents rising from the crater floor.",
-        "weather": "crystal clear deep blue sky, harsh sun, dramatic shadows, zero clouds"
+        "weather": "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, zero clouds, rich vivid colors, properly exposed"
     },
     {
         "name": "Underwater-Cliff Glass Resort",
         "desc": "地中海の海岸断崖に半分埋め込まれ、半分が海面上に突き出た巨大なガラスと白コンクリートのリゾート。S字カーブを描く平面形状、各フロアが海に向かって前に張り出すカンチレバー構造。大型プール、20室規模。WEATHER: fiery sunset, sky burning orange and deep magenta, reflections on the calm sea.",
-        "weather": "blazing golden sunset, sky pure orange and magenta gradient, no clouds, golden light on all surfaces"
+        "weather": "blazing golden sunset, sky deep saturated orange and magenta gradient, no clouds, vivid warm golden light saturating all surfaces, rich colors, properly exposed, no white blown-out sky"
     },
     {
         "name": "Forest Canopy Mega-Treehouse",
         "desc": "スウェーデンの針葉樹林、樹高25mの樹冠レベルに網目状の歩道橋で繋がれた20棟のキャビン群。各棟は樹木の幹に絡みつくような有機的な卵形・雫形のフォルムで、木の皮のような外壁。WEATHER: steady forest rain, rain visible as diagonal streaks, wet glistening bark, mist rising between trees.",
-        "weather": "forest rain, diagonal rain streaks visible, every surface wet and glistening, low mist between the trees, no open sky visible — only forest canopy"
+        "weather": "steady forest rain, diagonal rain streaks visible in air, every surface wet and glistening, rich deep greens of wet foliage, low mist between the trees, no open sky — only dense saturated green forest canopy, vivid colors"
     },
     {
         "name": "Desert Rock-Carved Complex",
         "desc": "ヨルダン・ペトラの砂岩渓谷に、岩盤を直接彫り込んで作られた現代的な大型リゾート。建物の半分が地下の洞窟、半分が砂岩の崖から突き出た大胆なコンクリートとガラスのヴォリューム。20室以上。WEATHER: golden hour morning sun, sandstone glowing deep amber and crimson, sharp shadows.",
-        "weather": "golden hour sunrise, sandstone lit deep amber-red, razor-sharp shadows, pure clear blue sky"
+        "weather": "golden hour sunrise, sandstone glowing deep saturated amber-red, razor-sharp shadows, deep saturated cerulean blue sky, vivid rich colors, properly exposed"
     },
     {
         "name": "Arctic Ice-Edge Lodge",
         "desc": "グリーンランドの氷河末端、氷と海の境界線上に建てられた黒い鉄とガラスの大型ロッジ。菱形・多角形を組み合わせた結晶のような幾何学フォルム、一切の直角なし。氷河の青白い壁面が建物の背後に迫り、前面は北極海。20人収容。WEATHER: blizzard with heavy snow, snowflakes thick in the air, warm amber glow from every window.",
-        "weather": "blizzard, thick snowfall, snow driven sideways, warm light glowing from windows, dramatic contrast of cold white and warm amber, clear sky above the storm"
+        "weather": "blizzard, thick snowfall driven sideways, warm amber light glowing from windows, dramatic contrast of cold blue-white snow and warm amber interior glow, deep saturated navy sky above the storm, properly exposed, vivid color contrast"
     },
     {
         "name": "Cascading Waterfall Villa",
         "desc": "アイスランドの滝の横、玄武岩の柱状節理の崖面に段々に張り付いた白いコンクリートの大型別荘群。各フロアが滝と平行に斜めに傾いたカンチレバーで張り出し、水平ではなく傾斜した屋根面が重なる。Frank Lloyd Wrightのカウフマン邸を10倍スケールに。WEATHER: crisp clear sunny day, bright blue sky, waterfall mist catching sunlight as rainbows.",
-        "weather": "brilliant clear sunny sky, deep blue, waterfall mist creating small rainbows, bright midday light"
+        "weather": "brilliant clear sunny sky, deep saturated azure blue, waterfall mist catching sunlight as vivid rainbows, bright midday light, rich saturated greens and blues, properly exposed"
     },
     {
         "name": "Floating Lagoon Resort",
         "desc": "タヒチのターコイズブルーのラグーンに、水上に浮かぶ花びら形の大型リゾート島。花弁状に広がる5つのウィングが放射状に伸び、各ウィングが曲線を描きながら水面上に張り出す。20棟以上の水上ヴィラ。WEATHER: golden sunset, sky blazing orange fading to deep violet, perfect mirror reflection in the lagoon.",
-        "weather": "burning sunset, sky pure orange to deep violet gradient, perfect glassy reflection in the turquoise lagoon, zero clouds"
+        "weather": "burning sunset, sky deep saturated orange fading to vivid violet, perfect glassy reflection in the rich turquoise lagoon, zero clouds, maximum color saturation, properly exposed, no blown-out whites"
     },
 ]
 
@@ -84,13 +84,14 @@ WEATHER (do not change): {scenario.get('weather', 'clear blue sky, golden light'
 
 VISUAL RULES:
 - Landscape fills at least 50% of the frame — sky, terrain, water, forest — epic and untamed (@peaktylerr scale)
-- One strong directional light source — hard shadows, deep blacks — NO flat overcast, NO grey sky
+- One strong directional light source — hard shadows, deep blacks — NO flat overcast, NO grey sky, NO white blown-out sky ever
+- RICH SATURATED COLORS: deep blue sky, vivid warm sunlight, saturated greens — full tonal range, no washed-out or faded look
 - Describe the building's SHAPE and MASS precisely: how it sits on, into, or above the terrain
 - Raw real materials visible: concrete texture, stone grain, weathered metal, aged timber
 - Small imperfection makes it real: a moss patch, a water stain on the facade, one window with warm light on inside
 - 2-3 tiny human silhouettes at the entrance — prove the enormous scale
 - MASSIVE resort scale — 15 people, multiple wings visible, wide establishing shot 16-24mm
-- End: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
+- End: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting NOT an illustration, photorealistic 8K"
 
 Output ONLY the prompt. 200-250 words. More detail = more realism."""
                 )
@@ -113,7 +114,7 @@ def generate_image(prompt):
         "prompt": clean,
         "image_size": {"width": 832, "height": 1040},
         "num_inference_steps": 35,
-        "guidance_scale": 5.0,
+        "guidance_scale": 7.5,
         "num_images": 1,
         "enable_safety_checker": False,
     }
@@ -285,8 +286,9 @@ RULES:
 - MASSIVE SCALE for 15 people — 7-8m ceilings, 20m+ rooms, multiple zones, gallery proportions
 - Quality furniture at grand scale (Minotti, Poliform, Cassina), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees
 - Lived-in imperfections: a half-burned candle, a crumpled linen throw, a book face-down — NOT sterile
-- Color: restrained — concrete grey, warm oak, muted stone, deep shadow — NO oversaturation
-- End: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, natural film grain, NOT a 3D render NOT AI art, photorealistic 8K"
+- EXTERIOR colors: rich and saturated — deep blue sky, vivid warm light, no blown-out white sky, correct exposure
+- INTERIOR colors: warm and rich — amber wood tones, warm stone, deep shadow — but never flat or washed out
+- End: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting NOT an illustration, photorealistic 8K"
 
 Output ONLY the prompt. 200-250 words. More detail = more realism."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
