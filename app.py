@@ -18,88 +18,79 @@ os.makedirs(os.path.join(_base_dir, "static", "images"), exist_ok=True)
 # ジョブ管理
 jobs = {}
 
-# ━━━ 20人規模・奇抜な形状・自然融合建築パターン ━━━
-SCENARIOS = [
-    {
-        "name": "Cliff-Hanging Bridge Resort",
-        "desc": "ノルウェーの峡湾を横断するように岩壁と岩壁の間に架けられた橋状の巨大リゾート建築。長さ150m・幅30mの橋型の建物が水面100m上に宙吊りになり、両端が崖に食い込む。ガラス床、吊り橋構造。WEATHER: heavy snowfall, snowflakes visible mid-air, pristine white snow on the bridge deck, deep blue fjord far below.",
-        "weather": "heavy snowfall, thick snow on surfaces, snowflakes in the air, no clouds — deep saturated navy blue sky above the snow, properly exposed, no white blown-out sky"
-    },
-    {
-        "name": "Volcanic Crater Retreat",
-        "desc": "休火山のクレーター内壁に沿って螺旋状に配置されたリング型リゾート。らせん状に降りていく有機的な曲線形の建物群がクレーターの内側をぐるりと囲み、中央の火口湖を見下ろす。黒い溶岩石と錆鉄の外壁。各棟が弧を描くように連結。20棟。WEATHER: blazing clear blue sky, intense tropical sun, steam vents rising from the crater floor.",
-        "weather": "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, zero clouds, rich vivid colors, properly exposed"
-    },
-    {
-        "name": "Underwater-Cliff Glass Resort",
-        "desc": "地中海の海岸断崖に半分埋め込まれ、半分が海面上に突き出た巨大なガラスと白コンクリートのリゾート。S字カーブを描く平面形状、各フロアが海に向かって前に張り出すカンチレバー構造。大型プール、20室規模。WEATHER: fiery sunset, sky burning orange and deep magenta, reflections on the calm sea.",
-        "weather": "blazing golden sunset, sky deep saturated orange and magenta gradient, no clouds, vivid warm golden light saturating all surfaces, rich colors, properly exposed, no white blown-out sky"
-    },
-    {
-        "name": "Forest Canopy Mega-Treehouse",
-        "desc": "スウェーデンの針葉樹林、樹高25mの樹冠レベルに網目状の歩道橋で繋がれた20棟のキャビン群。各棟は樹木の幹に絡みつくような有機的な卵形・雫形のフォルムで、木の皮のような外壁。WEATHER: steady forest rain, rain visible as diagonal streaks, wet glistening bark, mist rising between trees.",
-        "weather": "steady forest rain, diagonal rain streaks visible in air, every surface wet and glistening, rich deep greens of wet foliage, low mist between the trees, no open sky — only dense saturated green forest canopy, vivid colors"
-    },
-    {
-        "name": "Desert Rock-Carved Complex",
-        "desc": "ヨルダン・ペトラの砂岩渓谷に、岩盤を直接彫り込んで作られた現代的な大型リゾート。建物の半分が地下の洞窟、半分が砂岩の崖から突き出た大胆なコンクリートとガラスのヴォリューム。20室以上。WEATHER: golden hour morning sun, sandstone glowing deep amber and crimson, sharp shadows.",
-        "weather": "golden hour sunrise, sandstone glowing deep saturated amber-red, razor-sharp shadows, deep saturated cerulean blue sky, vivid rich colors, properly exposed"
-    },
-    {
-        "name": "Arctic Ice-Edge Lodge",
-        "desc": "グリーンランドの氷河末端、氷と海の境界線上に建てられた黒い鉄とガラスの大型ロッジ。菱形・多角形を組み合わせた結晶のような幾何学フォルム、一切の直角なし。氷河の青白い壁面が建物の背後に迫り、前面は北極海。20人収容。WEATHER: blizzard with heavy snow, snowflakes thick in the air, warm amber glow from every window.",
-        "weather": "blizzard, thick snowfall driven sideways, warm amber light glowing from windows, dramatic contrast of cold blue-white snow and warm amber interior glow, deep saturated navy sky above the storm, properly exposed, vivid color contrast"
-    },
-    {
-        "name": "Cascading Waterfall Villa",
-        "desc": "アイスランドの滝の横、玄武岩の柱状節理の崖面に段々に張り付いた白いコンクリートの大型別荘群。各フロアが滝と平行に斜めに傾いたカンチレバーで張り出し、水平ではなく傾斜した屋根面が重なる。Frank Lloyd Wrightのカウフマン邸を10倍スケールに。WEATHER: crisp clear sunny day, bright blue sky, waterfall mist catching sunlight as rainbows.",
-        "weather": "brilliant clear sunny sky, deep saturated azure blue, waterfall mist catching sunlight as vivid rainbows, bright midday light, rich saturated greens and blues, properly exposed"
-    },
-    {
-        "name": "Floating Lagoon Resort",
-        "desc": "タヒチのターコイズブルーのラグーンに、水上に浮かぶ花びら形の大型リゾート島。花弁状に広がる5つのウィングが放射状に伸び、各ウィングが曲線を描きながら水面上に張り出す。20棟以上の水上ヴィラ。WEATHER: golden sunset, sky blazing orange fading to deep violet, perfect mirror reflection in the lagoon.",
-        "weather": "burning sunset, sky deep saturated orange fading to vivid violet, perfect glassy reflection in the rich turquoise lagoon, zero clouds, maximum color saturation, properly exposed, no blown-out whites"
-    },
-]
-
-def generate_prompt_with_gemini(scenario):
-    """Geminiで超詳細なプロンプトを生成"""
+def generate_concept_and_prompt(index):
+    """Geminiが建物コンセプトをゼロから発明し、プロンプトまで生成"""
     import time
+
+    # 多様性のためのランダムシード要素
+    climates = ["Arctic tundra", "tropical rainforest", "Sahara desert", "Norwegian fjord", "Japanese cedar forest",
+                "Scottish highland", "Patagonian steppe", "Icelandic lava field", "Maldivian atoll", "Swiss alpine",
+                "Amazon river delta", "Mongolian steppe", "New Zealand volcanic coast", "Chilean Atacama", "Canadian Rockies",
+                "Indonesian jungle", "Moroccan atlas mountains", "Australian outback", "Finnish lake district", "Tibetan plateau"]
+    forms = ["a continuous spiral ramp", "stacked shifted boxes", "a single massive cantilever", "a ring or torus shape",
+             "carved directly into rock", "suspended by cables", "floating on water", "buried underground with only skylights",
+             "a bridge spanning a void", "a cluster of pods connected by walkways", "a helix tower", "folded planes of concrete",
+             "a series of arches", "mirrored glass that disappears into landscape", "a crescent moon shape",
+             "terraced into a hillside", "a monolithic black block", "transparent glass cube", "a series of tilted walls"]
+    weathers = [
+        "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, no clouds, vivid colors, properly exposed",
+        "heavy snowfall, thick snowflakes mid-air, deep saturated navy sky, warm amber glow from windows, vivid color contrast",
+        "blazing golden sunset, sky deep saturated orange-magenta gradient, no clouds, vivid warm light, properly exposed",
+        "forest rain, diagonal rain streaks, every surface wet glistening, rich saturated deep greens, low mist between trees",
+        "pre-dawn blue hour, deep saturated indigo sky, first light on horizon, warm lights inside building glowing amber",
+    ]
+
+    climate = random.choice(climates)
+    form = random.choice(forms)
+    weather = random.choice(weathers)
+
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(3):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""You are a world-class architectural photographer known for one thing: capturing the conversation between a building and its landscape — not copying either, but finding the tension and harmony between them.
+                    contents=f"""You are simultaneously a radical architect and a world-class architectural photographer. Your job: INVENT a completely original building and write a photorealistic image generation prompt for it.
 
-The core visual idea: CONTRAST AND HARMONY
-- CONTRAST: the building is man-made, precise, intentional — the landscape is wild, vast, indifferent. This opposition creates visual electricity.
-- HARMONY: yet the building belongs there. It shares materials with the ground beneath it, its geometry echoes the horizon line, its openings frame exactly the right view. It could not exist anywhere else.
-- Never let one dominate — nature and architecture are equals in the frame.
+INVENTION BRIEF (use these as creative seeds, not constraints):
+- Climate/Location seed: {climate}
+- Architectural form seed: {form}
+- Weather: {weather}
 
-Create a photorealistic exterior prompt for this building:
-"{scenario['desc']}"
+STEP 1 — Invent the building:
+- Name it (3-5 words, evocative)
+- Design something that has NEVER been built before. Push the concept far.
+- The building must feel like it COULD NOT EXIST anywhere else on earth — terrain, climate, and architecture are inseparable.
+- Scale: resort for 15 people. Large, sprawling, multiple wings or units.
+- Materials must come from or echo the landscape.
 
-WEATHER (do not change): {scenario.get('weather', 'clear blue sky, golden light')}
+STEP 2 — Write the photorealistic image prompt:
+Core idea: CONTRAST AND HARMONY — the building is precise and man-made, the landscape is wild and vast. Neither dominates. They are in conversation.
 
 VISUAL RULES:
-- Landscape fills at least 50% of the frame — sky, terrain, water, forest — epic and untamed (@peaktylerr scale)
-- One strong directional light source — hard shadows, deep blacks — NO flat overcast, NO grey sky, NO white blown-out sky ever
-- RICH SATURATED COLORS: deep blue sky, vivid warm sunlight, saturated greens — full tonal range, no washed-out or faded look
-- Describe the building's SHAPE and MASS precisely: how it sits on, into, or above the terrain
-- Raw real materials visible: concrete texture, stone grain, weathered metal, aged timber
-- Small imperfection makes it real: a moss patch, a water stain on the facade, one window with warm light on inside
-- 2-3 tiny human silhouettes at the entrance — prove the enormous scale
-- MASSIVE resort scale — 15 people, multiple wings visible, wide establishing shot 16-24mm
-- End: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting NOT an illustration, photorealistic 8K"
+- Landscape fills 50%+ of frame — epic, untamed, vast
+- One strong directional light — hard shadows, deep blacks — NO flat light, NO grey sky, NO white blown-out sky
+- RICH SATURATED COLORS — full tonal range, vivid, properly exposed
+- Describe the building's exact shape, mass, and how it meets the terrain
+- Real material textures: concrete grain, stone surface, weathered metal, aged timber
+- One small imperfection: moss on concrete, water stain, one lit window
+- 2-3 tiny human silhouettes to prove massive scale
+- Wide establishing shot, 16-24mm
 
-Output ONLY the prompt. 200-250 words. More detail = more realism."""
+OUTPUT FORMAT (exactly):
+NAME: [building name]
+PROMPT: [200-250 word photorealistic image prompt ending with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"]"""
                 )
-                return response.text.strip()
+                text = response.text.strip()
+                # NAME と PROMPT を分離
+                name_match = re.search(r'NAME:\s*(.+)', text)
+                prompt_match = re.search(r'PROMPT:\s*([\s\S]+)', text)
+                name = name_match.group(1).strip() if name_match else f"Architecture {index+1}"
+                prompt = prompt_match.group(1).strip() if prompt_match else text
+                return name, prompt
             except Exception as e:
                 print(f"[Gemini] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
-    return f"Luxury architectural exterior, concrete and glass, natural landscape, professional photography, 8K photorealistic"
+    return f"Architecture {index+1}", "Luxury architectural exterior, concrete and glass, natural landscape, photorealistic 8K"
 
 
 def generate_image(prompt):
@@ -170,38 +161,38 @@ Output only caption + hashtags."""
                 time.sleep(3)
     return f"Where architecture meets nature in perfect harmony.\n\n#aiarchitecture #architecture #luxurydesign #architecturephotography #design #interiordesign"
 
-def process_one(job_id, i, scenario):
+def process_one(job_id, i):
     """1枚を処理してjobsに追加"""
     try:
-        prompt = generate_prompt_with_gemini(scenario)
-        print(f"[Job {job_id}] {i+1}/5 prompt ready")
+        name, prompt = generate_concept_and_prompt(i)
+        print(f"[Job {job_id}] {i+1}/5 concept: {name}")
         filename = generate_image(prompt)
-        caption = generate_caption(scenario["name"], prompt)
+        caption = generate_caption(name, prompt)
         if filename:
             jobs[job_id]["results"].append({
-                "style": scenario["name"],
+                "style": name,
                 "prompt": prompt,
                 "image": filename,
                 "caption": caption,
             })
-            print(f"[Job {job_id}] {i+1}/5 DONE")
+            print(f"[Job {job_id}] {i+1}/5 DONE: {name}")
         else:
             print(f"[Job {job_id}] {i+1}/5 FAILED")
     except Exception as e:
         print(f"[Job {job_id}] {i+1} error: {e}")
         jobs[job_id].setdefault("errors", []).append(str(e))
 
-def run_job(job_id, scenarios):
+def run_job(job_id):
     """5枚を順番に生成"""
     import time
     jobs[job_id]["status"] = "running"
     jobs[job_id]["started_at"] = time.time()
     jobs[job_id]["current"] = 0
     durations = []
-    for i, scenario in enumerate(scenarios):
+    for i in range(5):
         jobs[job_id]["current"] = i + 1
         t0 = time.time()
-        process_one(job_id, i, scenario)
+        process_one(job_id, i)
         durations.append(time.time() - t0)
         jobs[job_id]["avg_duration"] = sum(durations) / len(durations)
     jobs[job_id]["status"] = "done"
@@ -340,9 +331,8 @@ def index():
 @app.route("/api/generate", methods=["POST"])
 def generate():
     job_id = uuid.uuid4().hex
-    scenarios = random.sample(SCENARIOS, 5)
     jobs[job_id] = {"status": "running", "results": [], "current": 0, "started_at": 0, "avg_duration": 0}
-    t = threading.Thread(target=run_job, args=(job_id, scenarios), daemon=True)
+    t = threading.Thread(target=run_job, args=(job_id,), daemon=True)
     t.start()
     return jsonify({"job_id": job_id})
 
