@@ -1,11 +1,11 @@
 from flask import Flask, render_template, jsonify, request
 from google import genai
+from google.genai import types as genai_types
 import os, uuid, requests, random, re, json, threading
 
 app = Flask(__name__)
 
 GEMINI_API_KEY = os.environ.get("GEMINI_API_KEY", "")
-FAL_KEY = os.environ.get("FAL_KEY", "")
 IG_ACCESS_TOKEN = os.environ.get("IG_ACCESS_TOKEN", "")
 IG_USER_ID = os.environ.get("IG_USER_ID", "")
 
@@ -22,22 +22,31 @@ def generate_concept_and_prompt(index):
     """Geminiが建物コンセプトをゼロから発明し、プロンプトまで生成"""
     import time
 
-    # 多様性のためのランダムシード要素
-    climates = ["Arctic tundra", "tropical rainforest", "Sahara desert", "Norwegian fjord", "Japanese cedar forest",
-                "Scottish highland", "Patagonian steppe", "Icelandic lava field", "Maldivian atoll", "Swiss alpine",
-                "Amazon river delta", "Mongolian steppe", "New Zealand volcanic coast", "Chilean Atacama", "Canadian Rockies",
-                "Indonesian jungle", "Moroccan atlas mountains", "Australian outback", "Finnish lake district", "Tibetan plateau"]
-    forms = ["a continuous spiral ramp", "stacked shifted boxes", "a single massive cantilever", "a ring or torus shape",
-             "carved directly into rock", "suspended by cables", "floating on water", "buried underground with only skylights",
-             "a bridge spanning a void", "a cluster of pods connected by walkways", "a helix tower", "folded planes of concrete",
-             "a series of arches", "mirrored glass that disappears into landscape", "a crescent moon shape",
-             "terraced into a hillside", "a monolithic black block", "transparent glass cube", "a series of tilted walls"]
+    climates = [
+        "Arctic tundra", "tropical rainforest", "Sahara desert", "Norwegian fjord",
+        "Japanese cedar forest", "Scottish highland", "Patagonian steppe", "Icelandic lava field",
+        "Maldivian atoll", "Swiss alpine", "Amazon river delta", "Mongolian steppe",
+        "New Zealand volcanic coast", "Chilean Atacama", "Canadian Rockies",
+        "Indonesian jungle", "Moroccan atlas mountains", "Australian outback",
+        "Finnish lake district", "Tibetan plateau"
+    ]
+    forms = [
+        "a single monolithic concrete slab elevated on pilotis", "stacked shifted rectangular volumes",
+        "carved directly into cliff face", "a ring encircling a void",
+        "a bridge spanning two rock faces", "terraced platforms descending a hillside",
+        "a buried bunker with only skylights above ground", "a transparent glass box on a plinth",
+        "folded concrete planes like origami", "a helix of interconnected levels",
+        "a series of parallel walls offset in depth", "a monolithic black stone mass with carved voids",
+        "a crescent-shaped plan following the terrain contour", "mirrored surfaces that dissolve into landscape",
+        "a cluster of towers connected by aerial walkways", "a single long horizontal bar elevated above terrain"
+    ]
     weathers = [
-        "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, no clouds, vivid colors, properly exposed",
-        "heavy snowfall, thick snowflakes mid-air, deep saturated navy sky, warm amber glow from windows, vivid color contrast",
-        "blazing golden sunset, sky deep saturated orange-magenta gradient, no clouds, vivid warm light, properly exposed",
-        "forest rain, diagonal rain streaks, every surface wet glistening, rich saturated deep greens, low mist between trees",
-        "pre-dawn blue hour, deep saturated indigo sky, first light on horizon, warm lights inside building glowing amber",
+        "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, absolutely zero clouds",
+        "heavy snowfall, thick snowflakes mid-air, deep saturated navy blue sky, warm amber glow from windows",
+        "blazing golden sunset, sky deep saturated orange-magenta gradient, zero clouds, vivid warm light",
+        "forest rain, diagonal rain streaks visible, every surface wet and glistening, rich saturated deep greens, low mist",
+        "pre-dawn blue hour, deep saturated indigo sky, thin line of warm light on horizon, amber interior glow",
+        "golden sunrise, deep saturated cerulean blue sky, long hard shadows, vivid warm light from one side",
     ]
 
     climate = random.choice(climates)
@@ -51,29 +60,33 @@ def generate_concept_and_prompt(index):
                     model=model,
                     contents=f"""You are simultaneously a radical architect and a world-class architectural photographer. Your job: INVENT a completely original building and write a photorealistic image generation prompt for it.
 
-INVENTION BRIEF (use these as creative seeds, not constraints):
+INVENTION BRIEF:
 - Climate/Location seed: {climate}
 - Architectural form seed: {form}
 - Weather: {weather}
 
 STEP 1 — Invent the building:
 - Name it (3-5 words, evocative)
-- Design something that has NEVER been built before. Push the concept far.
-- The building must feel like it COULD NOT EXIST anywhere else on earth — terrain, climate, and architecture are inseparable.
-- Scale: resort for 15 people. Large, sprawling, multiple wings or units.
-- Materials must come from or echo the landscape.
+- Design a building with the aesthetic of a world-class museum, cultural institution, or art gallery — monumental, brutalist or minimalist, institutional gravitas. NOT a house, NOT a hotel, NOT a villa.
+- Inspired by @matitectura: raw concrete, bold geometric volumes, massive scale, severe beauty, the building looks like it belongs in MoMA or on the cover of Wallpaper*.
+- The building CANNOT EXIST anywhere else on earth — terrain and architecture are inseparable.
+- PHYSICS: every element must be visibly supported. Cantilevers must have visible structural logic. NO floating. NO impossible structures.
+- Scale: large enough for 15 people, multiple wings, sprawling footprint.
+- Materials echo the landscape.
 
 STEP 2 — Write the photorealistic image prompt:
-Core idea: CONTRAST AND HARMONY — the building is precise and man-made, the landscape is wild and vast. Neither dominates. They are in conversation.
+Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature. Neither dominates.
 
-VISUAL RULES:
+STRICT VISUAL RULES:
+- ABSOLUTELY NO clouds, NO overcast sky, NO grey sky, NO haze — only the exact weather specified above
+- PHYSICS: the building must visibly sit on, into, or emerge from the ground — every volume has structural logic
+- Maximum 1-2 tiny human figures, very far away as scale reference only — NOT groups, NOT crowds
 - Landscape fills 50%+ of frame — epic, untamed, vast
-- One strong directional light — hard shadows, deep blacks — NO flat light, NO grey sky, NO white blown-out sky
-- RICH SATURATED COLORS — full tonal range, vivid, properly exposed
-- Describe the building's exact shape, mass, and how it meets the terrain
-- Real material textures: concrete grain, stone surface, weathered metal, aged timber
-- One small imperfection: moss on concrete, water stain, one lit window
-- 2-3 tiny human silhouettes to prove massive scale
+- One strong directional light — hard shadows, deep blacks
+- RICH SATURATED COLORS — full tonal range, vivid, properly exposed, no blown-out whites
+- Describe the building's exact shape and mass — how it meets the terrain
+- Real material textures: raw concrete grain, stone surface, weathered corten steel, aged timber
+- One small imperfection: moss on concrete, water stain on facade
 - Wide establishing shot, 16-24mm
 
 OUTPUT FORMAT (exactly):
@@ -81,7 +94,6 @@ NAME: [building name]
 PROMPT: [200-250 word photorealistic image prompt ending with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"]"""
                 )
                 text = response.text.strip()
-                # NAME と PROMPT を分離
                 name_match = re.search(r'NAME:\s*(.+)', text)
                 prompt_match = re.search(r'PROMPT:\s*([\s\S]+)', text)
                 name = name_match.group(1).strip() if name_match else f"Architecture {index+1}"
@@ -90,50 +102,38 @@ PROMPT: [200-250 word photorealistic image prompt ending with: "editorial archit
             except Exception as e:
                 print(f"[Gemini] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
-    return f"Architecture {index+1}", "Luxury architectural exterior, concrete and glass, natural landscape, photorealistic 8K"
+    return f"Architecture {index+1}", "Museum-like brutalist architecture, raw concrete, natural landscape, photorealistic 8K"
 
 
 def generate_image(prompt):
-    """fal.ai FLUX.1-dev で画像生成"""
+    """Imagen 4 で画像生成"""
     import time
     clean = re.sub(r'--ar \S+', '', prompt).strip()
-    headers = {
-        "Authorization": f"Key {FAL_KEY}",
-        "Content-Type": "application/json",
-    }
-    payload = {
-        "prompt": clean,
-        "image_size": {"width": 832, "height": 1040},
-        "num_inference_steps": 35,
-        "guidance_scale": 7.5,
-        "num_images": 1,
-        "enable_safety_checker": False,
-    }
-    api_url = "https://fal.run/fal-ai/flux/dev"
 
     for attempt in range(3):
         try:
-            print(f"[Image] attempt {attempt+1}")
-            res = requests.post(api_url, headers=headers, json=payload, timeout=180)
-            print(f"[Image] status={res.status_code}")
-            if res.status_code == 200:
-                data = res.json()
-                img_url = data["images"][0]["url"]
-                img_res = requests.get(img_url, timeout=60)
-                base_dir = os.path.dirname(os.path.abspath(__file__))
-                filename = f"{uuid.uuid4().hex}.jpg"
-                path = os.path.join(base_dir, "static", "images", filename)
-                with open(path, "wb") as f:
-                    f.write(img_res.content)
-                print(f"[Image OK] {filename}")
-                return filename
-            else:
-                print(f"[Image] error: {res.text[:300]}")
-                time.sleep(10)
+            print(f"[Image] Imagen 4 attempt {attempt+1}")
+            response = client.models.generate_images(
+                model="imagen-4-generate-001",
+                prompt=clean,
+                config=genai_types.GenerateImagesConfig(
+                    number_of_images=1,
+                    aspect_ratio="3:4",
+                )
+            )
+            img_bytes = response.generated_images[0].image.image_bytes
+            base_dir = os.path.dirname(os.path.abspath(__file__))
+            filename = f"{uuid.uuid4().hex}.jpg"
+            path = os.path.join(base_dir, "static", "images", filename)
+            with open(path, "wb") as f:
+                f.write(img_bytes)
+            print(f"[Image OK] {filename}")
+            return filename
         except Exception as e:
-            print(f"[Image Error] {e}")
+            print(f"[Image Error] attempt {attempt+1}: {e}")
             time.sleep(10)
-    raise RuntimeError(f"generate_image failed after 3 attempts")
+    raise RuntimeError("generate_image failed after 3 attempts")
+
 
 def generate_caption(name, prompt):
     """英語キャプション生成"""
@@ -143,13 +143,13 @@ def generate_caption(name, prompt):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""Write a short Instagram caption in English for this AI architecture image.
+                    contents=f"""Write a short Instagram caption in English for this architectural image.
 Concept: {name}
 Visual: {prompt[:150]}
 
 Rules:
 - 2-3 sentences, cinematic and evocative
-- Mention the dramatic relationship between the building and its natural setting
+- Mention the relationship between the building and its natural setting
 - NO hashtags in the body text
 - Add 6 relevant hashtags on a new line at the end
 
@@ -159,7 +159,8 @@ Output only caption + hashtags."""
             except Exception as e:
                 print(f"[Caption] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(3)
-    return f"Where architecture meets nature in perfect harmony.\n\n#aiarchitecture #architecture #luxurydesign #architecturephotography #design #interiordesign"
+    return f"Where architecture meets nature.\n\n#architecture #brutalism #design #architecturephotography #minimal #concrete"
+
 
 def process_one(job_id, i):
     """1枚を処理してjobsに追加"""
@@ -182,6 +183,7 @@ def process_one(job_id, i):
         print(f"[Job {job_id}] {i+1} error: {e}")
         jobs[job_id].setdefault("errors", []).append(str(e))
 
+
 def run_job(job_id):
     """5枚を順番に生成"""
     import time
@@ -203,65 +205,61 @@ def run_job(job_id):
 EXPAND_ANGLES = [
     (
         "Wide Exterior — Golden Hour",
-        "full building exterior, wide angle, golden hour, long shadows, sky ablaze orange and pink, same facade materials as original",
-        "wide-angle exterior, f/8, golden hour, dramatic sky"
+        "full building exterior, wide angle, golden hour, long hard shadows, deep saturated orange sky, zero clouds, same facade materials as original",
+        "wide-angle 16mm exterior, f/8, golden hour, rich saturated colors"
     ),
     (
         "Exterior — Snow & Glow",
-        "same building exterior in heavy snowfall, thick snowflakes falling mid-air, snow blanketing every surface, warm amber interior glow visible through glass, deep navy blue sky — NO grey overcast clouds",
-        "snowfall medium shot, warm vs cold contrast, Hasselblad X2D, 35mm"
+        "same building exterior in heavy snowfall, thick snowflakes falling mid-air, snow on every surface, warm amber interior glow through glass, deep saturated navy blue sky — absolutely NO grey clouds",
+        "snowfall 35mm, warm vs cold color contrast, deep blue sky"
     ),
     (
         "Night Exterior — Illuminated",
-        "same building at night, warm amber light glows from every window, reflected in pool or wet stone, stars or moonlight above",
-        "blue hour to night, long exposure feel, warm glow"
+        "same building at night, warm amber light from every window, reflected in pool or wet stone, deep blue-black sky, stars visible, zero clouds",
+        "blue-black night, long exposure, warm glow against dark sky"
     ),
     (
         "Aerial Overview",
-        "aerial drone, same building seen from above, surrounded by its natural landscape — coast, forest, desert, or mountain — shows scale",
-        "bird's eye, 45-degree angle, landscape context"
+        "aerial drone view, same building seen from above at 45 degrees, surrounded by epic natural landscape — coast, forest, desert, or mountain — deep saturated blue sky, zero clouds, shows massive scale",
+        "bird's eye 45-degree, deep blue sky, landscape context"
     ),
     (
-        "Interior — Grand Living Room",
-        "vast triple-height grand living hall, 8-meter ceilings, 25-meter long room, entire wall of floor-to-ceiling glass opening to dramatic landscape, multiple Minotti sectional sofas in bouclé arranged in clusters, Patagonia quartzite floor, two mature indoor olive trees 4m tall in stone planters, custom bronze shelving spanning full wall, afternoon light casting long diagonal shadows across the enormous floor, abstract sculpture on stone plinth, 15 people could gather here with space to spare",
-        "ultra-wide 14mm, afternoon light raking across enormous floor, private resort scale"
+        "Interior — Grand Hall",
+        "vast triple-height gallery hall, 8-meter raw concrete ceilings, 25-meter long room, entire wall of floor-to-ceiling glass opening to dramatic landscape, @matitectura aesthetic — raw concrete walls and floor, minimal furniture, one oblique shaft of sunlight cutting across the space, deep shadow in corners, ultra-sharp material detail: every concrete pour line visible, every reflection precise",
+        "ultra-wide 14mm, one strong oblique light shaft, museum scale, ultra-sharp"
     ),
     (
         "Interior — Master Suite at Dawn",
-        "enormous master suite, 6-meter ceilings, 15-meter wide room, full glass wall spanning the entire width with misty dawn landscape beyond, floating platform king bed centred in the vast space with Dedar linen and cashmere throw, warm aged walnut floor stretching 12 meters, mature 4m fiddle-leaf fig in corner, recessed warm lighting, silk curtains drifting, a daybed and seating area at the far end of the room, everything whispers extreme wealth and restraint",
-        "wide 20mm, soft diffused dawn light, vast negative space, private resort scale"
+        "enormous master suite, 6-meter raw concrete ceilings, full glass wall with dawn landscape beyond, platform bed centred, warm aged walnut floor, one oblique beam of dawn light across floor, ultra-sharp material textures: concrete grain visible, wood grain visible, glass reflections precise",
+        "wide 20mm, dawn light shaft, ultra-sharp detail, museum-like severity"
     ),
     (
-        "Interior — Chef's Kitchen & Dining",
-        "vast open-plan kitchen and 20-seat dining hall, 7m ceilings, 20-meter long room, Poliform island in Calacatta marble large enough for 6 chefs, Gaggenau appliances concealed behind flush stone panels, cluster of Bocci pendants hanging 5m over the dining table, full glass wall spanning the entire length to terrace, two enormous bird-of-paradise plants in concrete planters flanking the table, warm oak and bronze, evening light, sense of a private Michelin-starred restaurant",
-        "wide 20mm, warm layered lighting, massive indoor plants, restaurant-in-a-private-estate scale"
+        "Interior — Dining & Kitchen",
+        "vast open-plan kitchen and dining, 7m concrete ceilings, 20-meter long room, stone island, full glass wall to landscape, cluster of pendant lights, warm oak and stone, evening light, ultra-sharp every detail: stone grain, wood texture, glass reflection",
+        "wide 20mm, warm layered light, ultra-sharp material detail"
     ),
     (
-        "Interior — Spa Bathroom",
-        "monumental private spa, 7m ceiling, 18-meter long room, entire glass wall facing untouched nature, two freestanding Nero Marquina stone baths centred like sculptures 5 meters apart, marble walls floor to ceiling, private hammam for 8 people visible through glass partition, plunge pool inset in the floor, hanging eucalyptus bundles and 3m palm, morning mist visible outside, two beeswax candles half-burned on stone ledge, absolute silence and extreme luxury",
-        "wide 18mm, soft spa light, misty nature beyond glass, grand hotel spa scale"
+        "Interior — Spa",
+        "monumental spa, 7m raw concrete ceiling, entire glass wall facing untamed nature, two stone baths centred, marble walls, plunge pool, morning mist outside, soft diffused light, ultra-sharp material textures: stone veining, concrete grain, water surface",
+        "wide 18mm, soft diffused light, ultra-sharp stone and concrete detail"
     ),
     (
         "Terrace & Pool — Dusk",
-        "terrace with infinity pool, same architectural style, dusk sky gradient purple to orange, pool water perfectly still, outdoor loungers, potted agave plants, reflections",
-        "low angle at pool level, dusk, reflection shot"
+        "terrace with infinity pool, same architectural style, dusk sky deep saturated purple to orange gradient, zero clouds, pool water perfectly still mirror reflection, outdoor minimal furniture, ultra-sharp reflections and material detail",
+        "low angle at pool level, dusk, deep saturated sky, ultra-sharp reflection"
     ),
     (
-        "Interior Detail — Light & Material",
-        "architectural detail shot inside, same building materials — concrete, stone, wood, glass — dramatic shaft of natural light cutting across, a single sculptural plant or object",
-        "close-up detail, 50mm or 35mm, chiaroscuro lighting"
+        "Detail — Light & Material",
+        "architectural close-up detail, same building materials — raw concrete, stone, aged timber, glass — single dramatic shaft of natural light cutting across surface, every texture hyper-visible: concrete aggregate, wood grain, stone veining, sharp shadow edge",
+        "50mm macro-like detail, chiaroscuro, ultra-sharp texture"
     ),
 ]
+
 
 def generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note):
     """アングルごとの詳細プロンプトを生成"""
     import time
-    contents = f"""You are a world-class architectural photographer. Your images look like REAL photographs — never AI, never renders. Your signature: every shot shows the conversation between a building and its landscape.
-
-Core concept — CONTRAST AND HARMONY:
-- The building is precise, intentional, man-made. The landscape is wild, vast, indifferent. That tension is the shot.
-- Yet they belong together — materials echo the ground, geometry mirrors the horizon, openings frame the exact right view.
-- Neither dominates. They are equals.
+    contents = f"""You are a world-class architectural photographer. Your images look like REAL photographs — never AI, never renders.
 
 Original building (keep SAME style, materials, exterior form):
 \"\"\"{original_prompt[:350]}\"\"\"
@@ -270,18 +268,19 @@ Create a prompt for: "{angle_name}"
 Scene direction: {angle_hint}
 Camera note: {camera_note}
 
-RULES:
+STRICT RULES:
 - SAME building — same materials, same character, new angle only
-- EXTERIOR: landscape fills 50%+ of frame, epic and untamed. ONLY clear sky / snow / golden sunset / forest rain — NO grey overcast ever
-- INTERIORS: floor-to-ceiling glass frames the wild landscape outside — nature is always visible, always present. One strong oblique light shaft cuts across the room. Raw material textures: concrete grain, stone surface, aged wood.
-- MASSIVE SCALE for 15 people — 7-8m ceilings, 20m+ rooms, multiple zones, gallery proportions
+- ABSOLUTELY NO clouds, NO overcast, NO grey sky — only clear sky / snow / golden sunset / forest rain / night
+- PHYSICS: building must obey gravity — every element visibly supported, no floating
+- Maximum 1-2 tiny human figures as scale reference only — NOT groups
+- INTERIORS: @matitectura aesthetic — raw concrete or stone, floor-to-ceiling glass framing wild landscape, one strong oblique light shaft, ultra-sharp material detail (every pour line in concrete, every grain in wood, every vein in stone must be visible)
+- MASSIVE SCALE — 7-8m ceilings, 20m+ rooms, museum/gallery proportions
 - Quality furniture at grand scale (Minotti, Poliform, Cassina), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees
-- Lived-in imperfections: a half-burned candle, a crumpled linen throw, a book face-down — NOT sterile
-- EXTERIOR colors: rich and saturated — deep blue sky, vivid warm light, no blown-out white sky, correct exposure
-- INTERIOR colors: warm and rich — amber wood tones, warm stone, deep shadow — but never flat or washed out
-- End: "editorial architectural photograph, Hasselblad X2D, 35mm f/5.6, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting NOT an illustration, photorealistic 8K"
+- Lived-in imperfections: a half-burned candle, a crumpled linen throw — NOT sterile showroom
+- RICH SATURATED COLORS — full tonal range, correct exposure, no blown-out whites
+- End: "editorial architectural photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
 
-Output ONLY the prompt. 200-250 words. More detail = more realism."""
+Output ONLY the prompt. 200-250 words."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(2):
             try:
@@ -290,7 +289,8 @@ Output ONLY the prompt. 200-250 words. More detail = more realism."""
             except Exception as e:
                 print(f"[ExpandPrompt] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
-    return f"{angle_name} of luxury architectural building, photorealistic, 8K"
+    return f"{angle_name} of museum-like brutalist architecture, photorealistic 8K"
+
 
 def run_expand_job(job_id, original_prompt, total):
     """10アングルを順番に生成"""
@@ -314,8 +314,6 @@ def run_expand_job(job_id, original_prompt, total):
                     "caption": "",
                 })
                 print(f"[Expand {job_id}] {i+1}/{total} DONE")
-            else:
-                print(f"[Expand {job_id}] {i+1}/{total} FAILED")
         except Exception as e:
             print(f"[Expand {job_id}] {i+1} error: {e}")
         durations.append(time.time() - t0)
