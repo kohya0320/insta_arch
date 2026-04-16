@@ -114,7 +114,7 @@ def generate_image(prompt):
         try:
             print(f"[Image] Imagen 4 attempt {attempt+1}")
             response = client.models.generate_images(
-                model="imagen-4-generate-001",
+                model="imagen-4.0-generate-001",
                 prompt=clean,
                 config=genai_types.GenerateImagesConfig(
                     number_of_images=1,
