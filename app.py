@@ -143,30 +143,36 @@ def generate_image(prompt):
 
 
 def generate_caption(name, prompt):
-    """英語キャプション生成"""
+    """バズる英語キャプション生成"""
     import time
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(2):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""Write a short Instagram caption in English for this architectural image.
+                    contents=f"""Write a viral Instagram caption in English for this architectural image. The account posts AI-generated brutalist/minimalist architecture in dramatic natural landscapes.
+
 Concept: {name}
-Visual: {prompt[:150]}
+Visual: {prompt[:200]}
 
-Rules:
-- 2-3 sentences, cinematic and evocative
-- Mention the relationship between the building and its natural setting
+CAPTION RULES:
+- Line 1: A single punchy hook — a question, a bold statement, or a poetic observation that stops the scroll. Max 10 words.
+- Lines 2-3: 1-2 short evocative sentences. Cinematic. The tension between man-made precision and wild nature. No clichés.
+- Optional line 4: A short question that invites comments (e.g. "Would you spend a week here?")
 - NO hashtags in the body text
-- Add 6 relevant hashtags on a new line at the end
+- Tone: aspirational, quiet confidence — not hype, not corporate
 
-Output only caption + hashtags."""
+HASHTAGS (new line after caption):
+Mix high-volume discovery tags with niche architecture tags. Use exactly these 15 tags:
+#architecture #modernarchitecture #architecturephotography #brutalism #brutalistarchitecture #architecturelovers #minimal #minimalism #concretedesign #contemporaryarchitecture #archilovers #dezeen #architecturedaily #luxurydesign #aiarchitecture
+
+Output only: caption text, one blank line, then the 15 hashtags on one line."""
                 )
                 return response.text.strip()
             except Exception as e:
                 print(f"[Caption] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(3)
-    return f"Where architecture meets nature.\n\n#architecture #brutalism #design #architecturephotography #minimal #concrete"
+    return "Built where the world ends.\n\nRaw concrete against ancient stone. The silence here has weight.\n\nWould you stay?\n\n#architecture #modernarchitecture #architecturephotography #brutalism #brutalistarchitecture #architecturelovers #minimal #minimalism #concretedesign #contemporaryarchitecture #archilovers #dezeen #architecturedaily #luxurydesign #aiarchitecture"
 
 
 def process_one(job_id, i):
