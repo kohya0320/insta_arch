@@ -208,57 +208,67 @@ def run_job(job_id):
     print(f"[Job {job_id}] All done: {len(jobs[job_id]['results'])}/5")
 
 
-# ━━━ 10アングル展開 ━━━
+# ━━━ 10インテリア展開（@matitectura スタイル）━━━
 EXPAND_ANGLES = [
     (
-        "Wide Exterior — Golden Hour",
-        "full building exterior, wide angle, golden hour, long hard shadows, deep saturated orange sky, zero clouds, same facade materials as original",
-        "wide-angle 16mm exterior, f/8, golden hour, rich saturated colors"
+        "Grand Entry Hall",
+        "monumental entrance hall, 9-meter raw concrete ceiling, 30-meter long axis, floor-to-ceiling glass wall at far end framing the wild landscape beyond, polished concrete floor reflecting the shaft of light, single oblique beam of sunlight cutting diagonally across the space, deep shadow in corners, one minimal concrete bench, two tiny human silhouettes show the colossal scale",
+        "ultra-wide 14mm, one oblique light shaft, museum entry scale"
     ),
     (
-        "Exterior — Snow & Glow",
-        "same building exterior in heavy snowfall, thick snowflakes falling mid-air, snow on every surface, warm amber interior glow through glass, deep saturated navy blue sky — absolutely NO grey clouds",
-        "snowfall 35mm, warm vs cold color contrast, deep blue sky"
+        "Main Living Hall",
+        "vast triple-height living hall, 8-meter raw concrete ceilings, 25-meter long room, entire wall of floor-to-ceiling glass facing dramatic landscape, raw concrete walls and polished stone floor, Minotti sectional in bouclé placed as a single island in the vast space, one 4-meter mature olive tree in a raw concrete planter, afternoon light shaft raking the floor at a low angle, deep shadow at ceiling",
+        "ultra-wide 14mm, afternoon raking light, gallery scale"
     ),
     (
-        "Night Exterior — Illuminated",
-        "same building at night, warm amber light from every window, reflected in pool or wet stone, deep blue-black sky, stars visible, zero clouds",
-        "blue-black night, long exposure, warm glow against dark sky"
+        "Library & Study",
+        "double-height library, 6-meter raw concrete walls floor to ceiling lined with books, one full glass wall facing untamed landscape, a single long raw timber reading table centred, Arco floor lamp casting warm pool of light, late afternoon oblique sunlight cutting across the book spines, dust particles visible in the light beam, deep silence",
+        "wide 20mm, warm oblique light, intimate within monumental scale"
     ),
     (
-        "Aerial Overview",
-        "aerial drone view, same building seen from above at 45 degrees, surrounded by epic natural landscape — coast, forest, desert, or mountain — deep saturated blue sky, zero clouds, shows massive scale",
-        "bird's eye 45-degree, deep blue sky, landscape context"
+        "Master Bedroom",
+        "enormous master suite, 6-meter raw concrete ceilings, 16-meter wide room, full glass wall spanning entire width with dawn landscape beyond — the wilderness is the headboard, platform bed of aged walnut centred in the vast space, a single shaft of pale dawn light across the floor, Dedar linen slightly crumpled, one mature fiddle-leaf fig 4m tall in corner, deep silence and restraint",
+        "wide 20mm, soft dawn light shaft, vast negative space"
     ),
     (
-        "Interior — Grand Hall",
-        "vast triple-height gallery hall, 8-meter raw concrete ceilings, 25-meter long room, entire wall of floor-to-ceiling glass opening to dramatic landscape, @matitectura aesthetic — raw concrete walls and floor, minimal furniture, one oblique shaft of sunlight cutting across the space, deep shadow in corners, ultra-sharp material detail: every concrete pour line visible, every reflection precise",
-        "ultra-wide 14mm, one strong oblique light shaft, museum scale, ultra-sharp"
+        "Bathroom — Stone & Water",
+        "monumental bathroom, 6-meter raw concrete ceiling, 14-meter long room, entire glass wall facing untouched wild landscape, single freestanding stone bath centred like a sculpture, Nero Marquina marble walls, shallow water on the floor reflecting ceiling, morning mist visible outside, one beeswax candle half-burned on stone ledge, absolute silence",
+        "wide 20mm, soft diffused light, stone and water reflection"
     ),
     (
-        "Interior — Master Suite at Dawn",
-        "enormous master suite, 6-meter raw concrete ceilings, full glass wall with dawn landscape beyond, platform bed centred, warm aged walnut floor, one oblique beam of dawn light across floor, ultra-sharp material textures: concrete grain visible, wood grain visible, glass reflections precise",
-        "wide 20mm, dawn light shaft, ultra-sharp detail, museum-like severity"
+        "Kitchen & Dining",
+        "vast kitchen and dining hall, 7-meter concrete ceilings, 22-meter long space, Poliform stone island running 6 meters, 16-seat raw timber dining table under cluster of Bocci pendants, full glass wall to landscape, evening light warm on stone surfaces, shadow deep at ceiling, ultra-sharp: stone grain, wood texture, pendant reflections",
+        "wide 20mm, warm evening light, Michelin kitchen scale"
     ),
     (
-        "Interior — Dining & Kitchen",
-        "vast open-plan kitchen and dining, 7m concrete ceilings, 20-meter long room, stone island, full glass wall to landscape, cluster of pendant lights, warm oak and stone, evening light, ultra-sharp every detail: stone grain, wood texture, glass reflection",
-        "wide 20mm, warm layered light, ultra-sharp material detail"
+        "Meditation & Spa",
+        "monumental spa hall, 7-meter raw concrete ceiling, 20-meter long room, full glass wall facing ancient untamed wilderness, two stone basins centred 6 meters apart, private hammam chamber behind frosted glass, plunge pool inset flush with floor, hanging dried eucalyptus, morning mist pressing against the glass outside, one candle, absolute stillness",
+        "wide 18mm, soft diffused spa light, ancient stone and concrete"
     ),
     (
-        "Interior — Spa",
-        "monumental spa, 7m raw concrete ceiling, entire glass wall facing untamed nature, two stone baths centred, marble walls, plunge pool, morning mist outside, soft diffused light, ultra-sharp material textures: stone veining, concrete grain, water surface",
-        "wide 18mm, soft diffused light, ultra-sharp stone and concrete detail"
+        "Corridor & Circulation",
+        "long circulation corridor, 5-meter raw concrete ceiling, 30-meter length, one continuous slot skylight running full length casting a narrow blade of sunlight along the floor, rough concrete walls both sides, polished concrete floor as mirror, at the far end a full glass wall opening to wild landscape — light at the end of the tunnel composition",
+        "35mm, blade of skylight, long perspective compression"
     ),
     (
-        "Terrace & Pool — Dusk",
-        "terrace with infinity pool, same architectural style, dusk sky deep saturated purple to orange gradient, zero clouds, pool water perfectly still mirror reflection, outdoor minimal furniture, ultra-sharp reflections and material detail",
-        "low angle at pool level, dusk, deep saturated sky, ultra-sharp reflection"
+        "Terrace — Interior Edge",
+        "covered terrace at the boundary between inside and outside, 4-meter raw concrete soffit, the floor continuing seamlessly from interior to exterior, infinity edge dissolving into the vast landscape below, two minimal outdoor loungers in weathered teak, deep saturated blue sky or golden sunset beyond — no clouds, one glass of water on a stone ledge, the building and wilderness meet here",
+        "wide 20mm, interior-exterior threshold, deep saturated sky"
     ),
     (
-        "Detail — Light & Material",
-        "architectural close-up detail, same building materials — raw concrete, stone, aged timber, glass — single dramatic shaft of natural light cutting across surface, every texture hyper-visible: concrete aggregate, wood grain, stone veining, sharp shadow edge",
-        "50mm macro-like detail, chiaroscuro, ultra-sharp texture"
+        "Material Detail — Light & Texture",
+        "extreme close-up architectural detail inside the building, same raw concrete or stone or aged timber, a single dramatic shaft of natural light raking across the surface at a low angle — every pour line in concrete hyper-visible, every grain in wood, every crystal in stone, deep sharp shadow edge, a small imperfection: a crack, a stain, a mineral deposit — the material is the subject",
+        "50mm, raking light, hyper-sharp material texture"
+    ),
+    (
+        "Wide Exterior — Full Context",
+        "ultra-wide establishing shot, full building visible in its landscape, @gorpcore.jpeg wilderness — ancient weathered terrain, earthy muted tones, foreground rock or vegetation in sharp focus, building in mid-ground, distant horizon stretching vast, deep saturated blue sky or golden sunset or snow — zero clouds, 2 tiny human silhouettes at entrance prove massive scale, building obeys physics — sits on or into the terrain",
+        "ultra-wide 14-16mm, full landscape context, @gorpcore.jpeg terrain"
+    ),
+    (
+        "Aerial — Bird's Eye",
+        "aerial drone shot from directly above at 45 degrees, same building seen from high altitude, surrounded by its epic landscape — coast, forest, desert, mountain — @gorpcore.jpeg wilderness scale, earthy terrain, deep saturated blue sky zero clouds, building's form and footprint fully revealed from above, tiny human silhouettes show enormous scale",
+        "aerial 45-degree, bird's eye, landscape scale, deep blue sky"
     ),
 ]
 
