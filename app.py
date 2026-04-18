@@ -42,11 +42,11 @@ def generate_concept_and_prompt(index):
     ]
     weathers = [
         "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, absolutely zero clouds",
-        "heavy snowfall, thick snowflakes mid-air, deep saturated navy blue sky, warm amber glow from windows",
+        "heavy snowfall, thick snowflakes mid-air, deep saturated navy blue sky, dry snow on surfaces",
         "blazing golden sunset, sky deep saturated orange-magenta gradient, zero clouds, vivid warm light",
-        "forest rain, diagonal rain streaks visible, every surface wet and glistening, rich saturated deep greens, low mist",
         "pre-dawn blue hour, deep saturated indigo sky, thin line of warm light on horizon, amber interior glow",
         "golden sunrise, deep saturated cerulean blue sky, long hard shadows, vivid warm light from one side",
+        "midday sun, deep saturated blue sky, stark hard shadows, zero clouds, intense light",
     ]
 
     climate = random.choice(climates)
@@ -85,9 +85,9 @@ LANDSCAPE STYLE — @gorpcore.jpeg aesthetic for the nature/background:
 - Depth: foreground rocks or vegetation, mid-ground building, distant mountain or ocean or forest stretching to horizon
 
 STRICT VISUAL RULES:
-- ABSOLUTELY NO clouds, NO overcast sky, NO grey sky — only the exact weather specified above
+- ABSOLUTELY NO clouds, NO overcast sky, NO grey sky, NO rain, NO wet surfaces, NO wet walls — only the exact weather specified above
 - PHYSICS: the building must visibly sit on, into, or emerge from the ground — every volume has structural logic
-- Maximum 1-2 tiny human figures, very far away as scale reference only — NOT groups, NOT crowds
+- NO humans, NO people, NO figures anywhere in the image — zero human presence
 - Landscape fills 50%+ of frame — vast, ancient, untamed
 - One strong directional light — hard shadows, deep blacks
 - RICH but EARTHY COLORS — muted natural tones for the landscape, strong saturated light for sky and shadows
@@ -212,7 +212,7 @@ def run_job(job_id):
 EXPAND_ANGLES = [
     (
         "Grand Entry Hall",
-        "monumental entrance hall, 9-meter raw concrete ceiling, 30-meter long axis, floor-to-ceiling glass wall at far end framing the wild landscape beyond, polished concrete floor reflecting the shaft of light, single oblique beam of sunlight cutting diagonally across the space, deep shadow in corners, one minimal concrete bench, two tiny human silhouettes show the colossal scale",
+        "monumental entrance hall, 9-meter raw concrete ceiling, 30-meter long axis, floor-to-ceiling glass wall at far end framing the wild landscape beyond, polished concrete floor reflecting the shaft of light, single oblique beam of sunlight cutting diagonally across the space, deep shadow in corners, one minimal concrete bench, NO people NO humans",
         "ultra-wide 14mm, one oblique light shaft, museum entry scale"
     ),
     (
@@ -262,12 +262,12 @@ EXPAND_ANGLES = [
     ),
     (
         "Wide Exterior — Full Context",
-        "ultra-wide establishing shot, full building visible in its landscape, @gorpcore.jpeg wilderness — ancient weathered terrain, earthy muted tones, foreground rock or vegetation in sharp focus, building in mid-ground, distant horizon stretching vast, deep saturated blue sky or golden sunset or snow — zero clouds, 2 tiny human silhouettes at entrance prove massive scale, building obeys physics — sits on or into the terrain",
+        "ultra-wide establishing shot, full building visible in its landscape, @gorpcore.jpeg wilderness — ancient weathered terrain, earthy muted tones, foreground rock or vegetation in sharp focus, building in mid-ground, distant horizon stretching vast, deep saturated blue sky or golden sunset or snow — zero clouds, NO humans NO people, building obeys physics — sits on or into the terrain",
         "ultra-wide 14-16mm, full landscape context, @gorpcore.jpeg terrain"
     ),
     (
         "Aerial — Bird's Eye",
-        "aerial drone shot from directly above at 45 degrees, same building seen from high altitude, surrounded by its epic landscape — coast, forest, desert, mountain — @gorpcore.jpeg wilderness scale, earthy terrain, deep saturated blue sky zero clouds, building's form and footprint fully revealed from above, tiny human silhouettes show enormous scale",
+        "aerial drone shot from directly above at 45 degrees, same building seen from high altitude, surrounded by its epic landscape — coast, forest, desert, mountain — @gorpcore.jpeg wilderness scale, earthy terrain, deep saturated blue sky zero clouds, building's form and footprint fully revealed from above, NO humans NO people",
         "aerial 45-degree, bird's eye, landscape scale, deep blue sky"
     ),
 ]
@@ -287,10 +287,11 @@ Camera note: {camera_note}
 
 STRICT RULES:
 - SAME building — same materials, same character, new angle only
-- ABSOLUTELY NO clouds, NO overcast, NO grey sky — only clear sky / snow / golden sunset / forest rain / night
+- ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces, NO wet walls — only clear sky / snow / golden sunset / blue hour / night
+- NO humans, NO people, NO figures anywhere — zero human presence
 - PHYSICS: building must obey gravity — every element visibly supported, no floating
 - LANDSCAPE (@gorpcore.jpeg aesthetic): raw untouched wilderness, earthy muted-but-rich palette (weathered rock, moss, lichen, deep forest green, raw soil), terrain feels ancient and documentary — authentic organic textures, NOT a postcard. Foreground terrain detail, distant horizon.
-- Maximum 1-2 tiny human figures as scale reference only — NOT groups
+- NO humans, NO people, NO figures anywhere — zero human presence
 - INTERIORS: @matitectura aesthetic — raw concrete or stone, floor-to-ceiling glass framing wild landscape, one strong oblique light shaft, ultra-sharp material detail (every pour line in concrete, every grain in wood, every vein in stone must be visible)
 - MASSIVE SCALE — 7-8m ceilings, 20m+ rooms, museum/gallery proportions
 - Quality furniture at grand scale (Minotti, Poliform, Cassina), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees
