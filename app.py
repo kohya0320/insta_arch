@@ -77,16 +77,23 @@ STEP 1 — Invent the building:
 STEP 2 — Write the photorealistic image prompt:
 Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature. Neither dominates.
 
+LANDSCAPE STYLE — @gorpcore.jpeg aesthetic for the nature/background:
+- Raw, untouched wilderness at a scale that makes humans feel irrelevant
+- Earthy, muted-but-rich color palette: weathered rock, moss-covered stone, deep forest green, raw soil, lichen grey
+- Terrain feels REAL and documentary — not a postcard, not a fantasy — authentic textures, worn surfaces, organic imperfections
+- The landscape has weight and permanence — ancient, indifferent to the building beside it
+- Depth: foreground rocks or vegetation, mid-ground building, distant mountain or ocean or forest stretching to horizon
+
 STRICT VISUAL RULES:
-- ABSOLUTELY NO clouds, NO overcast sky, NO grey sky, NO haze — only the exact weather specified above
+- ABSOLUTELY NO clouds, NO overcast sky, NO grey sky — only the exact weather specified above
 - PHYSICS: the building must visibly sit on, into, or emerge from the ground — every volume has structural logic
 - Maximum 1-2 tiny human figures, very far away as scale reference only — NOT groups, NOT crowds
-- Landscape fills 50%+ of frame — epic, untamed, vast
+- Landscape fills 50%+ of frame — vast, ancient, untamed
 - One strong directional light — hard shadows, deep blacks
-- RICH SATURATED COLORS — full tonal range, vivid, properly exposed, no blown-out whites
+- RICH but EARTHY COLORS — muted natural tones for the landscape, strong saturated light for sky and shadows
 - Describe the building's exact shape and mass — how it meets the terrain
 - Real material textures: raw concrete grain, stone surface, weathered corten steel, aged timber
-- One small imperfection: moss on concrete, water stain on facade
+- One small imperfection: moss on concrete, water stain on facade, lichen on stone
 - Wide establishing shot, 16-24mm
 
 OUTPUT FORMAT (exactly):
@@ -272,6 +279,7 @@ STRICT RULES:
 - SAME building — same materials, same character, new angle only
 - ABSOLUTELY NO clouds, NO overcast, NO grey sky — only clear sky / snow / golden sunset / forest rain / night
 - PHYSICS: building must obey gravity — every element visibly supported, no floating
+- LANDSCAPE (@gorpcore.jpeg aesthetic): raw untouched wilderness, earthy muted-but-rich palette (weathered rock, moss, lichen, deep forest green, raw soil), terrain feels ancient and documentary — authentic organic textures, NOT a postcard. Foreground terrain detail, distant horizon.
 - Maximum 1-2 tiny human figures as scale reference only — NOT groups
 - INTERIORS: @matitectura aesthetic — raw concrete or stone, floor-to-ceiling glass framing wild landscape, one strong oblique light shaft, ultra-sharp material detail (every pour line in concrete, every grain in wood, every vein in stone must be visible)
 - MASSIVE SCALE — 7-8m ceilings, 20m+ rooms, museum/gallery proportions
