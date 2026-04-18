@@ -194,7 +194,7 @@
       </div>
     </div>
     <div class="action-btns">
-      <button class="expand-btn" id="expand-btn" onclick="generateViews()">Generate 10 Views</button>
+      <button class="expand-btn" id="expand-btn" onclick="generateViews()">Generate 12 Views</button>
       <button class="post-btn" id="post-btn" onclick="postToInstagram()">Post to Instagram</button>
     </div>
     <div class="result-msg" id="result-msg"></div>
@@ -354,12 +354,11 @@
     document.querySelectorAll('.card').forEach(c => c.classList.remove('selected'));
     card.classList.add('selected');
     selectedOption = opt;
-    document.getElementById('preview-img').src = '/static/images/' + opt.image;
     document.getElementById('preview-name').textContent = opt.style;
     document.getElementById('caption-box').value = opt.caption;
     document.getElementById('result-msg').textContent = '';
     document.getElementById('expand-btn').disabled = false;
-    document.getElementById('expand-btn').textContent = 'Generate 10 Views';
+    document.getElementById('expand-btn').textContent = 'Generate 12 Views';
     const postArea = document.getElementById('post-area');
     postArea.style.display = 'block';
     postArea.scrollIntoView({ behavior: 'smooth' });
