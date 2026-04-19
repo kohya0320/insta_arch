@@ -103,7 +103,7 @@
     .result-msg.ok { color: #4ade80; }
     .result-msg.err { color: #f87171; }
 
-    /* 10 views section */
+    /* 12 views section */
     .views-section { display: none; margin-top: 40px; }
     .views-section h2 { font-size: 11px; letter-spacing: 3px; color: #c9a84c; text-transform: uppercase; margin-bottom: 20px; }
     .views-progress { text-align: center; margin-bottom: 20px; }
@@ -113,15 +113,20 @@
     .views-eta { font-size: 11px; color: #444; margin-top: 4px; letter-spacing: 1px; text-align: center; }
     .views-grid {
       display: grid;
-      grid-template-columns: repeat(5, 1fr);
+      grid-template-columns: repeat(4, 1fr);
       gap: 8px;
     }
     @media (max-width: 800px) { .views-grid { grid-template-columns: repeat(2, 1fr); } }
+
     .view-card {
-      position: relative; overflow: hidden;
-      border: 1px solid #1a1a1a;
+      position: relative; overflow: hidden; cursor: pointer;
+      border: 2px solid #1a1a1a;
       animation: fadeIn 0.4s ease;
+      transition: all 0.2s;
+      user-select: none;
     }
+    .view-card:hover { border-color: #555; }
+    .view-card.selected { border-color: #c9a84c; box-shadow: 0 0 0 1px #c9a84c; }
     .view-card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
     .view-card-overlay {
       position: absolute; bottom: 0; left: 0; right: 0;
@@ -129,6 +134,80 @@
       background: linear-gradient(transparent, rgba(0,0,0,0.85));
     }
     .view-card-name { font-size: 9px; color: #c9a84c; letter-spacing: 1px; text-transform: uppercase; }
+    .view-badge {
+      position: absolute; top: 7px; left: 7px;
+      width: 24px; height: 24px; border-radius: 50%;
+      background: #c9a84c; color: #080808;
+      font-size: 11px; font-weight: 800;
+      display: none; align-items: center; justify-content: center;
+    }
+    .view-card.selected .view-badge { display: flex; }
+    .view-dblclick-hint {
+      position: absolute; top: 7px; right: 7px;
+      background: rgba(0,0,0,0.5); color: #888;
+      font-size: 8px; padding: 2px 5px; letter-spacing: 1px;
+      opacity: 0; transition: opacity 0.2s; pointer-events: none;
+    }
+    .view-card:hover .view-dblclick-hint { opacity: 1; }
+
+    /* Saved strip */
+    .saved-strip { margin-bottom: 24px; }
+    .saved-strip-header { font-size: 10px; color: #555; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 10px; }
+    .saved-grid {
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 6px;
+    }
+    @media (max-width: 800px) { .saved-grid { grid-template-columns: repeat(3, 1fr); } }
+    .saved-card {
+      position: relative; overflow: hidden;
+      border: 1px solid #2a2a2a;
+      animation: fadeIn 0.3s ease;
+    }
+    .saved-card img { width: 100%; aspect-ratio: 4/5; object-fit: cover; display: block; }
+    .saved-card-overlay {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      padding: 14px 6px 6px;
+      background: linear-gradient(transparent, rgba(0,0,0,0.85));
+    }
+    .saved-card-name { font-size: 8px; color: #888; letter-spacing: 1px; text-transform: uppercase; }
+    .saved-pin {
+      position: absolute; top: 5px; left: 5px;
+      background: #2a2a2a; color: #888; font-size: 8px;
+      padding: 2px 5px; letter-spacing: 1px;
+    }
+
+    /* Views action bar */
+    .views-action-bar {
+      display: none;
+      background: #0e0e0e; border: 1px solid #1a1a1a;
+      padding: 16px 20px; margin-top: 16px;
+      align-items: center; gap: 16px; flex-wrap: wrap;
+    }
+    .views-action-bar.visible { display: flex; }
+    .views-sel-info { font-size: 11px; color: #888; letter-spacing: 1px; flex: 1; }
+    .views-sel-info span { color: #c9a84c; font-weight: 700; }
+    .regen-btn {
+      padding: 12px 24px;
+      background: transparent; color: #888;
+      border: 1px solid #333; font-size: 10px;
+      font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .regen-btn:hover { border-color: #888; color: #ccc; }
+    .regen-btn:disabled { opacity: 0.4; cursor: default; }
+    .post-views-btn {
+      padding: 12px 24px;
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+      color: #fff; border: none; font-size: 10px;
+      font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .post-views-btn:hover { opacity: 0.88; }
+    .post-views-btn:disabled { background: #222; color: #555; cursor: default; }
+    .views-result-msg { width: 100%; text-align: center; font-size: 12px; margin-top: 4px; }
+    .views-result-msg.ok { color: #4ade80; }
+    .views-result-msg.err { color: #f87171; }
 
     /* Lightbox */
     .lightbox {
@@ -200,15 +279,30 @@
     <div class="result-msg" id="result-msg"></div>
   </div>
 
-  <!-- 10 views section -->
+  <!-- 12 views section -->
   <div class="views-section" id="views-section">
-    <h2>10 Views of Selected Building</h2>
+    <h2 id="views-title">12 Views of Selected Building</h2>
+
+    <!-- Saved strip (shown after first regenerate) -->
+    <div class="saved-strip" id="saved-strip" style="display:none">
+      <div class="saved-strip-header">Saved images</div>
+      <div class="saved-grid" id="saved-grid"></div>
+    </div>
+
     <div class="views-progress" id="views-progress">
-      <p id="views-progress-text">Generating view 1 / 10…</p>
+      <p id="views-progress-text">Generating view 1 / 12…</p>
       <div class="views-progress-bar-wrap"><div class="views-progress-bar" id="views-progress-bar"></div></div>
       <div class="views-eta" id="views-eta"></div>
     </div>
     <div class="views-grid" id="views-grid"></div>
+
+    <!-- Action bar: appears when ≥1 view selected -->
+    <div class="views-action-bar" id="views-action-bar">
+      <div class="views-sel-info" id="views-sel-info"><span id="sel-count">0</span> selected — tap to select/deselect, first = cover</div>
+      <button class="regen-btn" id="regen-btn" onclick="regenerateViews()">Regenerate</button>
+      <button class="post-views-btn" id="post-views-btn" onclick="postViewsToInstagram()">Post to Instagram</button>
+      <div class="views-result-msg" id="views-result-msg"></div>
+    </div>
   </div>
 </div>
 
@@ -224,6 +318,10 @@
   let expandTimerInterval = null;
   let shownViewImages = new Set();
   let lastExpandData = null;
+
+  // view selection
+  let selectedViewImages = []; // [{image, style, src}] ordered by selection
+  let savedViewImages = [];    // permanently saved across regenerates
 
   // lightbox
   let lightboxImages = []; // [{src, label}]
@@ -329,7 +427,6 @@
     }
   }
 
-  // 5枚グリッドのimage一覧（lightbox用）
   let mainImages = [];
 
   function addCard(opt) {
@@ -344,7 +441,6 @@
       <div class="selected-badge">✓ Selected</div>`;
     const idx = mainImages.length;
     mainImages.push({ src: '/static/images/' + opt.image, label: opt.style });
-    // 左クリック: 選択、長押し/右クリック不要 — ダブルクリックで拡大
     card.onclick = () => selectOption(card, opt);
     card.ondblclick = (e) => { e.stopPropagation(); openLightbox(mainImages, idx); };
     grid.appendChild(card);
@@ -377,9 +473,13 @@
     viewsGrid.innerHTML = '';
     shownViewImages.clear();
     viewImages = [];
+    selectedViewImages = [];
+    updateViewActionBar();
     viewsProgress.style.display = 'block';
     document.getElementById('views-progress-bar').style.width = '0%';
     document.getElementById('views-eta').textContent = '';
+    document.getElementById('views-title').textContent = '12 Views of Selected Building';
+    document.getElementById('views-result-msg').textContent = '';
     viewsSection.scrollIntoView({ behavior: 'smooth' });
 
     if (expandPollInterval) clearInterval(expandPollInterval);
@@ -418,28 +518,158 @@
         clearInterval(expandTimerInterval);
         viewsProgress.style.display = 'none';
         btn.disabled = false;
-        btn.textContent = 'Regenerate 10 Views';
+        btn.textContent = 'Generate 12 Views';
       }
     }, 3000);
   }
 
-  // 10 views image一覧（lightbox用）
+  async function regenerateViews() {
+    if (!selectedOption) return;
+
+    // Save currently selected view images to saved strip
+    selectedViewImages.forEach(item => {
+      const alreadySaved = savedViewImages.some(s => s.image === item.image);
+      if (!alreadySaved) {
+        savedViewImages.push(item);
+        addSavedCard(item);
+      }
+    });
+
+    if (savedViewImages.length > 0) {
+      document.getElementById('saved-strip').style.display = 'block';
+    }
+
+    // Re-run 12 views generation
+    selectedViewImages = [];
+    updateViewActionBar();
+    await generateViews();
+  }
+
   let viewImages = [];
 
   function addViewCard(opt) {
     const grid = document.getElementById('views-grid');
     const card = document.createElement('div');
     card.className = 'view-card';
-    card.style.cursor = 'pointer';
+    const src = '/static/images/' + opt.image;
     card.innerHTML = `
-      <img src="/static/images/${opt.image}" alt="${opt.style}">
+      <img src="${src}" alt="${opt.style}">
       <div class="view-card-overlay">
         <div class="view-card-name">${opt.style}</div>
-      </div>`;
+      </div>
+      <div class="view-badge"></div>
+      <div class="view-dblclick-hint">DBL</div>`;
+
     const idx = viewImages.length;
-    viewImages.push({ src: '/static/images/' + opt.image, label: opt.style });
-    card.onclick = () => openLightbox(viewImages, idx);
+    viewImages.push({ src, label: opt.style });
+
+    // シングルクリック = 選択/解除
+    card.addEventListener('click', () => toggleViewSelect(card, opt, src));
+
+    // ダブルクリック = ライトボックス拡大
+    card.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
+      openLightbox(viewImages, idx);
+    });
+
     grid.appendChild(card);
+  }
+
+  function toggleViewSelect(card, opt, src) {
+    const isSelected = card.classList.contains('selected');
+    if (isSelected) {
+      // Deselect
+      card.classList.remove('selected');
+      selectedViewImages = selectedViewImages.filter(i => i.image !== opt.image);
+    } else {
+      // Select
+      card.classList.add('selected');
+      selectedViewImages.push({ image: opt.image, style: opt.style, src });
+    }
+    rebadgeViewCards();
+    updateViewActionBar();
+  }
+
+  function rebadgeViewCards() {
+    // Update all view-badge numbers based on current selection order
+    document.querySelectorAll('.view-card').forEach(card => {
+      const img = card.querySelector('img');
+      if (!img) return;
+      const src = img.getAttribute('src');
+      const filename = src.replace('/static/images/', '');
+      const idx = selectedViewImages.findIndex(i => i.image === filename);
+      const badge = card.querySelector('.view-badge');
+      if (badge) {
+        badge.textContent = idx >= 0 ? (idx + 1) : '';
+      }
+    });
+  }
+
+  function updateViewActionBar() {
+    const bar = document.getElementById('views-action-bar');
+    const count = selectedViewImages.length;
+    document.getElementById('sel-count').textContent = count;
+    if (count > 0) {
+      bar.classList.add('visible');
+    } else {
+      bar.classList.remove('visible');
+    }
+    document.getElementById('post-views-btn').disabled = count === 0;
+  }
+
+  function addSavedCard(item) {
+    const grid = document.getElementById('saved-grid');
+    const card = document.createElement('div');
+    card.className = 'saved-card';
+    card.innerHTML = `
+      <img src="${item.src}" alt="${item.style}">
+      <div class="saved-card-overlay">
+        <div class="saved-card-name">${item.style}</div>
+      </div>
+      <div class="saved-pin">SAVED</div>`;
+    const idx = savedViewImages.length - 1;
+    card.addEventListener('click', () => {
+      const allSaved = savedViewImages.map(s => ({ src: s.src, label: s.style }));
+      openLightbox(allSaved, idx);
+    });
+    grid.appendChild(card);
+  }
+
+  async function postViewsToInstagram() {
+    if (selectedViewImages.length === 0) return;
+    const btn = document.getElementById('post-views-btn');
+    const regenBtn = document.getElementById('regen-btn');
+    const msg = document.getElementById('views-result-msg');
+    btn.disabled = true;
+    regenBtn.disabled = true;
+    btn.textContent = 'Posting…';
+    msg.textContent = '';
+    msg.className = 'views-result-msg';
+
+    const caption = document.getElementById('caption-box').value;
+    const imageUrls = selectedViewImages.map(i => window.location.origin + '/static/images/' + i.image);
+
+    try {
+      const res = await fetch('/api/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images: imageUrls, caption })
+      });
+      const data = await res.json();
+      if (data.success) {
+        msg.className = 'views-result-msg ok';
+        msg.textContent = `✓ Posted! (${selectedViewImages.length} image${selectedViewImages.length > 1 ? 's' : ''})`;
+      } else {
+        msg.className = 'views-result-msg err';
+        msg.textContent = '✕ ' + data.error;
+      }
+    } catch(e) {
+      msg.className = 'views-result-msg err';
+      msg.textContent = '✕ Error';
+    }
+    btn.disabled = false;
+    regenBtn.disabled = false;
+    btn.textContent = 'Post to Instagram';
   }
 
   async function postToInstagram() {
@@ -452,7 +682,7 @@
     try {
       const res = await fetch('/api/post', {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ image: selectedOption.image, caption, image_url: imageUrl })
+        body: JSON.stringify({ images: [imageUrl], caption })
       });
       const data = await res.json();
       if (data.success) { msg.className = 'result-msg ok'; msg.textContent = '✓ Posted!'; }

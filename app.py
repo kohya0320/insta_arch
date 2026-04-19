@@ -385,33 +385,98 @@ def expand():
     t.start()
     return jsonify({"job_id": job_id, "total": total})
 
+def upload_to_catbox(image_path):
+    """catbox.moe に匿名アップロードしてpublic URLを返す（登録不要）"""
+    try:
+        with open(image_path, 'rb') as f:
+            r = requests.post(
+                "https://catbox.moe/user/api.php",
+                data={"reqtype": "fileupload"},
+                files={"fileToUpload": f},
+                timeout=30
+            )
+        url = r.text.strip()
+        if url.startswith("https://"):
+            return url
+    except Exception as e:
+        print(f"[catbox] upload failed: {e}")
+    return None
+
+
+def resolve_public_url(img_url):
+    """Instagram用のpublic URLを取得（catbox.moe経由）"""
+    filename = img_url.split('/static/images/')[-1]
+    base_dir = os.path.dirname(os.path.abspath(__file__))
+    local_path = os.path.join(base_dir, "static", "images", filename)
+    cdn_url = upload_to_catbox(local_path)
+    return cdn_url if cdn_url else img_url
+
+
 @app.route("/api/post", methods=["POST"])
 def post():
+    import time
     data = request.json
-    caption = data.get("caption")
-    image_url = data.get("image_url")
+    caption = data.get("caption", "")
+    images = data.get("images", [])  # list of public URLs
 
+    if not images:
+        return jsonify({"error": "no images provided"}), 400
     if not IG_ACCESS_TOKEN or not IG_USER_ID:
         return jsonify({"error": "Instagram credentials not configured"}), 400
 
+    base = f"https://graph.instagram.com/v21.0"
+    token = IG_ACCESS_TOKEN
+    uid = IG_USER_ID
+
     try:
-        import time
-        container_res = requests.post(
-            f"https://graph.instagram.com/v21.0/{IG_USER_ID}/media",
-            params={"image_url": image_url, "caption": caption, "access_token": IG_ACCESS_TOKEN}
-        )
-        cdata = container_res.json()
-        if "id" not in cdata:
-            return jsonify({"error": str(cdata)}), 500
-        time.sleep(5)
-        pub_res = requests.post(
-            f"https://graph.instagram.com/v21.0/{IG_USER_ID}/media_publish",
-            params={"creation_id": cdata["id"], "access_token": IG_ACCESS_TOKEN}
-        )
-        pdata = pub_res.json()
-        if "id" not in pdata:
-            return jsonify({"error": str(pdata)}), 500
-        return jsonify({"success": True, "post_id": pdata["id"]})
+        # Cloudinary経由でpublic URLに変換
+        public_images = [resolve_public_url(u) for u in images]
+
+        if len(public_images) == 1:
+            # Single image post
+            r = requests.post(f"{base}/{uid}/media",
+                params={"image_url": public_images[0], "caption": caption, "access_token": token})
+            cdata = r.json()
+            if "id" not in cdata:
+                return jsonify({"error": str(cdata)}), 500
+            time.sleep(5)
+            pub = requests.post(f"{base}/{uid}/media_publish",
+                params={"creation_id": cdata["id"], "access_token": token})
+            pdata = pub.json()
+            if "id" not in pdata:
+                return jsonify({"error": str(pdata)}), 500
+            return jsonify({"success": True, "post_id": pdata["id"]})
+        else:
+            # Carousel post
+            child_ids = []
+            for img_url in public_images:
+                r = requests.post(f"{base}/{uid}/media",
+                    params={"image_url": img_url, "is_carousel_item": "true", "access_token": token})
+                cdata = r.json()
+                if "id" not in cdata:
+                    return jsonify({"error": f"carousel item failed: {cdata}"}), 500
+                child_ids.append(cdata["id"])
+                time.sleep(2)
+
+            # Create carousel container
+            r = requests.post(f"{base}/{uid}/media",
+                params={
+                    "media_type": "CAROUSEL",
+                    "children": ",".join(child_ids),
+                    "caption": caption,
+                    "access_token": token
+                })
+            carousel = r.json()
+            if "id" not in carousel:
+                return jsonify({"error": f"carousel container failed: {carousel}"}), 500
+
+            time.sleep(5)
+            pub = requests.post(f"{base}/{uid}/media_publish",
+                params={"creation_id": carousel["id"], "access_token": token})
+            pdata = pub.json()
+            if "id" not in pdata:
+                return jsonify({"error": str(pdata)}), 500
+            return jsonify({"success": True, "post_id": pdata["id"]})
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
