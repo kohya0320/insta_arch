@@ -218,53 +218,53 @@ def run_job(job_id):
 EXPAND_ANGLES = [
     (
         "Grand Entry Hall",
-        "monumental entrance hall, 9-meter raw concrete ceiling, 30-meter long axis, floor-to-ceiling glass wall at far end framing the wild landscape beyond, polished concrete floor reflecting the shaft of light, single oblique beam of sunlight cutting diagonally across the space, deep shadow in corners, one minimal concrete bench, NO people NO humans",
-        "ultra-wide 14mm, one oblique light shaft, museum entry scale"
+        "monumental entrance hall, 9-meter raw concrete ceiling, 30-meter long axis, floor-to-ceiling glass wall at far end framing wild landscape, honed limestone floor with visible fossil grain, single oblique beam of sunlight slicing diagonally — warm amber tone against cool concrete, at the entry: a single curved hand-plastered wall in warm sand plaster, one oversized hand-thrown ceramic vessel on a low travertine plinth, dried botanicals, deep shadow in far corners, NO people NO humans",
+        "ultra-wide 14mm, one oblique warm light shaft, museum entry scale"
     ),
     (
         "Main Living Hall",
-        "vast triple-height living hall, 8-meter raw concrete ceilings, 25-meter long room, entire wall of floor-to-ceiling glass facing dramatic landscape, raw concrete walls and polished stone floor, Minotti sectional in bouclé placed as a single island in the vast space, one 4-meter mature olive tree in a raw concrete planter, afternoon light shaft raking the floor at a low angle, deep shadow at ceiling",
-        "ultra-wide 14mm, afternoon raking light, gallery scale"
+        "vast triple-height living hall, 8-meter raw concrete ceiling, 25-meter long room, full glass wall facing dramatic landscape, floor of honed travertine with book-matched veining, a curved organic bouclé sectional as a warm island in the vast space, one sculptural travertine coffee table, a 4-meter mature olive tree in a raw concrete planter, afternoon raking light warm amber on the stone floor — the collision of brutal concrete and organic warmth is the subject",
+        "ultra-wide 14mm, warm afternoon raking light, gallery scale"
     ),
     (
         "Library & Study",
-        "double-height library, 6-meter raw concrete walls floor to ceiling lined with books, one full glass wall facing untamed landscape, a single long raw timber reading table centred, Arco floor lamp casting warm pool of light, late afternoon oblique sunlight cutting across the book spines, dust particles visible in the light beam, deep silence",
-        "wide 20mm, warm oblique light, intimate within monumental scale"
+        "double-height library, 6-meter raw concrete walls lined floor-to-ceiling with books, one full glass wall facing untamed landscape, a single 5-meter raw oak reading table — surface worn and warm, two sculptural aged brass pendants casting warm amber pools, late afternoon oblique sunlight raking across book spines — dust particles visible, a hand-thrown ceramic mug, a crumpled linen cloth, one open book, deep silence and warmth",
+        "wide 20mm, warm amber oblique light, intimate within monumental scale"
     ),
     (
         "Master Bedroom",
-        "enormous master suite, 6-meter raw concrete ceilings, 16-meter wide room, full glass wall spanning entire width with dawn landscape beyond — the wilderness is the headboard, platform bed of aged walnut centred in the vast space, a single shaft of pale dawn light across the floor, Dedar linen slightly crumpled, one mature fiddle-leaf fig 4m tall in corner, deep silence and restraint",
-        "wide 20mm, soft dawn light shaft, vast negative space"
+        "enormous master suite, 6-meter raw concrete ceilings, full glass wall spanning entire width — the wilderness is the headboard, a low platform bed in aged walnut with organic curved headboard in hand-plastered sand plaster, Dedar linen in warm ivory crumpled naturally, a sheepskin draped over a low curved chair, two sculptural ceramic bedside vessels, a single shaft of pale dawn light raking across the linen, one mature olive tree 3m tall, deep silence",
+        "wide 20mm, soft dawn raking light, warm organic against brutal concrete"
     ),
     (
         "Bathroom — Stone & Water",
-        "monumental bathroom, 6-meter raw concrete ceiling, 14-meter long room, entire glass wall facing untouched wild landscape, single freestanding stone bath centred like a sculpture, Nero Marquina marble walls, shallow water on the floor reflecting ceiling, morning mist visible outside, one beeswax candle half-burned on stone ledge, absolute silence",
-        "wide 20mm, soft diffused light, stone and water reflection"
+        "monumental bathroom, 6-meter raw concrete ceiling, 14-meter long room, full glass wall facing wild landscape, single freestanding sculptural stone bath in warm travertine — curved organic form, book-matched travertine walls with visible warm veining, honed limestone floor, shallow water reflecting the ceiling, a low oak stool with a folded linen towel, two half-burned beeswax candles on a stone ledge, morning light soft and diffused, absolute stillness",
+        "wide 20mm, soft diffused warm light, travertine and water reflection"
     ),
     (
         "Kitchen & Dining",
-        "vast kitchen and dining hall, 7-meter concrete ceilings, 22-meter long space, Poliform stone island running 6 meters, 16-seat raw timber dining table under cluster of Bocci pendants, full glass wall to landscape, evening light warm on stone surfaces, shadow deep at ceiling, ultra-sharp: stone grain, wood texture, pendant reflections",
-        "wide 20mm, warm evening light, Michelin kitchen scale"
+        "vast kitchen and dining hall, 7-meter raw concrete ceiling, 22-meter long space, a 6-meter island in warm Calacatta Viola marble with waterfall edge, 14-seat dining table in solid aged oak — surface marked and lived-in, cluster of hand-blown amber glass pendants casting warm light, full glass wall to landscape, evening light warm gold on stone and wood, an open cookbook, a ceramic bowl of fruit, shadow deep at the concrete ceiling",
+        "wide 20mm, warm amber evening light, Michelin kitchen scale"
     ),
     (
         "Meditation & Spa",
-        "monumental spa hall, 7-meter raw concrete ceiling, 20-meter long room, full glass wall facing ancient untamed wilderness, two stone basins centred 6 meters apart, private hammam chamber behind frosted glass, plunge pool inset flush with floor, hanging dried eucalyptus, morning mist pressing against the glass outside, one candle, absolute stillness",
-        "wide 18mm, soft diffused spa light, ancient stone and concrete"
+        "monumental spa, 7-meter raw concrete ceiling, 20-meter room, full glass wall facing ancient wilderness, a single deep soaking tub carved from a single block of warm travertine, plunge pool inset flush with honed limestone floor, walls in hand-applied sand plaster — warm and textured, hanging dried eucalyptus and pampas grass bundles, two low ceramic oil burners with soft flame, morning light diffused and golden, absolute stillness, warm vs raw concrete collision",
+        "wide 18mm, soft warm diffused light, organic warmth against raw concrete"
     ),
     (
         "Corridor & Circulation",
-        "long circulation corridor, 5-meter raw concrete ceiling, 30-meter length, one continuous slot skylight running full length casting a narrow blade of sunlight along the floor, rough concrete walls both sides, polished concrete floor as mirror, at the far end a full glass wall opening to wild landscape — light at the end of the tunnel composition",
-        "35mm, blade of skylight, long perspective compression"
+        "long circulation corridor, 5-meter raw concrete ceiling, 30-meter length, continuous slot skylight casting a single blade of warm amber light along the honed limestone floor, rough concrete walls both sides, at intervals: one curved hand-plastered alcove with a single ceramic sculpture, at the far end a full glass wall opening to wild landscape — warm light in a brutalist tunnel, the contrast is the subject",
+        "35mm, blade of warm skylight, long perspective compression"
     ),
     (
         "Terrace — Interior Edge",
-        "covered terrace at the boundary between inside and outside, 4-meter raw concrete soffit, the floor continuing seamlessly from interior to exterior, infinity edge dissolving into the vast landscape below, two minimal outdoor loungers in weathered teak, deep saturated blue sky or golden sunset beyond — no clouds, one glass of water on a stone ledge, the building and wilderness meet here",
-        "wide 20mm, interior-exterior threshold, deep saturated sky"
+        "covered terrace at the threshold between inside and outside, 4-meter raw concrete soffit, floor in large-format honed travertine continuing seamlessly interior to exterior, two low organic curved loungers in weathered teak with warm linen cushions, a single sculptural side table in raw stone, deep saturated blue sky or golden sunset beyond — zero clouds, one ceramic glass of water on stone ledge, the building and wilderness meet here in warmth",
+        "wide 20mm, interior-exterior threshold, warm materials against epic landscape"
     ),
     (
         "Material Detail — Light & Texture",
-        "extreme close-up architectural detail inside the building, same raw concrete or stone or aged timber, a single dramatic shaft of natural light raking across the surface at a low angle — every pour line in concrete hyper-visible, every grain in wood, every crystal in stone, deep sharp shadow edge, a small imperfection: a crack, a stain, a mineral deposit — the material is the subject",
-        "50mm, raking light, hyper-sharp material texture"
+        "extreme macro close-up of an interior surface — book-matched travertine wall with visible fossil and vein, OR aged oak with every grain hyper-visible, OR hand-plastered sand wall with every trowel mark — a single dramatic shaft of warm amber natural light raking across the surface at a very low angle, deep crisp shadow edge, a small imperfection: a hairline crack, a mineral deposit, a knot in the wood — the material is the entire subject",
+        "50mm macro, raking warm amber light, hyper-sharp material texture"
     ),
     (
         "Wide Exterior — Full Context",
@@ -297,13 +297,19 @@ STRICT RULES:
 - NO humans, NO people, NO figures anywhere — zero human presence
 - PHYSICS: building must obey gravity — every element visibly supported, no floating
 - LANDSCAPE (@gorpcore.jpeg aesthetic): raw untouched wilderness, earthy muted-but-rich palette (weathered rock, moss, lichen, deep forest green, raw soil), terrain feels ancient and documentary — authentic organic textures, NOT a postcard. Foreground terrain detail, distant horizon.
-- NO humans, NO people, NO figures anywhere — zero human presence
-- INTERIORS: @matitectura aesthetic — raw concrete or stone, floor-to-ceiling glass framing wild landscape, one strong oblique light shaft, ultra-sharp material detail (every pour line in concrete, every grain in wood, every vein in stone must be visible)
-- MASSIVE SCALE — 7-8m ceilings, 20m+ rooms, museum/gallery proportions
-- Quality furniture at grand scale (Minotti, Poliform, Cassina), honed stone (travertine, Calacatta, Nero Marquina), mature indoor trees
-- Lived-in imperfections: a half-burned candle, a crumpled linen throw — NOT sterile showroom
-- RICH SATURATED COLORS — full tonal range, correct exposure, no blown-out whites
-- End: "editorial architectural photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
+
+INTERIOR AESTHETIC — fusion of @matitectura architecture + @design.only styling:
+- ARCHITECTURE (@matitectura): raw concrete shell, 7-8m ceilings, floor-to-ceiling glass walls, museum/gallery proportions, brutal geometry
+- INTERIOR STYLING (@design.only): warm organic materials layered against the raw concrete — book-matched travertine, warm aged oak, hand-plastered walls in sand/cream, honed limestone floors with visible grain
+- FURNITURE: sculptural curved organic forms — a curved bouclé sofa as an island, a single organic coffee table in travertine or solid oak, a low platform bed in aged walnut — NOT sterile box furniture
+- LIGHTING: warm amber glow from low sculptural pendants or a single architectural slot, PLUS one oblique shaft of natural daylight raking across the space — two light sources creating depth
+- TEXTILES: layered — linen throws slightly crumpled, a sheepskin draped over a chair arm, a woven wool rug anchoring the seating — tactile, warm, lived-in
+- OBJECTS: hand-thrown ceramic vessels, a dried botanical arrangement, a single open art book on the table — curated imperfection, NOT a showroom
+- PALETTE: warm cream, raw sand, travertine ivory, aged oak honey, deep charcoal shadow — rich tonal contrast
+- The contrast and tension: brutal raw concrete ceiling/walls vs warm organic interior — that collision is the visual interest
+- Ultra-sharp material detail: every pour line in concrete, every grain in wood, every crystal in stone, every thread in fabric
+- RICH SATURATED COLORS — full tonal range, correct exposure, deep shadows, no blown-out whites
+- End: "editorial interior photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
 
 Output ONLY the prompt. 200-250 words."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:

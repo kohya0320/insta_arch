@@ -176,6 +176,9 @@
       background: #2a2a2a; color: #888; font-size: 8px;
       padding: 2px 5px; letter-spacing: 1px;
     }
+    .saved-card { cursor: pointer; transition: all 0.2s; }
+    .saved-card.selected { border-color: #c9a84c; box-shadow: 0 0 0 1px #c9a84c; }
+    .saved-card.selected .saved-pin { background: #c9a84c; color: #080808; font-weight: 700; }
 
     /* Views action bar */
     .views-action-bar {
@@ -621,18 +624,41 @@
     const grid = document.getElementById('saved-grid');
     const card = document.createElement('div');
     card.className = 'saved-card';
+    card.dataset.image = item.image;
     card.innerHTML = `
       <img src="${item.src}" alt="${item.style}">
       <div class="saved-card-overlay">
         <div class="saved-card-name">${item.style}</div>
       </div>
-      <div class="saved-pin">SAVED</div>`;
+      <div class="saved-pin" id="saved-pin-${item.image}">SAVED</div>`;
     const idx = savedViewImages.length - 1;
-    card.addEventListener('click', () => {
+
+    // シングルクリック = 選択/解除（投稿に含める）
+    card.addEventListener('click', () => toggleSavedSelect(card, item));
+    // ダブルクリック = ライトボックス
+    card.addEventListener('dblclick', (e) => {
+      e.stopPropagation();
       const allSaved = savedViewImages.map(s => ({ src: s.src, label: s.style }));
       openLightbox(allSaved, idx);
     });
     grid.appendChild(card);
+  }
+
+  function toggleSavedSelect(card, item) {
+    const isSelected = card.classList.contains('selected');
+    if (isSelected) {
+      card.classList.remove('selected');
+      selectedViewImages = selectedViewImages.filter(i => i.image !== item.image);
+      const pin = document.getElementById('saved-pin-' + item.image);
+      if (pin) pin.textContent = 'SAVED';
+    } else {
+      card.classList.add('selected');
+      selectedViewImages.push(item);
+      const pin = document.getElementById('saved-pin-' + item.image);
+      if (pin) pin.textContent = selectedViewImages.length;
+    }
+    rebadgeViewCards();
+    updateViewActionBar();
   }
 
   async function postViewsToInstagram() {
