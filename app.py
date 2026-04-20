@@ -31,14 +31,36 @@ def generate_concept_and_prompt(index):
         "Finnish lake district", "Tibetan plateau"
     ]
     forms = [
-        "a single monolithic concrete slab elevated on pilotis", "stacked shifted rectangular volumes",
-        "carved directly into cliff face", "a ring encircling a void",
-        "a bridge spanning two rock faces", "terraced platforms descending a hillside",
-        "a buried bunker with only skylights above ground", "a transparent glass box on a plinth",
-        "folded concrete planes like origami", "a helix of interconnected levels",
-        "a series of parallel walls offset in depth", "a monolithic black stone mass with carved voids",
-        "a crescent-shaped plan following the terrain contour", "mirrored surfaces that dissolve into landscape",
-        "a cluster of towers connected by aerial walkways", "a single long horizontal bar elevated above terrain"
+        "a single razor-thin horizontal slab cantilevered over a cliff edge, supported by one diagonal steel pillar",
+        "a perfect black sphere half-buried in the earth, only the upper hemisphere visible",
+        "a crescent-shaped curve that follows the contour of a hillside, one continuous flowing wall",
+        "a ring — a circular building with a courtyard void at its centre open to the sky",
+        "a bridge spanning two rock faces — the entire building IS the bridge, habitable interior within the span",
+        "a series of stacked shifting discs that rotate slightly at each level like a twisted stack of coins",
+        "a buried structure — only a cluster of triangular skylights protrude above ground level",
+        "a mirrored box that reflects the landscape so perfectly the building almost disappears",
+        "two massive parallel walls 40 meters apart, connected only by a glass ceiling — a canyon of architecture",
+        "a helix — a continuous ramp spiralling upward around a central void open to the sky",
+        "a single monolithic dark mass with deep carved voids — the negative space is the architecture",
+        "a cluster of irregular towers of different heights connected by slender glass bridges at various levels",
+        "folded planes like a crumpled sheet of metal, angular facets catching light differently on each face",
+        "a long low horizontal bar elevated 8 meters above terrain on a forest of thin pillars",
+        "terraced platforms cascading down a steep hillside like geological strata",
+        "a transparent glass volume so pure and simple it seems to exist only as light and reflection"
+    ]
+    materials = [
+        "entirely clad in weathered corten steel — deep rust orange-brown surface, oxidized texture",
+        "entirely in raw board-formed concrete — every formwork plank line visible, grey and mineral",
+        "entirely in black basalt stone — dark volcanic rock, matte and ancient",
+        "entirely in white hand-packed rammed earth — layered horizontal strata, warm ivory",
+        "entirely in dark oxidized zinc — matte charcoal grey, slightly iridescent in raking light",
+        "entirely in warm golden travertine — book-matched stone slabs, fossil-rich surface",
+        "entirely in weathered untreated cedar timber — silver-grey from exposure, grain hyper-visible",
+        "entirely in polished black granite — deep reflective surface mirroring sky and landscape",
+        "entirely in pale white limestone — rough-hewn blocks, carved texture, chalk-white",
+        "glass and exposed black steel — structural grid fully visible, transparent volume",
+        "entirely in hand-laid dark slate — horizontal layers of thin stone, slate-grey and charcoal",
+        "entirely in rusted patinated copper — deep brown-green surface, verdigris patches"
     ]
     weathers = [
         "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, absolutely zero clouds",
@@ -51,6 +73,7 @@ def generate_concept_and_prompt(index):
 
     climate = random.choice(climates)
     form = random.choice(forms)
+    material = random.choice(materials)
     weather = random.choice(weathers)
 
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
@@ -60,41 +83,36 @@ def generate_concept_and_prompt(index):
                     model=model,
                     contents=f"""You are simultaneously a radical architect and a world-class architectural photographer. Your job: INVENT a completely original building and write a photorealistic image generation prompt for it.
 
-INVENTION BRIEF:
-- Climate/Location seed: {climate}
-- Architectural form seed: {form}
+INVENTION BRIEF — follow these seeds EXACTLY, do NOT substitute or default to grey concrete:
+- Climate/Location: {climate}
+- Architectural form: {form}
+- Primary material: {material} — THIS IS MANDATORY. The building MUST be made of this material. Do NOT change it to concrete unless the material seed says concrete.
 - Weather: {weather}
 
 STEP 1 — Invent the building:
 - Name it (3-5 words, evocative)
-- Design a building with the aesthetic of a world-class museum, cultural institution, or art gallery — monumental, brutalist or minimalist, institutional gravitas. NOT a house, NOT a hotel, NOT a villa.
-- Inspired by @matitectura: raw concrete, bold geometric volumes, massive scale, severe beauty, the building looks like it belongs in MoMA or on the cover of Wallpaper*.
+- Monumental cultural institution scale — museum, arts centre, research pavilion. NOT a house.
 - The building CANNOT EXIST anywhere else on earth — terrain and architecture are inseparable.
-- PHYSICS: every element must be visibly supported. Cantilevers must have visible structural logic. NO floating. NO impossible structures.
-- Scale: large enough for 15 people, multiple wings, sprawling footprint.
-- Materials echo the landscape.
+- PHYSICS: every element visibly supported, cantilevers have structural logic, NO floating.
+- Scale: sprawling, multiple wings, large enough for 15+ people.
+- The material seed above IS the building's surface — describe it in detail.
 
 STEP 2 — Write the photorealistic image prompt:
-Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature. Neither dominates.
+Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature.
 
-LANDSCAPE STYLE — @gorpcore.jpeg aesthetic for the nature/background:
-- Raw, untouched wilderness at a scale that makes humans feel irrelevant
-- Earthy, muted-but-rich color palette: weathered rock, moss-covered stone, deep forest green, raw soil, lichen grey
-- Terrain feels REAL and documentary — not a postcard, not a fantasy — authentic textures, worn surfaces, organic imperfections
-- The landscape has weight and permanence — ancient, indifferent to the building beside it
-- Depth: foreground rocks or vegetation, mid-ground building, distant mountain or ocean or forest stretching to horizon
+LANDSCAPE (@gorpcore.jpeg):
+- Raw untouched wilderness, documentary feel, authentic textures
+- Earthy muted-rich palette: weathered rock, moss, lichen, deep forest, raw soil
+- Ancient, indifferent to the building — depth: foreground rocks/vegetation, building mid-ground, vast horizon
 
-STRICT VISUAL RULES:
-- ABSOLUTELY NO clouds, NO overcast sky, NO grey sky, NO rain, NO wet surfaces, NO wet walls — only the exact weather specified above
-- PHYSICS: the building must visibly sit on, into, or emerge from the ground — every volume has structural logic
-- NO humans, NO people, NO figures anywhere in the image — zero human presence
-- Landscape fills 50%+ of frame — vast, ancient, untamed
-- One strong directional light — hard shadows, deep blacks
-- RICH but EARTHY COLORS — muted natural tones for the landscape, strong saturated light for sky and shadows
-- Describe the building's exact shape and mass — how it meets the terrain
-- Real material textures: raw concrete grain, stone surface, weathered corten steel, aged timber
-- One small imperfection: moss on concrete, water stain on facade, lichen on stone
-- Wide establishing shot, 16-24mm
+STRICT RULES:
+- ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces — exact weather above only
+- NO humans, NO people — zero human presence
+- PHYSICS: building sits on, into, or emerges from the ground
+- Landscape 50%+ of frame
+- One strong directional light, hard shadows, deep blacks
+- Describe the building material texture in extreme photographic detail
+- One small imperfection on the facade: lichen, oxide streak, weathering mark
 
 OUTPUT FORMAT (exactly):
 NAME: [building name]
@@ -109,7 +127,7 @@ PROMPT: [200-250 word photorealistic image prompt ending with: "editorial archit
             except Exception as e:
                 print(f"[Gemini] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
-    return f"Architecture {index+1}", "Museum-like brutalist architecture, raw concrete, natural landscape, photorealistic 8K"
+    return f"Architecture {index+1}", "Museum-like architecture, natural landscape, photorealistic 8K"
 
 
 def generate_image(prompt):
