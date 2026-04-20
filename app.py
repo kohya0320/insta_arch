@@ -144,6 +144,7 @@ def generate_image(prompt):
                 config=genai_types.GenerateImagesConfig(
                     number_of_images=1,
                     aspect_ratio="3:4",
+                    negative_prompt="clouds, overcast sky, grey sky, cloudy, storm clouds, rain, fog, mist, wet surfaces, puddles, people, humans, figures",
                 )
             )
             img_bytes = response.generated_images[0].image.image_bytes
