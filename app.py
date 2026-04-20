@@ -326,15 +326,24 @@ def generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note,
 
     contents = f"""You are a world-class architectural photographer. Your images look like REAL photographs — never AI, never renders.
 
-Original building (keep SAME style, materials, exterior form):
-\"\"\"{original_prompt[:350]}\"\"\"
+ORIGINAL BUILDING — extract and strictly follow these details:
+\"\"\"{original_prompt[:800]}\"\"\"
+
+From the above, identify and carry over EXACTLY:
+- The primary facade material and its texture (corten, basalt, concrete, timber, glass, etc.)
+- The window/opening type and proportion (small slits, floor-to-ceiling glass, punched openings, no windows, etc.)
+- The overall form and silhouette
+- The scale (number of levels, footprint)
+- Any unique structural elements (pilotis, cantilevers, arches, etc.)
 
 Create a prompt for: "{angle_name}"
 Scene direction: {angle_hint}
 Camera note: {camera_note}
 
 STRICT RULES (all shots):
-- SAME building — same materials, same character, new angle only
+- SAME building — the window sizes, opening proportions, material textures, and scale MUST match the original exactly
+- If the original has small punched windows, interior views show small punched windows — NOT floor-to-ceiling glass
+- If the original has floor-to-ceiling glass walls, interiors show full glass walls framing the landscape
 - ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces, NO wet walls
 - NO humans, NO people, NO figures anywhere — zero human presence
 - PHYSICS: building must obey gravity — every element visibly supported, no floating
