@@ -144,12 +144,13 @@ def generate_image(prompt):
                 config=genai_types.GenerateImagesConfig(
                     number_of_images=1,
                     aspect_ratio="3:4",
+                    output_mime_type="image/png",
                     negative_prompt="clouds, overcast sky, grey sky, cloudy, storm clouds, rain, fog, mist, wet surfaces, puddles, people, humans, figures",
                 )
             )
             img_bytes = response.generated_images[0].image.image_bytes
             base_dir = os.path.dirname(os.path.abspath(__file__))
-            filename = f"{uuid.uuid4().hex}.jpg"
+            filename = f"{uuid.uuid4().hex}.png"
             path = os.path.join(base_dir, "static", "images", filename)
             with open(path, "wb") as f:
                 f.write(img_bytes)
