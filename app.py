@@ -297,9 +297,33 @@ EXPAND_ANGLES = [
 ]
 
 
-def generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note):
+def generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note, is_interior=True):
     """アングルごとの詳細プロンプトを生成"""
     import time
+
+    if is_interior:
+        style_rules = """INTERIOR AESTHETIC — fusion of @matitectura architecture + @design.only styling:
+- ARCHITECTURE (@matitectura): same building shell — massive ceilings 7-8m, floor-to-ceiling glass walls, museum/gallery proportions
+- INTERIOR STYLING (@design.only): warm organic materials layered against the raw architecture — book-matched travertine, warm aged oak, hand-plastered walls in sand/cream, honed limestone floors
+- FURNITURE: sculptural curved organic forms — a curved bouclé sofa, organic travertine coffee table, low platform bed in aged walnut — NOT sterile box furniture
+- LIGHTING: warm amber glow from low sculptural pendants PLUS one oblique shaft of natural daylight — two light sources, depth and warmth
+- TEXTILES: linen throws slightly crumpled, a sheepskin over a chair arm, woven wool rug — tactile, lived-in
+- OBJECTS: hand-thrown ceramic vessels, dried botanicals, an open art book — curated imperfection, NOT a showroom
+- PALETTE: warm cream, raw sand, travertine ivory, aged oak honey, deep charcoal shadow
+- The collision: brutal architecture shell vs warm organic interior — that tension is the subject
+- Ultra-sharp: every grain in wood, every vein in stone, every thread in fabric
+- RICH SATURATED COLORS — full tonal range, correct exposure, deep shadows, no blown-out whites
+- End: "editorial interior photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K\""""
+    else:
+        style_rules = """EXTERIOR RULES:
+- SAME building — same materials, same form, exterior view only
+- LANDSCAPE (@gorpcore.jpeg): raw untouched wilderness, earthy muted-rich palette (weathered rock, moss, lichen, deep forest green, raw soil), ancient and documentary, NOT a postcard
+- Foreground terrain detail, building mid-ground, vast horizon
+- One strong directional light, hard shadows, deep blacks
+- Describe exact building material texture in detail
+- RICH but EARTHY COLORS — natural tones for landscape, saturated light for sky
+- End: "editorial architectural photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K\""""
+
     contents = f"""You are a world-class architectural photographer. Your images look like REAL photographs — never AI, never renders.
 
 Original building (keep SAME style, materials, exterior form):
@@ -309,25 +333,15 @@ Create a prompt for: "{angle_name}"
 Scene direction: {angle_hint}
 Camera note: {camera_note}
 
-STRICT RULES:
+STRICT RULES (all shots):
 - SAME building — same materials, same character, new angle only
-- ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces, NO wet walls — only clear sky / snow / golden sunset / blue hour / night
+- ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces, NO wet walls
 - NO humans, NO people, NO figures anywhere — zero human presence
 - PHYSICS: building must obey gravity — every element visibly supported, no floating
-- LANDSCAPE (@gorpcore.jpeg aesthetic): raw untouched wilderness, earthy muted-but-rich palette (weathered rock, moss, lichen, deep forest green, raw soil), terrain feels ancient and documentary — authentic organic textures, NOT a postcard. Foreground terrain detail, distant horizon.
 
-INTERIOR AESTHETIC — fusion of @matitectura architecture + @design.only styling:
-- ARCHITECTURE (@matitectura): raw concrete shell, 7-8m ceilings, floor-to-ceiling glass walls, museum/gallery proportions, brutal geometry
-- INTERIOR STYLING (@design.only): warm organic materials layered against the raw concrete — book-matched travertine, warm aged oak, hand-plastered walls in sand/cream, honed limestone floors with visible grain
-- FURNITURE: sculptural curved organic forms — a curved bouclé sofa as an island, a single organic coffee table in travertine or solid oak, a low platform bed in aged walnut — NOT sterile box furniture
-- LIGHTING: warm amber glow from low sculptural pendants or a single architectural slot, PLUS one oblique shaft of natural daylight raking across the space — two light sources creating depth
-- TEXTILES: layered — linen throws slightly crumpled, a sheepskin draped over a chair arm, a woven wool rug anchoring the seating — tactile, warm, lived-in
-- OBJECTS: hand-thrown ceramic vessels, a dried botanical arrangement, a single open art book on the table — curated imperfection, NOT a showroom
-- PALETTE: warm cream, raw sand, travertine ivory, aged oak honey, deep charcoal shadow — rich tonal contrast
-- The contrast and tension: brutal raw concrete ceiling/walls vs warm organic interior — that collision is the visual interest
-- Ultra-sharp material detail: every pour line in concrete, every grain in wood, every crystal in stone, every thread in fabric
-- RICH SATURATED COLORS — full tonal range, correct exposure, deep shadows, no blown-out whites
-- End: "editorial interior photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
+{style_rules}
+
+Output ONLY the prompt. 200-250 words."""
 
 Output ONLY the prompt. 200-250 words."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
@@ -352,7 +366,8 @@ def run_expand_job(job_id, original_prompt, total):
         jobs[job_id]["current"] = i + 1
         t0 = time.time()
         try:
-            prompt = generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note)
+            is_interior = i < (total - 2)  # 最後の2枚（Wide Exterior, Aerial）は外観
+            prompt = generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note, is_interior)
             print(f"[Expand {job_id}] {i+1}/{total} prompt ready")
             filename = generate_image(prompt)
             if filename:
