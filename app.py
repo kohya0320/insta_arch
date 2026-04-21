@@ -299,60 +299,79 @@ EXPAND_ANGLES = [
 ]
 
 
-def generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note, is_interior=True):
+def generate_building_spec(original_prompt):
+    """選択した建物の仕様書を1回だけ生成 — 12枚全部で共有する"""
+    import time
+    for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
+        for attempt in range(2):
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=f"""Analyze this architectural image prompt and extract a precise building specification.
+
+PROMPT:
+\"\"\"{original_prompt}\"\"\"
+
+Output a concise BUILDING SPEC (bullet points only, no prose) covering:
+- FACADE MATERIAL: exact material name, color, texture detail
+- WINDOW TYPE: size (small slits / punched openings / floor-to-ceiling glass / no windows), pattern, proportion
+- STRUCTURAL FORM: overall silhouette, key geometry
+- SCALE: approximate floor count, ceiling heights, footprint description
+- UNIQUE FEATURES: cantilevers, pilotis, arches, carved voids, bridges, etc.
+- LANDSCAPE/CLIMATE: terrain type, vegetation, weather/light
+- COLOR PALETTE: dominant tones of building and landscape
+
+Be extremely specific. This spec will be used to ensure 12 different views of the SAME building are visually consistent."""
+                )
+                return response.text.strip()
+            except Exception as e:
+                print(f"[BuildingSpec] {model} attempt {attempt+1} failed: {e}")
+                time.sleep(3)
+    return ""
+
+
+def generate_expand_prompt(building_spec, original_prompt, angle_name, angle_hint, camera_note, is_interior=True):
     """アングルごとの詳細プロンプトを生成"""
     import time
 
     if is_interior:
-        style_rules = """INTERIOR AESTHETIC — fusion of @matitectura architecture + @design.only styling:
-- ARCHITECTURE (@matitectura): same building shell — massive ceilings 7-8m, floor-to-ceiling glass walls, museum/gallery proportions
-- INTERIOR STYLING (@design.only): warm organic materials layered against the raw architecture — book-matched travertine, warm aged oak, hand-plastered walls in sand/cream, honed limestone floors
-- FURNITURE: sculptural curved organic forms — a curved bouclé sofa, organic travertine coffee table, low platform bed in aged walnut — NOT sterile box furniture
-- LIGHTING: warm amber glow from low sculptural pendants PLUS one oblique shaft of natural daylight — two light sources, depth and warmth
-- TEXTILES: linen throws slightly crumpled, a sheepskin over a chair arm, woven wool rug — tactile, lived-in
-- OBJECTS: hand-thrown ceramic vessels, dried botanicals, an open art book — curated imperfection, NOT a showroom
-- PALETTE: warm cream, raw sand, travertine ivory, aged oak honey, deep charcoal shadow
-- The collision: brutal architecture shell vs warm organic interior — that tension is the subject
-- Ultra-sharp: every grain in wood, every vein in stone, every thread in fabric
-- RICH SATURATED COLORS — full tonal range, correct exposure, deep shadows, no blown-out whites
+        style_rules = f"""INTERIOR AESTHETIC — @matitectura shell + @design.only warmth:
+- The CEILING, WALLS, and STRUCTURAL SHELL must reflect the building spec above — if facade is corten steel, interior walls show raw corten or same material; if glass, full glass walls frame the landscape
+- WINDOW/OPENINGS: match the spec exactly — same size, same proportions as the exterior
+- INTERIOR STYLING (@design.only): warm organic furnishings layered against the raw shell — travertine, warm oak, hand-plastered sand walls, honed stone floors
+- FURNITURE: curved organic forms — bouclé sofa, travertine coffee table, walnut bed — lived-in, NOT a showroom
+- LIGHTING: warm amber pendants + one oblique natural daylight shaft
+- TEXTILES: crumpled linen, sheepskin, woven rug — tactile warmth
+- OBJECTS: hand-thrown ceramics, dried botanicals, open art book
 - End: "editorial interior photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K\""""
     else:
-        style_rules = """EXTERIOR RULES:
-- SAME building — same materials, same form, exterior view only
-- LANDSCAPE (@gorpcore.jpeg): raw untouched wilderness, earthy muted-rich palette (weathered rock, moss, lichen, deep forest green, raw soil), ancient and documentary, NOT a postcard
+        style_rules = f"""EXTERIOR RULES:
+- Show the SAME building as specified above — exact same materials, form, window pattern
+- LANDSCAPE (@gorpcore.jpeg): raw untouched wilderness, earthy muted-rich palette, ancient and documentary
 - Foreground terrain detail, building mid-ground, vast horizon
 - One strong directional light, hard shadows, deep blacks
-- Describe exact building material texture in detail
-- RICH but EARTHY COLORS — natural tones for landscape, saturated light for sky
 - End: "editorial architectural photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K\""""
 
     contents = f"""You are a world-class architectural photographer. Your images look like REAL photographs — never AI, never renders.
 
-ORIGINAL BUILDING — extract and strictly follow these details:
-\"\"\"{original_prompt[:800]}\"\"\"
+THIS IS THE BUILDING — follow this spec exactly for every detail:
+{building_spec}
 
-From the above, identify and carry over EXACTLY:
-- The primary facade material and its texture (corten, basalt, concrete, timber, glass, etc.)
-- The window/opening type and proportion (small slits, floor-to-ceiling glass, punched openings, no windows, etc.)
-- The overall form and silhouette
-- The scale (number of levels, footprint)
-- Any unique structural elements (pilotis, cantilevers, arches, etc.)
+You are photographing THIS specific building from a new angle. Every visual detail (material, window size, scale, structural form) must be consistent with the spec above.
 
-Create a prompt for: "{angle_name}"
-Scene direction: {angle_hint}
-Camera note: {camera_note}
+Shot to create: "{angle_name}"
+Direction: {angle_hint}
+Camera: {camera_note}
 
-STRICT RULES (all shots):
-- SAME building — the window sizes, opening proportions, material textures, and scale MUST match the original exactly
-- If the original has small punched windows, interior views show small punched windows — NOT floor-to-ceiling glass
-- If the original has floor-to-ceiling glass walls, interiors show full glass walls framing the landscape
+STRICT RULES:
+- Window sizes and proportions MUST match the spec — do NOT invent new openings
+- Facade material MUST match the spec — do NOT substitute concrete if spec says corten/timber/glass
+- Scale MUST match — same floor heights, same footprint proportions
 - ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces, NO wet walls
-- NO humans, NO people, NO figures anywhere — zero human presence
-- PHYSICS: building must obey gravity — every element visibly supported, no floating
+- NO humans, NO people, NO figures — zero human presence
+- PHYSICS: all elements visibly supported
 
 {style_rules}
-
-Output ONLY the prompt. 200-250 words."""
 
 Output ONLY the prompt. 200-250 words."""
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
@@ -363,22 +382,28 @@ Output ONLY the prompt. 200-250 words."""
             except Exception as e:
                 print(f"[ExpandPrompt] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
-    return f"{angle_name} of museum-like brutalist architecture, photorealistic 8K"
+    return f"{angle_name} of the building, photorealistic 8K"
 
 
 def run_expand_job(job_id, original_prompt, total):
-    """10アングルを順番に生成"""
+    """12アングルを順番に生成"""
     import time
     jobs[job_id]["status"] = "running"
     jobs[job_id]["started_at"] = time.time()
     jobs[job_id]["current"] = 0
     durations = []
+
+    # 建物仕様書を1回だけ生成して全12枚で共有
+    print(f"[Expand {job_id}] Generating building spec...")
+    building_spec = generate_building_spec(original_prompt)
+    print(f"[Expand {job_id}] Building spec ready:\n{building_spec[:200]}")
+
     for i, (angle_name, angle_hint, camera_note) in enumerate(EXPAND_ANGLES):
         jobs[job_id]["current"] = i + 1
         t0 = time.time()
         try:
             is_interior = i < (total - 2)  # 最後の2枚（Wide Exterior, Aerial）は外観
-            prompt = generate_expand_prompt(original_prompt, angle_name, angle_hint, camera_note, is_interior)
+            prompt = generate_expand_prompt(building_spec, original_prompt, angle_name, angle_hint, camera_note, is_interior)
             print(f"[Expand {job_id}] {i+1}/{total} prompt ready")
             filename = generate_image(prompt)
             if filename:
