@@ -134,6 +134,8 @@ def generate_image(prompt):
     """Imagen 4 で画像生成"""
     import time
     clean = re.sub(r'--ar \S+', '', prompt).strip()
+    # 曇り・雨・人物を強制除外（negative_promptが使えないためプロンプトに明示）
+    clean = "ZERO clouds, clear sky only, NO overcast, NO rain, NO fog, NO wet surfaces, NO people, NO humans. " + clean
 
     for attempt in range(3):
         try:
@@ -145,7 +147,6 @@ def generate_image(prompt):
                     number_of_images=1,
                     aspect_ratio="3:4",
                     output_mime_type="image/png",
-                    negative_prompt="clouds, overcast sky, grey sky, cloudy, storm clouds, rain, fog, mist, wet surfaces, puddles, people, humans, figures",
                 )
             )
             img_bytes = response.generated_images[0].image.image_bytes
