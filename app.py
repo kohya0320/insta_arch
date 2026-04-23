@@ -98,21 +98,29 @@ STEP 1 — Invent the building:
 - The material seed above IS the building's surface — describe it in detail.
 
 STEP 2 — Write the photorealistic image prompt:
-Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature.
+Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature. Neither dominates.
 
-LANDSCAPE (@gorpcore.jpeg):
-- Raw untouched wilderness, documentary feel, authentic textures
-- Earthy muted-rich palette: weathered rock, moss, lichen, deep forest, raw soil
-- Ancient, indifferent to the building — depth: foreground rocks/vegetation, building mid-ground, vast horizon
+BUILDING AESTHETIC — @matitectura:
+- Monumental, severe, institutional — the building has the gravitas of MoMA or a Tadao Ando museum
+- Bold uncompromising geometry — the form is radical and site-specific
+- The material seed above IS the facade — describe its exact texture, grain, colour, aging in photographic detail
+- One small imperfection: lichen patch, oxide streak, a hairline crack, a weathering stain
+- The building looks like it has ALWAYS been here — inseparable from the terrain
+
+LANDSCAPE AESTHETIC — @gorpcore.jpeg:
+- Raw, untouched wilderness at a scale that makes the building feel small
+- Earthy, muted-but-rich palette: weathered grey rock, dark moss, lichen-covered stone, deep forest green, raw ochre soil
+- Terrain feels ANCIENT and documentary — authentic worn textures, organic imperfections, NOT a postcard
+- Depth layers: sharp foreground rocks or vegetation → building in mid-ground → vast horizon (mountain range / ocean / forest canopy)
+- The landscape is indifferent to the building — it was here first
 
 STRICT RULES:
 - ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces — exact weather above only
 - NO humans, NO people — zero human presence
-- PHYSICS: building sits on, into, or emerges from the ground
-- Landscape 50%+ of frame
-- One strong directional light, hard shadows, deep blacks
-- Describe the building material texture in extreme photographic detail
-- One small imperfection on the facade: lichen, oxide streak, weathering mark
+- PHYSICS: building sits on, into, or emerges from the ground — no floating
+- Landscape fills 50%+ of frame
+- One strong directional light — hard shadows, deep blacks, rich saturated sky
+- Wide establishing shot, 16-24mm lens
 
 OUTPUT FORMAT (exactly):
 NAME: [building name]
