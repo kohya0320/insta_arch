@@ -89,13 +89,15 @@ INVENTION BRIEF — follow these seeds EXACTLY, do NOT substitute or default to 
 - Primary material: {material} — THIS IS MANDATORY. The building MUST be made of this material. Do NOT change it to concrete unless the material seed says concrete.
 - Weather: {weather}
 
-STEP 1 — Invent the building:
+STEP 1 — Invent the building (design reference: @matitectura):
 - Name it (3-5 words, evocative)
-- Monumental cultural institution scale — museum, arts centre, research pavilion. NOT a house.
-- The building CANNOT EXIST anywhere else on earth — terrain and architecture are inseparable.
+- The building's DESIGN must channel @matitectura: bold uncompromising geometry, severe beauty, monumental scale, raw honest use of material, institutional gravitas — the kind of building that appears in Wallpaper* or wins the Pritzker Prize
+- Think Tadao Ando, Peter Zumthor, Herzog & de Meuron — brutalist or minimalist, never decorative, never domestic
+- Monumental cultural institution — museum, arts pavilion, research centre. NOT a house, NOT a hotel.
+- The building CANNOT EXIST anywhere else on earth — the form is born from the terrain.
 - PHYSICS: every element visibly supported, cantilevers have structural logic, NO floating.
-- Scale: sprawling, multiple wings, large enough for 15+ people.
-- The material seed above IS the building's surface — describe it in detail.
+- Scale: sprawling, multiple wings, 15+ people, massive presence.
+- The material seed IS the facade — use it with the same honesty and rawness as @matitectura uses concrete.
 
 STEP 2 — Write the photorealistic image prompt:
 Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature. Neither dominates.
