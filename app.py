@@ -22,56 +22,69 @@ def generate_concept_and_prompt(index):
     """Geminiが建物コンセプトをゼロから発明し、プロンプトまで生成"""
     import time
 
-    climates = [
-        "Arctic tundra", "tropical rainforest", "Sahara desert", "Norwegian fjord",
-        "Japanese cedar forest", "Scottish highland", "Patagonian steppe", "Icelandic lava field",
-        "Maldivian atoll", "Swiss alpine", "Amazon river delta", "Mongolian steppe",
-        "New Zealand volcanic coast", "Chilean Atacama", "Canadian Rockies",
-        "Indonesian jungle", "Moroccan atlas mountains", "Australian outback",
-        "Finnish lake district", "Tibetan plateau"
+    # @matitectura分析に基づくロケーション（古代遺跡・歴史的環境との対話）
+    locations = [
+        "ancient Roman ruins on a Mediterranean clifftop — crumbling stone arches, wild herbs between the stones",
+        "abandoned stone monastery on a mist-covered hillside — weathered limestone walls, ancient terraces",
+        "Norwegian fjord cliff face — raw vertical granite, dark water far below",
+        "Japanese cedar forest — ancient trees, filtered light, moss-covered stone ground",
+        "Moroccan desert — ancient rammed-earth kasbah ruins, ochre sand, dramatic rock formations",
+        "Greek island coastal cliff — white calcite rock, deep cobalt sea far below, wild thyme",
+        "Icelandic lava field — black volcanic rock, steam vents, vast emptiness",
+        "Chilean Atacama desert — ancient salt flat, terracotta rock formations, no vegetation",
+        "Scottish highland — ancient moorland, dark peat, granite outcrops, heather",
+        "Tuscan hillside — ancient stone terrace walls, wild cypress trees, ochre earth",
+        "Patagonian steppe — vast wind-swept plain, eroded sandstone towers, raw ochre grass",
+        "Swiss alpine valley — ancient stone alpine huts in ruin, granite peaks, dark pine forest",
+        "abandoned Anatolian stone village — ancient basalt buildings, dry grass, vast plateau",
+        "Portuguese Atlantic cliff — ancient stone fort ruins, dark sea, salt-worn rock",
+        "Tibetan plateau — ancient stone walls, high altitude, raw ochre landscape, vast sky",
+        "Australian outback — ancient red sandstone monolith, spinifex grass, raw ochre earth",
     ]
+    # 建築フォーム（彫刻的・カンチレバー・水/反射を含む）
     forms = [
-        "a single razor-thin horizontal slab cantilevered over a cliff edge, supported by one diagonal steel pillar",
-        "a perfect black sphere half-buried in the earth, only the upper hemisphere visible",
-        "a crescent-shaped curve that follows the contour of a hillside, one continuous flowing wall",
-        "a ring — a circular building with a courtyard void at its centre open to the sky",
-        "a bridge spanning two rock faces — the entire building IS the bridge, habitable interior within the span",
-        "a series of stacked shifting discs that rotate slightly at each level like a twisted stack of coins",
-        "a buried structure — only a cluster of triangular skylights protrude above ground level",
-        "a mirrored box that reflects the landscape so perfectly the building almost disappears",
-        "two massive parallel walls 40 meters apart, connected only by a glass ceiling — a canyon of architecture",
-        "a helix — a continuous ramp spiralling upward around a central void open to the sky",
-        "a single monolithic dark mass with deep carved voids — the negative space is the architecture",
-        "a cluster of irregular towers of different heights connected by slender glass bridges at various levels",
-        "folded planes like a crumpled sheet of metal, angular facets catching light differently on each face",
-        "a long low horizontal bar elevated 8 meters above terrain on a forest of thin pillars",
-        "terraced platforms cascading down a steep hillside like geological strata",
-        "a transparent glass volume so pure and simple it seems to exist only as light and reflection"
+        "a seamless reflecting pool surrounding the building — the structure appears to float on water, perfectly mirrored",
+        "a mirrored glass pavilion inserted into ancient stone ruins — the new reflects the old, history and present collide",
+        "a cantilevered horizontal slab extending dramatically over a cliff edge — pure tension and gravity",
+        "a curved sculptural mass that follows the terrain contour — organic geometry, no straight lines",
+        "a minimalist black volume partially submerged in a shallow reflecting pool — building and water are one",
+        "a crescent-shaped plan wrapping around a central reflecting courtyard open to the sky",
+        "a ring — circular building encircling a void with a still water pool at its centre",
+        "two massive parallel walls connected by a glass roof — a canyon of architecture with water channel below",
+        "a buried structure with only skylights and a rooftop reflecting pool visible above ground",
+        "a bridge-building spanning two cliff faces — habitable space within the span, water far below",
+        "folded angular planes like origami in stone — each facet catches light at a different angle",
+        "a cluster of monolithic towers of different heights connected by slender glass bridges",
+        "a long low horizontal bar elevated above ancient ruins on a single row of thin pillars",
+        "a helix — continuous ramp spiralling around a central void with water at its base",
+        "a perfect geometric void carved into a hillside — the negative space is the architecture",
     ]
+    # 素材（古代vs現代のコントラスト）
     materials = [
-        "entirely clad in weathered corten steel — deep rust orange-brown surface, oxidized texture",
-        "entirely in raw board-formed concrete — every formwork plank line visible, grey and mineral",
-        "entirely in black basalt stone — dark volcanic rock, matte and ancient",
-        "entirely in white hand-packed rammed earth — layered horizontal strata, warm ivory",
-        "entirely in dark oxidized zinc — matte charcoal grey, slightly iridescent in raking light",
-        "entirely in warm golden travertine — book-matched stone slabs, fossil-rich surface",
-        "entirely in weathered untreated cedar timber — silver-grey from exposure, grain hyper-visible",
-        "entirely in polished black granite — deep reflective surface mirroring sky and landscape",
-        "entirely in pale white limestone — rough-hewn blocks, carved texture, chalk-white",
-        "glass and exposed black steel — structural grid fully visible, transparent volume",
-        "entirely in hand-laid dark slate — horizontal layers of thin stone, slate-grey and charcoal",
-        "entirely in rusted patinated copper — deep brown-green surface, verdigris patches"
+        "ancient weathered limestone base with mirrored glass upper volume — old stone meets pure reflection",
+        "weathered corten steel — deep rust orange-brown, oxidized texture, harmonising with ochre terrain",
+        "raw board-formed concrete — every formwork plank line visible, mineral grey, ancient-feeling",
+        "polished black granite — deep reflective surface mirroring sky and landscape perfectly",
+        "mirrored stainless steel panels — the building dissolves into the landscape through pure reflection",
+        "dark basalt stone — volcanic and ancient, matte surface absorbing light",
+        "white hand-packed rammed earth — layered horizontal strata, warm ivory, echoing ancient kasbah walls",
+        "pale white limestone rough-hewn blocks — carved texture, chalk-white, blending with ancient ruins",
+        "dark oxidized zinc — matte charcoal grey, slightly iridescent, ultra-modern against ancient stone",
+        "weathered untreated cedar timber — silver-grey from exposure, warm grain, organic",
+        "rusted patinated copper — deep verdigris brown-green, ancient-feeling surface",
+        "glass and exposed black steel — structural grid fully visible, pure transparency",
     ]
     weathers = [
-        "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, absolutely zero clouds",
-        "heavy snowfall, thick snowflakes mid-air, deep saturated navy blue sky, dry snow on surfaces",
-        "blazing golden sunset, sky deep saturated orange-magenta gradient, zero clouds, vivid warm light",
-        "pre-dawn blue hour, deep saturated indigo sky, thin line of warm light on horizon, amber interior glow",
-        "golden sunrise, deep saturated cerulean blue sky, long hard shadows, vivid warm light from one side",
-        "midday sun, deep saturated blue sky, stark hard shadows, zero clouds, intense light",
+        "golden hour — deep saturated amber-orange light raking across surfaces, long hard shadows, zero clouds",
+        "pre-dawn blue hour — deep indigo sky, thin warm line on horizon, still reflections in water, meditative",
+        "heavy snowfall — thick snowflakes mid-air, deep navy sky, snow on ancient stone and modern surfaces",
+        "blazing golden sunset — sky deep saturated magenta-orange gradient, zero clouds, vivid warm light",
+        "midday harsh sun — deep saturated blue sky, stark hard shadows, intense light, zero clouds",
+        "golden sunrise — cerulean blue sky, long hard shadows from one side, warm light on stone and glass",
+        "misty golden dusk — soft diffused amber light, atmospheric haze over distant landscape, cinematic",
     ]
 
-    climate = random.choice(climates)
+    location = random.choice(locations)
     form = random.choice(forms)
     material = random.choice(materials)
     weather = random.choice(weathers)
@@ -81,48 +94,48 @@ def generate_concept_and_prompt(index):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""You are simultaneously a radical architect and a world-class architectural photographer. Your job: INVENT a completely original building and write a photorealistic image generation prompt for it.
+                    contents=f"""You are simultaneously a radical architect and a world-class architectural photographer. Your job: INVENT a completely original building inspired by @matitectura and write a photorealistic image generation prompt for it.
 
-INVENTION BRIEF — follow these seeds EXACTLY, do NOT substitute or default to grey concrete:
-- Climate/Location: {climate}
+INVENTION SEEDS — follow EXACTLY:
+- Location/Context: {location}
 - Architectural form: {form}
-- Primary material: {material} — THIS IS MANDATORY. The building MUST be made of this material. Do NOT change it to concrete unless the material seed says concrete.
-- Weather: {weather}
+- Primary material: {material} — MANDATORY, do not substitute
+- Weather/Light: {weather}
 
-STEP 1 — Invent the building (design reference: @matitectura):
+STEP 1 — Invent the building (@matitectura style):
 - Name it (3-5 words, evocative)
-- The building's DESIGN must channel @matitectura: bold uncompromising geometry, severe beauty, monumental scale, raw honest use of material, institutional gravitas — the kind of building that appears in Wallpaper* or wins the Pritzker Prize
-- Think Tadao Ando, Peter Zumthor, Herzog & de Meuron — brutalist or minimalist, never decorative, never domestic
-- Monumental cultural institution — museum, arts pavilion, research centre. NOT a house, NOT a hotel.
-- The building CANNOT EXIST anywhere else on earth — the form is born from the terrain.
-- PHYSICS: every element visibly supported, cantilevers have structural logic, NO floating.
-- Scale: sprawling, multiple wings, 15+ people, massive presence.
-- The material seed IS the facade — use it with the same honesty and rawness as @matitectura uses concrete.
+- Design inspired by @matitectura's actual aesthetic:
+  * DIALOGUE between ancient/historical context and radical contemporary architecture
+  * WATER and reflection as a key architectural element (pool, water channel, still water) — if the form seed includes water, make it central
+  * MATERIAL CONTRAST: weathered ancient surfaces vs smooth modern materials (mirrored glass, polished stone, clean concrete)
+  * SCULPTURAL FORM — the building is a sculpture, curved or geometric, never generic
+  * MEDITATIVE and CINEMATIC atmosphere — the building inspires silence and awe
+- Monumental scale — museum, cultural pavilion, arts centre. NOT a house.
+- The building and location are INSEPARABLE — the terrain makes the architecture.
+- PHYSICS: every element structurally logical, no floating.
 
 STEP 2 — Write the photorealistic image prompt:
-Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature. Neither dominates.
+Core visual: the COLLISION and HARMONY of ancient place + radical contemporary building.
 
-BUILDING AESTHETIC — @matitectura:
-- Monumental, severe, institutional — the building has the gravitas of MoMA or a Tadao Ando museum
-- Bold uncompromising geometry — the form is radical and site-specific
-- The material seed above IS the facade — describe its exact texture, grain, colour, aging in photographic detail
-- One small imperfection: lichen patch, oxide streak, a hairline crack, a weathering stain
-- The building looks like it has ALWAYS been here — inseparable from the terrain
+BUILDING (@matitectura):
+- Describe the exact material texture in extreme photographic detail
+- Describe the water element and how it reflects the building and sky
+- One small weathering imperfection: lichen on stone, oxide streak, a crack
+- The building feels like it was discovered, not built
 
-LANDSCAPE AESTHETIC — @gorpcore.jpeg:
-- Raw, untouched wilderness at a scale that makes the building feel small
-- Earthy, muted-but-rich palette: weathered grey rock, dark moss, lichen-covered stone, deep forest green, raw ochre soil
-- Terrain feels ANCIENT and documentary — authentic worn textures, organic imperfections, NOT a postcard
-- Depth layers: sharp foreground rocks or vegetation → building in mid-ground → vast horizon (mountain range / ocean / forest canopy)
-- The landscape is indifferent to the building — it was here first
+LANDSCAPE (@gorpcore.jpeg):
+- Raw, ancient, untouched wilderness — documentary texture, NOT a postcard
+- Earthy muted-rich palette: weathered rock, moss, lichen, dark soil, wild vegetation
+- Depth: sharp foreground detail → building mid-ground → vast horizon
+- The landscape is indifferent and eternal
 
 STRICT RULES:
-- ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces — exact weather above only
+- ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet walls or wet surfaces — only the exact weather/light above
+- Pools and still water ARE allowed — they are part of @matitectura's style
 - NO humans, NO people — zero human presence
-- PHYSICS: building sits on, into, or emerges from the ground — no floating
-- Landscape fills 50%+ of frame
-- One strong directional light — hard shadows, deep blacks, rich saturated sky
-- Wide establishing shot, 16-24mm lens
+- PHYSICS: building anchored to terrain
+- Landscape 50%+ of frame
+- Wide establishing shot, 16-24mm
 
 OUTPUT FORMAT (exactly):
 NAME: [building name]
