@@ -28,7 +28,11 @@ def generate_concept_and_prompt(index):
         "Maldivian atoll", "Swiss alpine", "Amazon river delta", "Mongolian steppe",
         "New Zealand volcanic coast", "Chilean Atacama", "Canadian Rockies",
         "Indonesian jungle", "Moroccan atlas mountains", "Australian outback",
-        "Finnish lake district", "Tibetan plateau"
+        "Finnish lake district", "Tibetan plateau",
+        "ancient Mediterranean cliffside with Roman-era stone ruins below",
+        "abandoned stone monastery valley in Scottish highland, mossy ruins",
+        "Moroccan desert plateau, crumbling ancient kasbah walls nearby",
+        "Japanese cedar forest with ancient stone shrine remnants half-buried",
     ]
     forms = [
         "a single razor-thin horizontal slab cantilevered over a cliff edge, supported by one diagonal steel pillar",
@@ -46,7 +50,9 @@ def generate_concept_and_prompt(index):
         "folded planes like a crumpled sheet of metal, angular facets catching light differently on each face",
         "a long low horizontal bar elevated 8 meters above terrain on a forest of thin pillars",
         "terraced platforms cascading down a steep hillside like geological strata",
-        "a transparent glass volume so pure and simple it seems to exist only as light and reflection"
+        "a transparent glass volume so pure and simple it seems to exist only as light and reflection",
+        "a minimalist glass and steel volume partially sunk into a still reflecting pool — water mirrors the building and sky perfectly, ancient stone wall as backdrop",
+        "a severe monolithic mass inserted into ancient stone ruins — modern precision meets eroded history, old and new locked together",
     ]
     materials = [
         "entirely clad in weathered corten steel — deep rust orange-brown surface, oxidized texture",
@@ -69,6 +75,7 @@ def generate_concept_and_prompt(index):
         "pre-dawn blue hour, deep saturated indigo sky, thin line of warm light on horizon, amber interior glow",
         "golden sunrise, deep saturated cerulean blue sky, long hard shadows, vivid warm light from one side",
         "midday sun, deep saturated blue sky, stark hard shadows, zero clouds, intense light",
+        "misty dusk, low mist pooling in valleys, silhouetted building forms against deep amber-violet sky, no direct rain, dry mist only",
     ]
 
     climate = random.choice(climates)
@@ -93,6 +100,7 @@ STEP 1 — Invent the building (design reference: @matitectura):
 - Name it (3-5 words, evocative)
 - The building's DESIGN must channel @matitectura: bold uncompromising geometry, severe beauty, monumental scale, raw honest use of material, institutional gravitas — the kind of building that appears in Wallpaper* or wins the Pritzker Prize
 - Think Tadao Ando, Peter Zumthor, Herzog & de Meuron — brutalist or minimalist, never decorative, never domestic
+- OPTIONAL but encouraged: a still reflecting pool or shallow water in the foreground; OR ancient stone ruins / eroded walls adjacent to the building — modern precision in dialogue with ancient decay
 - Monumental cultural institution — museum, arts pavilion, research centre. NOT a house, NOT a hotel.
 - The building CANNOT EXIST anywhere else on earth — the form is born from the terrain.
 - PHYSICS: every element visibly supported, cantilevers have structural logic, NO floating.
