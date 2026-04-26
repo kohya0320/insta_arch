@@ -211,6 +211,46 @@
     .views-result-msg { width: 100%; text-align: center; font-size: 12px; margin-top: 4px; }
     .views-result-msg.ok { color: #4ade80; }
     .views-result-msg.err { color: #f87171; }
+    .draft-btn {
+      padding: 12px 24px;
+      background: transparent; color: #7eb8d4;
+      border: 1px solid #7eb8d4; font-size: 10px;
+      font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .draft-btn:hover { background: #7eb8d4; color: #080808; }
+    .draft-btn:disabled { opacity: 0.4; cursor: default; }
+
+    /* Drafts section */
+    .drafts-section { margin-bottom: 36px; display: none; }
+    .drafts-header { font-size: 10px; color: #7eb8d4; letter-spacing: 3px; text-transform: uppercase; margin-bottom: 14px; border-bottom: 1px solid #1a1a1a; padding-bottom: 10px; }
+    .drafts-list { display: flex; flex-direction: column; gap: 12px; }
+    .draft-item {
+      display: flex; gap: 12px; align-items: flex-start;
+      background: #0e0e0e; border: 1px solid #1a1a1a; padding: 14px;
+    }
+    .draft-thumbs { display: flex; gap: 4px; flex-shrink: 0; }
+    .draft-thumbs img { width: 44px; aspect-ratio: 3/4; object-fit: cover; }
+    .draft-info { flex: 1; min-width: 0; }
+    .draft-date { font-size: 9px; color: #444; letter-spacing: 1px; margin-bottom: 6px; }
+    .draft-caption-preview { font-size: 11px; color: #666; line-height: 1.5; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .draft-actions { display: flex; gap: 8px; margin-top: 10px; }
+    .draft-post-btn {
+      padding: 7px 16px;
+      background: linear-gradient(135deg, #833ab4, #fd1d1d, #fcb045);
+      color: #fff; border: none; font-size: 9px;
+      font-weight: 600; letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: opacity 0.2s;
+    }
+    .draft-post-btn:hover { opacity: 0.85; }
+    .draft-del-btn {
+      padding: 7px 12px;
+      background: transparent; color: #444;
+      border: 1px solid #2a2a2a; font-size: 9px;
+      letter-spacing: 2px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .draft-del-btn:hover { border-color: #f87171; color: #f87171; }
 
     /* Lightbox */
     .lightbox {
@@ -254,6 +294,12 @@
 </div>
 
 <div class="main">
+  <!-- Drafts section -->
+  <div class="drafts-section" id="drafts-section">
+    <div class="drafts-header">Drafts</div>
+    <div class="drafts-list" id="drafts-list"></div>
+  </div>
+
   <div class="gen-wrap">
     <button class="generate-btn" id="gen-btn" onclick="generate()">Generate 5 Options</button>
   </div>
@@ -303,6 +349,7 @@
     <div class="views-action-bar" id="views-action-bar">
       <div class="views-sel-info" id="views-sel-info"><span id="sel-count">0</span> selected — tap to select/deselect, first = cover</div>
       <button class="regen-btn" id="regen-btn" onclick="regenerateViews()">Regenerate</button>
+      <button class="draft-btn" id="draft-btn" onclick="saveDraft()">Save Draft</button>
       <button class="post-views-btn" id="post-views-btn" onclick="postViewsToInstagram()">Post to Instagram</button>
       <div class="views-result-msg" id="views-result-msg"></div>
     </div>
@@ -717,6 +764,108 @@
     regenBtn.disabled = false;
     btn.textContent = 'Post to Instagram';
   }
+
+  // ── Drafts ──────────────────────────────────────────────
+  const DRAFTS_KEY = 'insta_arch_drafts';
+
+  function loadDraftsFromStorage() {
+    try { return JSON.parse(localStorage.getItem(DRAFTS_KEY) || '[]'); } catch { return []; }
+  }
+  function saveDraftsToStorage(drafts) {
+    localStorage.setItem(DRAFTS_KEY, JSON.stringify(drafts));
+  }
+
+  function saveDraft() {
+    if (selectedViewImages.length === 0) return;
+    const caption = document.getElementById('caption-box').value;
+    const drafts = loadDraftsFromStorage();
+    const draft = {
+      id: Date.now().toString(),
+      images: selectedViewImages.slice(),
+      caption,
+      createdAt: new Date().toISOString(),
+    };
+    drafts.unshift(draft);
+    saveDraftsToStorage(drafts);
+    renderDrafts();
+
+    // Flash feedback
+    const btn = document.getElementById('draft-btn');
+    btn.textContent = 'Saved!';
+    setTimeout(() => { btn.textContent = 'Save Draft'; }, 1500);
+  }
+
+  function deleteDraft(id) {
+    const drafts = loadDraftsFromStorage().filter(d => d.id !== id);
+    saveDraftsToStorage(drafts);
+    renderDrafts();
+  }
+
+  async function postDraft(id) {
+    const drafts = loadDraftsFromStorage();
+    const draft = drafts.find(d => d.id === id);
+    if (!draft) return;
+    const postBtn = document.getElementById('draft-post-' + id);
+    const delBtn = document.getElementById('draft-del-' + id);
+    postBtn.disabled = true;
+    postBtn.textContent = 'Posting…';
+    if (delBtn) delBtn.disabled = true;
+    const imageUrls = draft.images.map(i => window.location.origin + '/static/images/' + i.image);
+    try {
+      const res = await fetch('/api/post', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ images: imageUrls, caption: draft.caption })
+      });
+      const data = await res.json();
+      if (data.success) {
+        postBtn.textContent = '✓ Posted!';
+        postBtn.style.background = '#4ade80';
+        setTimeout(() => deleteDraft(id), 2000);
+      } else {
+        postBtn.textContent = 'Failed';
+        postBtn.disabled = false;
+        if (delBtn) delBtn.disabled = false;
+        alert('Error: ' + data.error);
+      }
+    } catch(e) {
+      postBtn.textContent = 'Error';
+      postBtn.disabled = false;
+      if (delBtn) delBtn.disabled = false;
+    }
+  }
+
+  function renderDrafts() {
+    const drafts = loadDraftsFromStorage();
+    const section = document.getElementById('drafts-section');
+    const list = document.getElementById('drafts-list');
+    if (drafts.length === 0) { section.style.display = 'none'; list.innerHTML = ''; return; }
+    section.style.display = 'block';
+    list.innerHTML = '';
+    drafts.forEach(draft => {
+      const thumbs = draft.images.slice(0, 5).map(i =>
+        `<img src="/static/images/${i.image}" alt="${i.style}">`
+      ).join('');
+      const date = new Date(draft.createdAt).toLocaleString('ja-JP', { month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' });
+      const captionPreview = draft.caption.replace(/\n/g, ' ').substring(0, 80);
+      const item = document.createElement('div');
+      item.className = 'draft-item';
+      item.innerHTML = `
+        <div class="draft-thumbs">${thumbs}</div>
+        <div class="draft-info">
+          <div class="draft-date">${date} · ${draft.images.length} images</div>
+          <div class="draft-caption-preview">${captionPreview}</div>
+          <div class="draft-actions">
+            <button class="draft-post-btn" id="draft-post-${draft.id}" onclick="postDraft('${draft.id}')">Post to Instagram</button>
+            <button class="draft-del-btn" id="draft-del-${draft.id}" onclick="deleteDraft('${draft.id}')">Delete</button>
+          </div>
+        </div>`;
+      list.appendChild(item);
+    });
+  }
+
+  // 起動時に下書きを表示
+  renderDrafts();
 
   async function postToInstagram() {
     if (!selectedOption) return;
