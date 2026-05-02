@@ -220,6 +220,15 @@
     }
     .draft-btn:hover { background: #7eb8d4; color: #080808; }
     .draft-btn:disabled { opacity: 0.4; cursor: default; }
+    .save-btn {
+      padding: 12px 24px;
+      background: transparent; color: #aaa;
+      border: 1px solid #444; font-size: 10px;
+      font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .save-btn:hover { background: #444; color: #fff; }
+    .save-btn:disabled { opacity: 0.4; cursor: default; }
 
     /* Drafts section */
     .drafts-section { margin-bottom: 36px; display: none; }
@@ -349,6 +358,7 @@
     <div class="views-action-bar" id="views-action-bar">
       <div class="views-sel-info" id="views-sel-info"><span id="sel-count">0</span> selected — tap to select/deselect, first = cover</div>
       <button class="regen-btn" id="regen-btn" onclick="regenerateViews()">Regenerate</button>
+      <button class="save-btn" id="save-btn" onclick="downloadSelected()">Download</button>
       <button class="draft-btn" id="draft-btn" onclick="saveDraft()">Save Draft</button>
       <button class="post-views-btn" id="post-views-btn" onclick="postViewsToInstagram()">Post to Instagram</button>
       <div class="views-result-msg" id="views-result-msg"></div>
@@ -763,6 +773,28 @@
     btn.disabled = false;
     regenBtn.disabled = false;
     btn.textContent = 'Post to Instagram';
+  }
+
+  // ── Download ─────────────────────────────────────────────
+  async function downloadSelected() {
+    if (selectedViewImages.length === 0) return;
+    const btn = document.getElementById('save-btn');
+    btn.disabled = true;
+    btn.textContent = 'Saving…';
+    for (let i = 0; i < selectedViewImages.length; i++) {
+      const item = selectedViewImages[i];
+      const url = '/static/images/' + item.image;
+      const res = await fetch(url);
+      const blob = await res.blob();
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `arch_${String(i + 1).padStart(2, '0')}_${item.style.replace(/[^a-z0-9]/gi, '_')}.png`;
+      a.click();
+      URL.revokeObjectURL(a.href);
+      await new Promise(r => setTimeout(r, 400));
+    }
+    btn.disabled = false;
+    btn.textContent = 'Download';
   }
 
   // ── Drafts ──────────────────────────────────────────────
