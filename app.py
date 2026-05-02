@@ -346,8 +346,8 @@ def run_job(job_id):
     print(f"[Job {job_id}] All done: {len(jobs[job_id]['results'])}/5")
 
 
-# ━━━ 10インテリア展開（@matitectura スタイル）━━━
-EXPAND_ANGLES = [
+# ━━━ インテリアプール（毎回10室をランダム選択）━━━
+INTERIOR_ANGLES_POOL = [
     (
         "Grand Entry Hall",
         "monumental entrance hall, 9-meter raw concrete ceiling, 30-meter long axis, floor-to-ceiling glass wall at far end framing wild landscape, honed limestone floor with visible fossil grain, single oblique beam of sunlight slicing diagonally — warm amber tone against cool concrete, at the entry: a single curved hand-plastered wall in warm sand plaster, one oversized hand-thrown ceramic vessel on a low travertine plinth, dried botanicals, deep shadow in far corners, NO people NO humans",
@@ -398,6 +398,60 @@ EXPAND_ANGLES = [
         "extreme macro close-up of an interior surface — book-matched travertine wall with visible fossil and vein, OR aged oak with every grain hyper-visible, OR hand-plastered sand wall with every trowel mark — a single dramatic shaft of warm amber natural light raking across the surface at a very low angle, deep crisp shadow edge, a small imperfection: a hairline crack, a mineral deposit, a knot in the wood — the material is the entire subject",
         "50mm macro, raking warm amber light, hyper-sharp material texture"
     ),
+    (
+        "Private Screening Room",
+        "intimate screening room, 4-meter raw concrete ceiling, 18-meter long room, entire far wall is a seamless 8-meter projection screen glowing soft white, floor-to-ceiling acoustic panels in hand-woven dark linen, three rows of wide curved lounge chairs in warm cognac leather — deep and reclined, a single low travertine shelf running the side wall with two ceramic vessels, warm amber floor-wash lighting at the base of walls, absolute darkness above, cinematic silence",
+        "wide 24mm, dramatic low ambient light, cinema scale"
+    ),
+    (
+        "Indoor Lap Pool",
+        "monumental indoor pool hall, 7-meter raw concrete ceiling, 25-meter lap pool inset flush with honed black granite floor, still water surface reflecting the concrete ceiling perfectly — the reflection doubles the space, one full glass wall at the far end framing wild landscape, natural light entering from a continuous slot skylight raking across the water surface, two raw oak benches with folded linen towels, absolute silence and stillness, NO people",
+        "ultra-wide 14mm, water reflection doubling the space, slot skylight"
+    ),
+    (
+        "Wine Cellar & Vault",
+        "underground wine vault, 4-meter raw concrete barrel-vaulted ceiling, 20-meter long tunnel, floor-to-ceiling wine storage in aged oak and raw steel racks — thousands of bottles, a single long rough-hewn oak table at centre with two ceramic wine glasses, pendant lighting — single warm amber bulb on a long cord casting a dramatic pool of light, deep shadow in the arched ceiling, aged stone floor, the silence and gravity of an ancient cellar",
+        "35mm, single pendant warm light, barrel vault compression"
+    ),
+    (
+        "Atrium & Indoor Garden",
+        "soaring central atrium, 12-meter raw concrete walls rising to a full glass roof — sky and clouds above, interior garden below: ancient olive trees 6 meters tall in raw concrete planters, jasmine climbing a concrete wall, a shallow water channel cutting through honed limestone floor, warm golden sunlight falling vertically through the glass roof creating pools of light and shadow, a single curved bench in aged oak, the smell of earth and light implied in every detail",
+        "ultra-wide 14mm, vertical light from glass roof, atrium scale"
+    ),
+    (
+        "Artist Studio & Workshop",
+        "vast studio, 6-meter raw concrete ceiling, north-facing full glass wall — flat diffused daylight, no shadows, floor in raw grey epoxy — marked with years of creative work, a massive 4-meter oak work table with scattered architectural drawings, clay maquettes, open reference books, two industrial task lights on articulated arms, a wall of raw steel shelving with art books and ceramic vessels, controlled daylight and creative chaos",
+        "wide 20mm, flat north light, creative workspace scale"
+    ),
+    (
+        "Fireplace Lounge",
+        "intimate lounge, 5-meter raw concrete ceiling, one full glass wall to dark landscape at night, centrepiece: a monumental fireplace carved from a single block of warm travertine — 2 meters wide, fire burning low and warm, two deep curved bouclé armchairs pulled close, a sheepskin on the floor, a low travertine side table with a ceramic whisky glass, warm amber firelight against cool concrete walls, deep shadows beyond, absolute intimacy within monumental space",
+        "35mm, warm firelight as primary source, intimate within brutal shell"
+    ),
+    (
+        "Rooftop Sky Terrace",
+        "rooftop terrace at altitude, raw concrete parapet walls, large-format travertine floor continuing from interior, two low organic teak daybeds with warm linen, a single raw stone fire pit, vast 360-degree landscape panorama — mountain range or coastline stretching to horizon, deep saturated blue sky zero clouds or blazing sunset, the building's roof as a room open to the sky, one ceramic vessel on the parapet edge, NO humans",
+        "wide 18mm, sky as ceiling, panoramic landscape edge"
+    ),
+    (
+        "Monumental Staircase",
+        "a single monumental staircase as architectural sculpture, raw concrete treads cantilevered from a concrete wall — no visible support, 6-meter void rising through 3 floors, a slot skylight at the top casting a blade of warm amber light down the full height of the void, honed limestone landing at base, the staircase is the entire subject — pure geometry, light, and shadow, deep shadow in recesses, NO people",
+        "24mm, vertical void, cantilevered concrete geometry"
+    ),
+    (
+        "Guest Suite",
+        "serene guest suite, 5-meter raw concrete ceiling, full glass wall framing a private landscape view, a low platform bed in aged walnut with organic linen in warm ivory, a single curved reading chair in weathered linen, one floor-to-ceiling bookshelf in raw oak against a concrete wall, morning light soft and directional through the glass, a single hand-thrown ceramic vase on a low stone shelf, quiet and complete, deep restful shadow",
+        "wide 20mm, soft morning light, quiet intimate scale"
+    ),
+    (
+        "Home Office — Command Room",
+        "dramatic home office, 5-meter raw concrete ceiling, full glass wall as the desk backdrop — wild landscape beyond, a single 4-meter floating desk in polished black granite cantilevered from the concrete wall, one precise task light in aged brass casting warm amber, floor in honed dark slate, walls raw concrete — no decoration, no distraction, one architectural model on the desk, a stack of drawings, total focus and severity",
+        "wide 20mm, single task light warmth against concrete severity"
+    ),
+]
+
+# 外観は常に固定（最後の2枚）
+EXTERIOR_ANGLES = [
     (
         "Wide Exterior — Full Context",
         "ultra-wide establishing shot, full building visible in its landscape, @gorpcore.jpeg wilderness — ancient weathered terrain, earthy muted tones, foreground rock or vegetation in sharp focus, building in mid-ground, distant horizon stretching vast, deep saturated blue sky or golden sunset or snow — zero clouds, NO humans NO people, building obeys physics — sits on or into the terrain",
@@ -498,19 +552,25 @@ Output ONLY the prompt. 200-250 words."""
 
 
 def run_expand_job(job_id, original_prompt, total):
-    """12アングルを順番に生成"""
+    """12アングルを順番に生成（インテリア10室はランダム選択）"""
     import time
     jobs[job_id]["status"] = "running"
     jobs[job_id]["started_at"] = time.time()
     jobs[job_id]["current"] = 0
     durations = []
 
+    # インテリアプールから10室をランダム選択 + 外観2枚を固定で追加
+    selected_interiors = random.sample(INTERIOR_ANGLES_POOL, 10)
+    angles = selected_interiors + EXTERIOR_ANGLES
+    total = len(angles)
+    jobs[job_id]["total"] = total
+
     # 建物仕様書を1回だけ生成して全12枚で共有
     print(f"[Expand {job_id}] Generating building spec...")
     building_spec = generate_building_spec(original_prompt)
     print(f"[Expand {job_id}] Building spec ready:\n{building_spec[:200]}")
 
-    for i, (angle_name, angle_hint, camera_note) in enumerate(EXPAND_ANGLES):
+    for i, (angle_name, angle_hint, camera_note) in enumerate(angles):
         jobs[job_id]["current"] = i + 1
         t0 = time.time()
         try:
@@ -612,7 +672,7 @@ def generate_from_ref():
 def expand():
     data = request.json
     original_prompt = data.get("prompt", "")
-    total = len(EXPAND_ANGLES)
+    total = 12  # 10 interiors (random) + 2 exteriors (fixed)
     job_id = uuid.uuid4().hex
     jobs[job_id] = {"status": "running", "results": [], "current": 0, "started_at": 0, "avg_duration": 0, "total": total}
     t = threading.Thread(target=run_expand_job, args=(job_id, original_prompt, total), daemon=True)
