@@ -19,6 +19,17 @@ os.makedirs(os.path.join(_base_dir, "static", "images"), exist_ok=True)
 # ジョブ管理
 jobs = {}
 
+WEATHERS = [
+    "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, absolutely zero clouds",
+    "heavy snowfall, thick snowflakes mid-air, deep saturated navy blue sky, dry snow on surfaces",
+    "blazing golden sunset, sky deep saturated orange-magenta gradient, zero clouds, vivid warm light",
+    "pre-dawn blue hour, deep saturated indigo sky, thin line of warm light on horizon, amber interior glow",
+    "golden sunrise, deep saturated cerulean blue sky, long hard shadows, vivid warm light from one side",
+    "midday sun, deep saturated blue sky, stark hard shadows, zero clouds, intense light",
+    "misty dusk, low mist pooling in valleys, silhouetted building forms against deep amber-violet sky, no direct rain, dry mist only",
+]
+
+
 def generate_concept_and_prompt(index):
     """Geminiが建物コンセプトをゼロから発明し、プロンプトまで生成"""
     import time
@@ -69,15 +80,7 @@ def generate_concept_and_prompt(index):
         "entirely in hand-laid dark slate — horizontal layers of thin stone, slate-grey and charcoal",
         "entirely in rusted patinated copper — deep brown-green surface, verdigris patches"
     ]
-    weathers = [
-        "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, absolutely zero clouds",
-        "heavy snowfall, thick snowflakes mid-air, deep saturated navy blue sky, dry snow on surfaces",
-        "blazing golden sunset, sky deep saturated orange-magenta gradient, zero clouds, vivid warm light",
-        "pre-dawn blue hour, deep saturated indigo sky, thin line of warm light on horizon, amber interior glow",
-        "golden sunrise, deep saturated cerulean blue sky, long hard shadows, vivid warm light from one side",
-        "midday sun, deep saturated blue sky, stark hard shadows, zero clouds, intense light",
-        "misty dusk, low mist pooling in valleys, silhouetted building forms against deep amber-violet sky, no direct rain, dry mist only",
-    ]
+    weathers = WEATHERS
 
     climate = random.choice(climates)
     form = random.choice(forms)
@@ -147,6 +150,86 @@ PROMPT: [200-250 word photorealistic image prompt ending with: "editorial archit
                 print(f"[Gemini] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
     return f"Architecture {index+1}", "Museum-like architecture, natural landscape, photorealistic 8K"
+
+
+def generate_concept_from_ref(analysis, index):
+    """参照画像の分析結果から新しい建物コンセプトを生成"""
+    import time
+    weather = random.choice(WEATHERS)
+    for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
+        for attempt in range(3):
+            try:
+                response = client.models.generate_content(
+                    model=model,
+                    contents=f"""You are a radical architect and world-class architectural photographer.
+
+A reference image has been analyzed. Here is its analysis:
+{analysis}
+
+Your job: INVENT a completely NEW building INSPIRED by the reference — not a copy. Keep the same spirit, atmosphere, material palette, and landscape feeling, but design something original.
+
+Weather for this image: {weather}
+
+STEP 1 — Invent the building:
+- Name it (3-5 words, evocative)
+- Channel the same material honesty, relationship to landscape, and monumental scale as the reference
+- Monumental cultural institution — museum, arts pavilion, research centre. NOT a house, NOT a hotel.
+- The building CANNOT EXIST anywhere else on earth — form born from terrain.
+- PHYSICS: every element visibly supported, no floating.
+- Scale: sprawling, multiple wings, massive presence.
+
+STEP 2 — Write the photorealistic image prompt:
+- Same material palette and texture spirit as the reference
+- Same landscape type and atmosphere as the reference
+- Weather: {weather}
+- BUILDING: bold uncompromising geometry, raw material honesty, severe beauty
+- LANDSCAPE: raw untouched wilderness, earthy muted-rich palette, ancient and documentary
+- STRICT RULES: NO clouds (unless weather specifies snow/mist), NO humans, building sits on or into terrain, landscape 50%+ of frame
+- End with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
+
+OUTPUT FORMAT (exactly):
+NAME: [building name]
+PROMPT: [200-250 word photorealistic image prompt]"""
+                )
+                text = response.text.strip()
+                name_match = re.search(r'NAME:\s*(.+)', text)
+                prompt_match = re.search(r'PROMPT:\s*([\s\S]+)', text)
+                name = name_match.group(1).strip() if name_match else f"Architecture {index+1}"
+                prompt = prompt_match.group(1).strip() if prompt_match else text
+                return name, prompt
+            except Exception as e:
+                print(f"[RefGen] {model} attempt {attempt+1} failed: {e}")
+                time.sleep(5)
+    return f"Architecture {index+1}", "Museum-like architecture, natural landscape, photorealistic 8K"
+
+
+def run_ref_job(job_id, analysis):
+    """参照画像ベースで5枚を生成"""
+    import time
+    jobs[job_id]["status"] = "running"
+    jobs[job_id]["started_at"] = time.time()
+    durations = []
+    for i in range(5):
+        jobs[job_id]["current"] = i + 1
+        t0 = time.time()
+        try:
+            name, prompt = generate_concept_from_ref(analysis, i)
+            print(f"[RefJob {job_id}] {i+1}/5 concept: {name}")
+            filename = generate_image(prompt)
+            caption = generate_caption(name, prompt)
+            if filename:
+                jobs[job_id]["results"].append({
+                    "style": name, "prompt": prompt,
+                    "image": filename, "caption": caption,
+                })
+                print(f"[RefJob {job_id}] {i+1}/5 DONE: {name}")
+        except Exception as e:
+            print(f"[RefJob {job_id}] {i+1} error: {e}")
+            jobs[job_id].setdefault("errors", []).append(str(e))
+        durations.append(time.time() - t0)
+        jobs[job_id]["avg_duration"] = sum(durations) / len(durations)
+    jobs[job_id]["status"] = "done"
+    print(f"[RefJob {job_id}] All done: {len(jobs[job_id]['results'])}/5")
 
 
 def generate_image(prompt):
@@ -477,6 +560,53 @@ def status(job_id):
         "started_at": job.get("started_at", 0),
         "errors": job.get("errors", []),
     })
+
+@app.route("/api/analyze", methods=["POST"])
+def analyze_image_route():
+    """アップロード画像をGemini Visionで分析"""
+    import time
+    if 'image' not in request.files:
+        return jsonify({"error": "no image"}), 400
+    file = request.files['image']
+    img_bytes = file.read()
+    mime_type = file.content_type or "image/jpeg"
+    for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
+        try:
+            response = client.models.generate_content(
+                model=model,
+                contents=[
+                    genai_types.Part.from_bytes(data=img_bytes, mime_type=mime_type),
+                    """Analyze this architectural/landscape image as a design reference. Extract:
+- ARCHITECTURAL STYLE: overall aesthetic, influences, era
+- MATERIALS: facade materials, exact colors, textures (very specific)
+- FORM & GEOMETRY: building shape, silhouette, structural elements
+- SCALE: approximate size, floor count, proportions
+- LANDSCAPE/SETTING: terrain type, vegetation, climate, geography
+- ATMOSPHERE: time of day, weather, lighting quality, mood
+- KEY DETAILS: window style, openings, unique features
+
+Be extremely specific and visual. This will be used to generate new buildings inspired by this image."""
+                ]
+            )
+            return jsonify({"analysis": response.text.strip()})
+        except Exception as e:
+            print(f"[Analyze] {model} failed: {e}")
+            time.sleep(3)
+    return jsonify({"error": "analysis failed"}), 500
+
+
+@app.route("/api/generate-from-ref", methods=["POST"])
+def generate_from_ref():
+    data = request.json
+    analysis = data.get("analysis", "")
+    if not analysis:
+        return jsonify({"error": "no analysis"}), 400
+    job_id = uuid.uuid4().hex
+    jobs[job_id] = {"status": "running", "results": [], "current": 0, "started_at": 0, "avg_duration": 0}
+    t = threading.Thread(target=run_ref_job, args=(job_id, analysis), daemon=True)
+    t.start()
+    return jsonify({"job_id": job_id})
+
 
 @app.route("/api/expand", methods=["POST"])
 def expand():

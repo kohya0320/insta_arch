@@ -261,6 +261,47 @@
     }
     .draft-del-btn:hover { border-color: #f87171; color: #f87171; }
 
+    /* Reference upload */
+    .ref-section { margin-bottom: 32px; }
+    .ref-toggle {
+      display: inline-block; padding: 10px 28px;
+      background: transparent; color: #555;
+      border: 1px solid #2a2a2a; border-radius: 2px;
+      font-size: 10px; letter-spacing: 3px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.3s; margin-bottom: 16px;
+    }
+    .ref-toggle:hover { border-color: #555; color: #aaa; }
+    .ref-body { display: none; }
+    .ref-body.open { display: block; }
+    .ref-drop {
+      border: 1px dashed #2a2a2a; padding: 32px 20px; text-align: center;
+      cursor: pointer; transition: border-color 0.2s; margin-bottom: 16px;
+    }
+    .ref-drop:hover, .ref-drop.dragover { border-color: #c9a84c; }
+    .ref-drop p { font-size: 11px; color: #444; letter-spacing: 2px; }
+    .ref-drop input { display: none; }
+    .ref-preview { display: none; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+    .ref-preview.visible { display: flex; }
+    .ref-preview img { width: 120px; aspect-ratio: auto; object-fit: cover; flex-shrink: 0; }
+    .ref-analysis { flex: 1; font-size: 11px; color: #666; line-height: 1.7; max-height: 120px; overflow-y: auto; }
+    .ref-actions { display: flex; gap: 10px; }
+    .ref-analyze-btn {
+      padding: 11px 24px; background: transparent; color: #888;
+      border: 1px solid #333; font-size: 10px;
+      font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .ref-analyze-btn:hover { border-color: #aaa; color: #ccc; }
+    .ref-analyze-btn:disabled { opacity: 0.4; cursor: default; }
+    .ref-gen-btn {
+      padding: 11px 24px; background: transparent; color: #c9a84c;
+      border: 1px solid #c9a84c; font-size: 10px;
+      font-weight: 600; letter-spacing: 3px; text-transform: uppercase;
+      cursor: pointer; transition: all 0.3s; display: none;
+    }
+    .ref-gen-btn:hover { background: #c9a84c; color: #080808; }
+    .ref-gen-btn:disabled { opacity: 0.4; cursor: default; background: transparent; color: #c9a84c; }
+
     /* Lightbox */
     .lightbox {
       display: none; position: fixed; inset: 0; z-index: 1000;
@@ -307,6 +348,28 @@
   <div class="drafts-section" id="drafts-section">
     <div class="drafts-header">Drafts</div>
     <div class="drafts-list" id="drafts-list"></div>
+  </div>
+
+  <!-- Reference image upload -->
+  <div class="ref-section">
+    <div style="text-align:center">
+      <button class="ref-toggle" onclick="toggleRef()">+ Upload Reference Image</button>
+    </div>
+    <div class="ref-body" id="ref-body">
+      <div class="ref-drop" id="ref-drop" onclick="document.getElementById('ref-input').click()"
+           ondragover="refDragOver(event)" ondragleave="refDragLeave(event)" ondrop="refDrop(event)">
+        <p>Click or drag & drop an image</p>
+        <input type="file" id="ref-input" accept="image/*" onchange="refFileSelected(event)">
+      </div>
+      <div class="ref-preview" id="ref-preview">
+        <img id="ref-thumb" src="" alt="reference">
+        <div class="ref-analysis" id="ref-analysis"></div>
+      </div>
+      <div class="ref-actions">
+        <button class="ref-analyze-btn" id="ref-analyze-btn" onclick="analyzeRef()" style="display:none">Analyze Image</button>
+        <button class="ref-gen-btn" id="ref-gen-btn" onclick="generateFromRef()">Generate 5 Inspired by This</button>
+      </div>
+    </div>
   </div>
 
   <div class="gen-wrap">
@@ -407,6 +470,127 @@
     if (e.key === 'ArrowRight') lightboxNav(1);
     if (e.key === 'Escape') closeLightbox();
   });
+
+  // ── Reference image upload ────────────────────────────────
+  let refFile = null;
+  let refAnalysis = null;
+
+  function toggleRef() {
+    const body = document.getElementById('ref-body');
+    const btn = document.querySelector('.ref-toggle');
+    const isOpen = body.classList.contains('open');
+    body.classList.toggle('open', !isOpen);
+    btn.textContent = isOpen ? '+ Upload Reference Image' : '− Upload Reference Image';
+  }
+
+  function refDragOver(e) { e.preventDefault(); document.getElementById('ref-drop').classList.add('dragover'); }
+  function refDragLeave(e) { document.getElementById('ref-drop').classList.remove('dragover'); }
+  function refDrop(e) {
+    e.preventDefault();
+    document.getElementById('ref-drop').classList.remove('dragover');
+    const file = e.dataTransfer.files[0];
+    if (file && file.type.startsWith('image/')) setRefFile(file);
+  }
+  function refFileSelected(e) {
+    const file = e.target.files[0];
+    if (file) setRefFile(file);
+  }
+
+  function setRefFile(file) {
+    refFile = file;
+    refAnalysis = null;
+    const thumb = document.getElementById('ref-thumb');
+    thumb.src = URL.createObjectURL(file);
+    document.getElementById('ref-preview').classList.add('visible');
+    document.getElementById('ref-analysis').textContent = '';
+    document.getElementById('ref-analyze-btn').style.display = 'inline-block';
+    document.getElementById('ref-gen-btn').style.display = 'none';
+  }
+
+  async function analyzeRef() {
+    if (!refFile) return;
+    const btn = document.getElementById('ref-analyze-btn');
+    const analysisEl = document.getElementById('ref-analysis');
+    btn.disabled = true;
+    btn.textContent = 'Analyzing…';
+    analysisEl.textContent = 'Analyzing image with Gemini Vision…';
+
+    const formData = new FormData();
+    formData.append('image', refFile);
+    try {
+      const res = await fetch('/api/analyze', { method: 'POST', body: formData });
+      const data = await res.json();
+      if (data.analysis) {
+        refAnalysis = data.analysis;
+        analysisEl.textContent = data.analysis;
+        document.getElementById('ref-gen-btn').style.display = 'inline-block';
+        btn.textContent = 'Re-analyze';
+      } else {
+        analysisEl.textContent = 'Analysis failed: ' + (data.error || 'unknown error');
+      }
+    } catch(e) {
+      analysisEl.textContent = 'Error: ' + e.message;
+    }
+    btn.disabled = false;
+  }
+
+  async function generateFromRef() {
+    if (!refAnalysis) return;
+    const btn = document.getElementById('ref-gen-btn');
+    btn.disabled = true;
+    btn.textContent = 'Generating…';
+
+    // 通常生成と同じUIをリセット
+    const genBtn = document.getElementById('gen-btn');
+    const progress = document.getElementById('progress');
+    const grid = document.getElementById('grid');
+    const postArea = document.getElementById('post-area');
+    const viewsSection = document.getElementById('views-section');
+    genBtn.disabled = true;
+    progress.style.display = 'block';
+    grid.innerHTML = '';
+    postArea.style.display = 'none';
+    viewsSection.style.display = 'none';
+    selectedOption = null;
+    shownImages.clear();
+    mainImages = [];
+    jobStartTime = Date.now();
+    if (pollInterval) clearInterval(pollInterval);
+    if (timerInterval) clearInterval(timerInterval);
+
+    const res = await fetch('/api/generate-from-ref', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ analysis: refAnalysis })
+    });
+    const { job_id } = await res.json();
+    let lastData = null;
+
+    timerInterval = setInterval(() => {
+      if (lastData) updateETA(lastData, 5, 'progress-eta');
+    }, 1000);
+
+    pollInterval = setInterval(async () => {
+      const r = await fetch(`/api/status/${job_id}`);
+      const data = await r.json();
+      lastData = data;
+      data.results.forEach(opt => {
+        if (!shownImages.has(opt.image)) { shownImages.add(opt.image); addCard(opt); }
+      });
+      const cur = data.current || Math.max(shownImages.size, 1);
+      document.getElementById('progress-text').textContent = `Generating image ${cur} / 5…`;
+      document.getElementById('progress-bar').style.width = `${data.count * 20}%`;
+      updateETA(data, 5, 'progress-eta');
+      if (data.status === 'done') {
+        clearInterval(pollInterval);
+        clearInterval(timerInterval);
+        progress.style.display = 'none';
+        genBtn.disabled = false;
+        btn.disabled = false;
+        btn.textContent = 'Generate 5 Inspired by This';
+      }
+    }, 3000);
+  }
 
   async function generate() {
     const btn = document.getElementById('gen-btn');
