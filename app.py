@@ -65,6 +65,14 @@ def generate_concept_and_prompt(index):
         "a transparent glass volume so pure and simple it seems to exist only as light and reflection",
         "a minimalist glass and steel volume partially sunk into a still reflecting pool — water mirrors the building and sky perfectly, ancient stone wall as backdrop",
         "a severe monolithic mass inserted into ancient stone ruins — modern precision meets eroded history, old and new locked together",
+        "a long horizontal pavilion floating 1 meter above a mirror-still rectangular reflecting pool on barely visible hairline columns — the entire building doubled in perfect reflection below, sky and structure indistinguishable",
+        "a U-shaped courtyard sunk 8 meters below ground level — three walls of ancient rough-hewn stone, one wall entirely glass, a shallow water pool at the centre open to sky — architecture as excavation, not construction",
+        "a slender vertical slab of polished black stone rising from the exact centre of a still rectangular pool — its reflection completing a perfect vertical symmetry, the pool doubling its height into the earth",
+        "ancient stone colonnades still standing — a razor-thin glass volume inserted precisely between the columns, touching the old stones as lightly as possible — centuries of ruin and one day of precision in the same frame",
+        "a building whose roof is flush with the surrounding water — the structure entirely submerged below a shallow reflecting lake, only the roof plane visible at water level, a single stone staircase descending into the architecture below",
+        "two massive ancient stone walls centuries apart — a single suspended glass bridge connecting them at their crowns, the new structure spanning the void between old ruins like a thought between two memories",
+        "a low curved wave-form frozen mid-crest, its underside hollowed into a vaulted interior — a continuous shallow water trough at the base reflects rippling light onto the curved concrete ceiling above, the room lit entirely by reflected water",
+        "a series of rectangular stone and glass volumes cascading down to a still lake — each volume stepping lower until the final one sits half-submerged, its glass wall below the waterline looking into the lake from inside",
     ]
     materials = [
         "entirely clad in weathered corten steel — deep rust orange-brown surface, oxidized texture",
