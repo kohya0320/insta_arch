@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from google import genai
 from google.genai import types as genai_types
-from PIL import Image
+from PIL import Image, ImageFilter
 import io, os, uuid, requests, random, re, json, threading
 
 app = Flask(__name__)
@@ -255,18 +255,39 @@ def generate_image(prompt):
             base_dir = os.path.dirname(os.path.abspath(__file__))
             filename = f"{uuid.uuid4().hex}.png"
             path = os.path.join(base_dir, "static", "images", filename)
-            # Instagram推奨サイズ 1080×1350 (4:5) にリサイズ＆センタークロップ
             img = Image.open(io.BytesIO(img_bytes))
+            native_w, native_h = img.size
+            print(f"[Image native] {native_w}x{native_h}")
+
             TARGET_W, TARGET_H = 1080, 1350
-            scale = max(TARGET_W / img.width, TARGET_H / img.height)
-            new_w = int(img.width * scale)
-            new_h = int(img.height * scale)
-            img = img.resize((new_w, new_h), Image.LANCZOS)
-            left = (new_w - TARGET_W) // 2
-            top = (new_h - TARGET_H) // 2
+            # ネイティブ解像度が十分大きければ縮小のみ（アップスケールなし）
+            # 4:5にトリミングするための最小スケールを計算
+            scale = max(TARGET_W / native_w, TARGET_H / native_h)
+            if scale > 1.0:
+                # アップスケールが必要な場合: 2倍精度で生成してから縮小
+                # まず2xでアップ → 縮小 → シャープネス（ダウンスケールの方が高画質）
+                up_w = max(int(native_w * scale * 1.5), TARGET_W)
+                up_h = max(int(native_h * scale * 1.5), TARGET_H)
+                img = img.resize((up_w, up_h), Image.LANCZOS)
+                scale2 = max(TARGET_W / up_w, TARGET_H / up_h)
+                new_w = int(up_w * scale2)
+                new_h = int(up_h * scale2)
+                img = img.resize((new_w, new_h), Image.LANCZOS)
+            else:
+                new_w = int(native_w * scale)
+                new_h = int(native_h * scale)
+                img = img.resize((new_w, new_h), Image.LANCZOS)
+
+            # センタークロップ
+            left = (img.width - TARGET_W) // 2
+            top = (img.height - TARGET_H) // 2
             img = img.crop((left, top, left + TARGET_W, top + TARGET_H))
-            img.save(path, "PNG", optimize=False, compress_level=1)
-            print(f"[Image OK] {filename} → {TARGET_W}x{TARGET_H}")
+
+            # アンシャープマスクで精細感を強化
+            img = img.filter(ImageFilter.UnsharpMask(radius=0.8, percent=120, threshold=2))
+
+            img.save(path, "PNG", optimize=False, compress_level=0)
+            print(f"[Image OK] {filename} → {TARGET_W}x{TARGET_H} (native: {native_w}x{native_h}, scale: {scale:.3f})")
             return filename
         except Exception as e:
             print(f"[Image Error] attempt {attempt+1}: {e}")
