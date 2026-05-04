@@ -247,11 +247,16 @@ def generate_image(prompt):
     # 曇り・雨・人物を強制除外（negative_promptが使えないためプロンプトに明示）
     clean = "ZERO clouds, clear sky only, NO overcast, NO rain, NO fog, NO wet surfaces, NO people, NO humans. " + clean
 
+    # Imagen 4 Ultra → 通常モデルの順で試す
+    IMAGE_MODELS = ["imagen-4.0-ultra-001", "imagen-4.0-generate-001"]
+
     for attempt in range(3):
+        model_idx = min(attempt, len(IMAGE_MODELS) - 1)
+        imagen_model = IMAGE_MODELS[model_idx]
         try:
-            print(f"[Image] Imagen 4 attempt {attempt+1}")
+            print(f"[Image] {imagen_model} attempt {attempt+1}")
             response = client.models.generate_images(
-                model="imagen-4.0-generate-001",
+                model=imagen_model,
                 prompt=clean,
                 config=genai_types.GenerateImagesConfig(
                     number_of_images=1,
@@ -265,26 +270,20 @@ def generate_image(prompt):
             path = os.path.join(base_dir, "static", "images", filename)
             img = Image.open(io.BytesIO(img_bytes))
             native_w, native_h = img.size
-            print(f"[Image native] {native_w}x{native_h}")
+            print(f"[Image native] {native_w}x{native_h} from {imagen_model}")
 
-            TARGET_W, TARGET_H = 1080, 1350
-            # ネイティブ解像度が十分大きければ縮小のみ（アップスケールなし）
-            # 4:5にトリミングするための最小スケールを計算
+            # Instagram最大サイズ 1440×1800 (4:5) を目標に
+            TARGET_W, TARGET_H = 1440, 1800
             scale = max(TARGET_W / native_w, TARGET_H / native_h)
             if scale > 1.0:
-                # アップスケールが必要な場合: 2倍精度で生成してから縮小
-                # まず2xでアップ → 縮小 → シャープネス（ダウンスケールの方が高画質）
+                # アップスケールが必要: オーバーサンプリングしてから縮小
                 up_w = max(int(native_w * scale * 1.5), TARGET_W)
                 up_h = max(int(native_h * scale * 1.5), TARGET_H)
                 img = img.resize((up_w, up_h), Image.LANCZOS)
                 scale2 = max(TARGET_W / up_w, TARGET_H / up_h)
-                new_w = int(up_w * scale2)
-                new_h = int(up_h * scale2)
-                img = img.resize((new_w, new_h), Image.LANCZOS)
+                img = img.resize((int(up_w * scale2), int(up_h * scale2)), Image.LANCZOS)
             else:
-                new_w = int(native_w * scale)
-                new_h = int(native_h * scale)
-                img = img.resize((new_w, new_h), Image.LANCZOS)
+                img = img.resize((int(native_w * scale), int(native_h * scale)), Image.LANCZOS)
 
             # センタークロップ
             left = (img.width - TARGET_W) // 2
