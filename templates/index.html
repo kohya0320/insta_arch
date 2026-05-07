@@ -685,7 +685,7 @@
     const res = await fetch('/api/expand', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: selectedOption.prompt })
+      body: JSON.stringify({ prompt: selectedOption.prompt, image: selectedOption.image })
     });
     const { job_id, total } = await res.json();
 

@@ -493,30 +493,49 @@ EXTERIOR_ANGLES = [
 ]
 
 
-def generate_building_spec(original_prompt):
-    """選択した建物の仕様書を1回だけ生成 — 12枚全部で共有する"""
+def generate_building_spec(original_prompt, image_path=None):
+    """選択した建物の仕様書を1回だけ生成 — 12枚全部で共有する
+    image_pathがあればGemini Visionで実際の画像を直接分析（テキスト分析より高精度）"""
     import time
+
+    vision_instruction = """You are analyzing an architectural photograph to extract an ultra-precise building specification.
+This spec will be used to generate 12 different interior and exterior views of THIS EXACT SAME BUILDING — so every detail must be captured with ruthless precision.
+
+Extract and list EVERY visual detail:
+- FACADE MATERIAL: exact material, precise color (e.g. "deep rust orange corten steel, heavily oxidized, coarse texture"), surface finish, aging/weathering patterns
+- WINDOW TYPE: exact proportions (narrow horizontal slits / tall vertical slots / large punched squares / floor-to-ceiling glass walls / no windows), grid pattern, mullion thickness, glass tint
+- STRUCTURAL FORM: precise silhouette — is it a single monolith / L-shape / cantilevered slab / buried mass / curved wall? How does it meet the ground?
+- ROOF: flat / slightly pitched / invisible / green roof / stone?
+- SCALE: approximate number of floors, estimated ceiling heights, total width vs height ratio
+- UNIQUE FEATURES: any cantilevers (which direction, how far), carved voids, arches, water elements, bridges, protruding volumes
+- HOW IT MEETS GROUND: sits directly on rock / partially buried / on a plinth / emerging from hillside
+- LANDSCAPE: terrain (rocky / forested / desert / snowy / coastal), specific vegetation visible, ground material
+- LIGHT & TIME: direction of sunlight, approximate time of day, shadow direction and length
+- COLOR PALETTE: list 4-6 dominant colors with precise descriptions (building + landscape)
+- INTERIOR HINT: based on the exterior, what materials would the interior structural shell be? (same facade material inside, or different?)
+
+Output as bullet points only. Be exhaustively specific — a future AI must be able to recreate this building identically from your description alone."""
+
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(2):
             try:
-                response = client.models.generate_content(
-                    model=model,
-                    contents=f"""Analyze this architectural image prompt and extract a precise building specification.
+                if image_path and os.path.exists(image_path):
+                    with open(image_path, "rb") as f:
+                        img_bytes = f.read()
+                    contents = [
+                        genai_types.Part.from_bytes(data=img_bytes, mime_type="image/png"),
+                        vision_instruction,
+                    ]
+                    print(f"[BuildingSpec] Using Gemini Vision on actual image: {image_path}")
+                else:
+                    contents = f"""Analyze this architectural image prompt and extract a precise building specification.
 
 PROMPT:
 \"\"\"{original_prompt}\"\"\"
 
-Output a concise BUILDING SPEC (bullet points only, no prose) covering:
-- FACADE MATERIAL: exact material name, color, texture detail
-- WINDOW TYPE: size (small slits / punched openings / floor-to-ceiling glass / no windows), pattern, proportion
-- STRUCTURAL FORM: overall silhouette, key geometry
-- SCALE: approximate floor count, ceiling heights, footprint description
-- UNIQUE FEATURES: cantilevers, pilotis, arches, carved voids, bridges, etc.
-- LANDSCAPE/CLIMATE: terrain type, vegetation, weather/light
-- COLOR PALETTE: dominant tones of building and landscape
+{vision_instruction}"""
 
-Be extremely specific. This spec will be used to ensure 12 different views of the SAME building are visually consistent."""
-                )
+                response = client.models.generate_content(model=model, contents=contents)
                 return response.text.strip()
             except Exception as e:
                 print(f"[BuildingSpec] {model} attempt {attempt+1} failed: {e}")
@@ -579,7 +598,7 @@ Output ONLY the prompt. 200-250 words."""
     return f"{angle_name} of the building, photorealistic 8K"
 
 
-def run_expand_job(job_id, original_prompt, total):
+def run_expand_job(job_id, original_prompt, total, image_filename=None):
     """12アングルを順番に生成（インテリア10室はランダム選択）"""
     import time
     jobs[job_id]["status"] = "running"
@@ -593,9 +612,15 @@ def run_expand_job(job_id, original_prompt, total):
     total = len(angles)
     jobs[job_id]["total"] = total
 
-    # 建物仕様書を1回だけ生成して全12枚で共有
+    # 実際の画像パスを解決
+    image_path = None
+    if image_filename:
+        base_dir = os.path.dirname(os.path.abspath(__file__))
+        image_path = os.path.join(base_dir, "static", "images", image_filename)
+
+    # 建物仕様書を1回だけ生成して全12枚で共有（実画像をVisionで分析）
     print(f"[Expand {job_id}] Generating building spec...")
-    building_spec = generate_building_spec(original_prompt)
+    building_spec = generate_building_spec(original_prompt, image_path=image_path)
     print(f"[Expand {job_id}] Building spec ready:\n{building_spec[:200]}")
 
     for i, (angle_name, angle_hint, camera_note) in enumerate(angles):
@@ -700,10 +725,11 @@ def generate_from_ref():
 def expand():
     data = request.json
     original_prompt = data.get("prompt", "")
+    image_filename = data.get("image", None)  # 選択した外観画像のファイル名
     total = 12  # 10 interiors (random) + 2 exteriors (fixed)
     job_id = uuid.uuid4().hex
     jobs[job_id] = {"status": "running", "results": [], "current": 0, "started_at": 0, "avg_duration": 0, "total": total}
-    t = threading.Thread(target=run_expand_job, args=(job_id, original_prompt, total), daemon=True)
+    t = threading.Thread(target=run_expand_job, args=(job_id, original_prompt, total, image_filename), daemon=True)
     t.start()
     return jsonify({"job_id": job_id, "total": total})
 
