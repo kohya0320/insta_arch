@@ -60,7 +60,7 @@ def generate_concept_and_prompt(index):
         "a single monolithic dark mass with deep carved voids — the negative space is the architecture",
         "a cluster of irregular towers of different heights connected by slender glass bridges at various levels",
         "folded planes like a crumpled sheet of metal, angular facets catching light differently on each face",
-        "a long low horizontal bar elevated 8 meters above terrain on a forest of thin pillars",
+        "a long low horizontal monolith half-buried into a hillside — only the facade visible, the rest swallowed by the earth",
         "terraced platforms cascading down a steep hillside like geological strata",
         "a transparent glass volume so pure and simple it seems to exist only as light and reflection",
         "a minimalist glass and steel volume partially sunk into a still reflecting pool — water mirrors the building and sky perfectly, ancient stone wall as backdrop",
