@@ -15,6 +15,17 @@
     .main { max-width: 1100px; margin: 0 auto; padding: 36px 16px 80px; }
 
     .gen-wrap { text-align: center; margin-bottom: 40px; }
+    .hint-wrap { text-align: center; margin-bottom: 16px; }
+    .hint-input {
+      width: 100%; max-width: 560px;
+      background: #0e0e0e; border: 1px solid #2a2a2a;
+      padding: 12px 16px; color: #ccc; font-size: 13px;
+      font-family: inherit; letter-spacing: 0.5px;
+      outline: none; transition: border-color 0.2s;
+    }
+    .hint-input::placeholder { color: #444; }
+    .hint-input:focus { border-color: #c9a84c; }
+
     .generate-btn {
       display: inline-block; padding: 15px 48px;
       background: transparent; color: #c9a84c;
@@ -312,6 +323,10 @@
     </div>
   </div>
 
+  <div class="hint-wrap">
+    <input type="text" id="custom-hint" class="hint-input" maxlength="120"
+      placeholder="こだわりを追加（例: 深紅の鉄骨、ネオンブルーのライン、金色の格子窓）">
+  </div>
   <div class="gen-wrap">
     <button class="generate-btn" id="gen-btn" onclick="generate()">Generate 5 Options</button>
   </div>
@@ -359,7 +374,7 @@
     <div class="views-action-bar" id="views-action-bar">
       <div class="views-sel-info" id="views-sel-info"><span id="sel-count">0</span> selected — tap to select/deselect, first = cover</div>
       <button class="regen-btn" id="regen-btn" onclick="regenerateViews()">Regenerate</button>
-      <button class="save-btn" id="save-btn" onclick="downloadSelected()">Download</button>
+      <button class="save-btn" id="save-btn" onclick="downloadSelected()">Save / Share</button>
     </div>
   </div>
 </div>
@@ -550,7 +565,12 @@
     if (expandPollInterval) clearInterval(expandPollInterval);
     if (expandTimerInterval) clearInterval(expandTimerInterval);
 
-    const res = await fetch('/api/generate', { method: 'POST' });
+    const customHint = document.getElementById('custom-hint').value.trim();
+    const res = await fetch('/api/generate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ custom_hint: customHint })
+    });
     const { job_id } = await res.json();
 
     let lastData = null;
@@ -854,26 +874,47 @@
     updateViewActionBar();
   }
 
-  // ── Download ─────────────────────────────────────────────
+  // ── Download / Share ─────────────────────────────────────
   async function downloadSelected() {
     if (selectedViewImages.length === 0) return;
     const btn = document.getElementById('save-btn');
     btn.disabled = true;
-    btn.textContent = 'Saving…';
-    for (let i = 0; i < selectedViewImages.length; i++) {
+    btn.textContent = 'Loading…';
+
+    // 全画像を並列取得
+    const blobs = await Promise.all(
+      selectedViewImages.map(item => fetch('/static/images/' + item.image).then(r => r.blob()))
+    );
+
+    // iOS Photos 対応: Web Share API でファイル共有
+    if (navigator.share && navigator.canShare) {
+      const files = blobs.map((blob, i) => {
+        const name = `arch_${String(i + 1).padStart(2, '0')}.png`;
+        return new File([blob], name, { type: 'image/png' });
+      });
+      if (navigator.canShare({ files })) {
+        try {
+          await navigator.share({ files });
+          btn.disabled = false;
+          btn.textContent = 'Save / Share';
+          return;
+        } catch (e) {
+          if (e.name === 'AbortError') { btn.disabled = false; btn.textContent = 'Save / Share'; return; }
+        }
+      }
+    }
+
+    // フォールバック: 通常ダウンロード（並列取得済みなので高速）
+    for (let i = 0; i < blobs.length; i++) {
       const item = selectedViewImages[i];
-      const url = '/static/images/' + item.image;
-      const res = await fetch(url);
-      const blob = await res.blob();
       const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
+      a.href = URL.createObjectURL(blobs[i]);
       a.download = `arch_${String(i + 1).padStart(2, '0')}_${item.style.replace(/[^a-z0-9]/gi, '_')}.png`;
       a.click();
       URL.revokeObjectURL(a.href);
-      await new Promise(r => setTimeout(r, 400));
     }
     btn.disabled = false;
-    btn.textContent = 'Download';
+    btn.textContent = 'Save / Share';
   }
 
 </script>

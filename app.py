@@ -30,7 +30,7 @@ WEATHERS = [
 ]
 
 
-def generate_concept_and_prompt(index):
+def generate_concept_and_prompt(index, custom_hint=""):
     """Geminiが建物コンセプトをゼロから発明し、プロンプトまで生成"""
     import time
 
@@ -62,8 +62,6 @@ def generate_concept_and_prompt(index):
         "folded planes like a crumpled sheet of metal, angular facets catching light differently on each face",
         "a long low horizontal monolith half-buried into a hillside — only the facade visible, the rest swallowed by the earth",
         "terraced platforms cascading down a steep hillside like geological strata",
-        "a transparent glass volume so pure and simple it seems to exist only as light and reflection",
-        "a minimalist glass and steel volume partially sunk into a still reflecting pool — water mirrors the building and sky perfectly, ancient stone wall as backdrop",
         "a severe monolithic mass inserted into ancient stone ruins — modern precision meets eroded history, old and new locked together",
         "a long horizontal pavilion floating 1 meter above a mirror-still rectangular reflecting pool on barely visible hairline columns — the entire building doubled in perfect reflection below, sky and structure indistinguishable",
         "a U-shaped courtyard sunk 8 meters below ground level — three walls of ancient rough-hewn stone, one wall entirely glass, a shallow water pool at the centre open to sky — architecture as excavation, not construction",
@@ -84,7 +82,6 @@ def generate_concept_and_prompt(index):
         "entirely in weathered untreated cedar timber — silver-grey from exposure, grain hyper-visible",
         "entirely in polished black granite — deep reflective surface mirroring sky and landscape",
         "entirely in pale white limestone — rough-hewn blocks, carved texture, chalk-white",
-        "glass and exposed black steel — structural grid fully visible, transparent volume",
         "entirely in hand-laid dark slate — horizontal layers of thin stone, slate-grey and charcoal",
         "entirely in rusted patinated copper — deep brown-green surface, verdigris patches"
     ]
@@ -107,6 +104,7 @@ INVENTION BRIEF — follow these seeds EXACTLY, do NOT substitute or default to 
 - Architectural form: {form}
 - Primary material: {material} — THIS IS MANDATORY. The building MUST be made of this material. Do NOT change it to concrete unless the material seed says concrete.
 - Weather: {weather}
+{f"- ADDITIONAL REQUIREMENT (mandatory — make this a defining visual element of the building): {custom_hint}" if custom_hint else ""}
 
 STEP 1 — Invent the building (design reference: @matitectura):
 - Name it (3-5 words, evocative)
@@ -140,6 +138,8 @@ STRICT RULES:
 - ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces — exact weather above only
 - NO humans, NO people — zero human presence
 - PHYSICS: building sits on, into, or emerges from the ground — no floating
+- WINDOWS: building MUST have large, bold windows or openings — floor-to-ceiling glass walls, oversized punched openings, or dramatic full-width glazing preferred; absolutely NO windowless solid bunkers with zero openings
+- FACADE: building MUST NOT be predominantly glass — facade must be primarily solid material (concrete, stone, metal, timber, or earth); large glass inserts and full glass walls on select faces are encouraged, but the overall building must read as solid, not a glass box
 - Landscape fills 50%+ of frame
 - One strong directional light — hard shadows, deep blacks, rich saturated sky
 - Wide establishing shot, 16-24mm lens
@@ -335,10 +335,10 @@ Output only: caption text, one blank line, then the 15 hashtags on one line."""
     return "Built where the world ends.\n\nRaw concrete against ancient stone. The silence here has weight.\n\nWould you stay?\n\n#architecture #modernarchitecture #architecturephotography #brutalism #brutalistarchitecture #architecturelovers #minimal #minimalism #concretedesign #contemporaryarchitecture #archilovers #dezeen #architecturedaily #luxurydesign #aiarchitecture"
 
 
-def process_one(job_id, i):
+def process_one(job_id, i, custom_hint=""):
     """1枚を処理してjobsに追加"""
     try:
-        name, prompt = generate_concept_and_prompt(i)
+        name, prompt = generate_concept_and_prompt(i, custom_hint)
         print(f"[Job {job_id}] {i+1}/5 concept: {name}")
         filename = generate_image(prompt)
         caption = generate_caption(name, prompt)
@@ -357,7 +357,7 @@ def process_one(job_id, i):
         jobs[job_id].setdefault("errors", []).append(str(e))
 
 
-def run_job(job_id):
+def run_job(job_id, custom_hint=""):
     """5枚を順番に生成"""
     import time
     jobs[job_id]["status"] = "running"
@@ -367,7 +367,7 @@ def run_job(job_id):
     for i in range(5):
         jobs[job_id]["current"] = i + 1
         t0 = time.time()
-        process_one(job_id, i)
+        process_one(job_id, i, custom_hint)
         durations.append(time.time() - t0)
         jobs[job_id]["avg_duration"] = sum(durations) / len(durations)
     jobs[job_id]["status"] = "done"
@@ -514,7 +514,11 @@ Extract and list EVERY visual detail:
 - COLOR PALETTE: list 4-6 dominant colors with precise descriptions (building + landscape)
 - INTERIOR HINT: based on the exterior, what materials would the interior structural shell be? (same facade material inside, or different?)
 
-Output as bullet points only. Be exhaustively specific — a future AI must be able to recreate this building identically from your description alone."""
+Output as bullet points only. Be exhaustively specific — a future AI must be able to recreate this building identically from your description alone.
+
+At the very end, add exactly one line in this format:
+FINGERPRINT: [facade material ≤8 words] | [structural form ≤8 words] | [window type ≤8 words] | [X floors, ~Ym wide]
+Example: FINGERPRINT: heavily oxidized corten steel, rust orange | cantilevered horizontal slab over cliff | narrow horizontal slits, no mullions | 3 floors, ~60m wide"""
 
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(2):
@@ -543,7 +547,7 @@ PROMPT:
     return ""
 
 
-def generate_expand_prompt(building_spec, original_prompt, angle_name, angle_hint, camera_note, is_interior=True):
+def generate_expand_prompt(building_spec, fingerprint, original_prompt, angle_name, angle_hint, camera_note, is_interior=True):
     """アングルごとの詳細プロンプトを生成"""
     import time
 
@@ -591,7 +595,11 @@ Output ONLY the prompt. 200-250 words."""
         for attempt in range(2):
             try:
                 response = client.models.generate_content(model=model, contents=contents)
-                return response.text.strip()
+                result = response.text.strip()
+                # FINGERPRINT を先頭に強制埋め込み（Geminiの解釈ズレを防ぐ）
+                if fingerprint:
+                    result = f"EXACT SAME BUILDING — {fingerprint}. " + result
+                return result
             except Exception as e:
                 print(f"[ExpandPrompt] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
@@ -623,12 +631,20 @@ def run_expand_job(job_id, original_prompt, total, image_filename=None):
     building_spec = generate_building_spec(original_prompt, image_path=image_path)
     print(f"[Expand {job_id}] Building spec ready:\n{building_spec[:200]}")
 
+    # FINGERPRINT を抽出（仕様書末尾の1行）
+    fingerprint = ""
+    for line in building_spec.split('\n'):
+        if line.strip().startswith('FINGERPRINT:'):
+            fingerprint = line.strip().replace('FINGERPRINT:', '').strip()
+            break
+    print(f"[Expand {job_id}] Fingerprint: {fingerprint}")
+
     for i, (angle_name, angle_hint, camera_note) in enumerate(angles):
         jobs[job_id]["current"] = i + 1
         t0 = time.time()
         try:
             is_interior = i < (total - 2)  # 最後の2枚（Wide Exterior, Aerial）は外観
-            prompt = generate_expand_prompt(building_spec, original_prompt, angle_name, angle_hint, camera_note, is_interior)
+            prompt = generate_expand_prompt(building_spec, fingerprint, original_prompt, angle_name, angle_hint, camera_note, is_interior)
             print(f"[Expand {job_id}] {i+1}/{total} prompt ready")
             filename = generate_image(prompt)
             if filename:
@@ -653,9 +669,11 @@ def index():
 
 @app.route("/api/generate", methods=["POST"])
 def generate():
+    data = request.json or {}
+    custom_hint = data.get("custom_hint", "")
     job_id = uuid.uuid4().hex
     jobs[job_id] = {"status": "running", "results": [], "current": 0, "started_at": 0, "avg_duration": 0}
-    t = threading.Thread(target=run_job, args=(job_id,), daemon=True)
+    t = threading.Thread(target=run_job, args=(job_id, custom_hint), daemon=True)
     t.start()
     return jsonify({"job_id": job_id})
 
