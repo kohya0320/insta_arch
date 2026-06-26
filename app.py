@@ -19,151 +19,228 @@ os.makedirs(os.path.join(_base_dir, "static", "images"), exist_ok=True)
 # ジョブ管理
 jobs = {}
 
-WEATHERS = [
-    "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, absolutely zero clouds",
-    "heavy snowfall, thick snowflakes mid-air, deep saturated navy blue sky, dry snow on surfaces",
-    "blazing golden sunset, sky deep saturated orange-magenta gradient, zero clouds, vivid warm light",
-    "pre-dawn blue hour, deep saturated indigo sky, thin line of warm light on horizon, amber interior glow",
-    "golden sunrise, deep saturated cerulean blue sky, long hard shadows, vivid warm light from one side",
-    "midday sun, deep saturated blue sky, stark hard shadows, zero clouds, intense light",
-    "misty dusk, low mist pooling in valleys, silhouetted building forms against deep amber-violet sky, no direct rain, dry mist only",
+# ━━━ 動詞ベースシナリオ ━━━
+# [環境] + [建築のアクション（動詞）] + [素材・色] の構造。
+# 名詞のリストではなく、建築が環境に行う「アクション（動詞）」を核にすることで
+# パッと目を引く「環境と建築の強烈なコントラスト」を直接生成する。
+VERB_SCENARIOS = [
+    {
+        "name_hint": "Pierce — Arctic",
+        "verb": "PIERCE",
+        "verb_intent": "A single element drives straight through the landscape like a needle — vertical violence in a horizontal world",
+        "environment": "infinite flat white Arctic snowfield, horizon-to-horizon, blinding white, not a single tree or rock",
+        "action": "a single jet-black concrete cylinder — 8 meters diameter, 80 meters tall — erupts from the snowfield at a 5-degree angle, its base buried in snow, its tip vanishing into deep blue sky, a narrow vertical slot the full height of the cylinder on its south face is the only opening",
+        "material_color": "near-matte black pigmented concrete, faint formwork rings on the cylinder surface, one oxide streak running the full height",
+        "light": "blazing midday sun, deep cobalt blue sky, the cylinder casts a razor-sharp elliptical shadow on the blinding white snow",
+    },
+    {
+        "name_hint": "Slice — Scottish Hillside",
+        "verb": "SLICE",
+        "verb_intent": "Architecture cuts through terrain like a surgical blade — the gap between is the space",
+        "environment": "vivid emerald-green Scottish highland hillside, rolling moorland of ancient heather and peat, a grey loch in the far distance",
+        "action": "a long linear building slices diagonally into the hillside at a 15-degree angle — 120 meters long, 6 meters wide, the incision goes from grade on one end to 10 meters below grade at the other, the building IS the cut, raw earth exposed on three sides as walls",
+        "material_color": "a full-height COR-TEN steel face — deep rust-orange oxidized surface — flush with the grass above on the hillside edge, the interior reveals raw compressed earth walls",
+        "light": "golden hour raking from the side, the COR-TEN glows amber, the deep slot of the incision is in dramatic shadow against the vivid green hill",
+    },
+    {
+        "name_hint": "Float — Atlantic Rocks",
+        "verb": "FLOAT",
+        "verb_intent": "Massive weight appears to defy gravity, hovering with impossible lightness above violent terrain",
+        "environment": "rugged Atlantic coastline, jagged black basalt sea stacks, crashing white surf, ancient geological chaos",
+        "action": "a massive horizontal concrete platform — 80 meters long, 30 meters wide, 3 meters thick — floats 12 meters above the rock shelf on four impossibly slender steel columns, the underside is polished stainless mirror reflecting the rocks and surf below, a single large void cut through the slab frames the sky",
+        "material_color": "warm white board-formed concrete above, mirror-polished stainless steel underside catching wave reflections, four hairline steel columns barely visible",
+        "light": "pre-dawn blue hour, deep indigo sky, thin amber line on the horizon, the mirror underside catches and fragments the first amber light, the surf far below glows white",
+    },
+    {
+        "name_hint": "Mirror — Cedar Forest",
+        "verb": "MIRROR",
+        "verb_intent": "Architecture reflects the landscape so completely it vanishes — presence revealed only by its razor edges",
+        "environment": "dense Japanese cedar forest, 40-meter-tall straight dark trunks, mossy forest floor, golden morning shafts of light",
+        "action": "a large rectangular volume — 40 meters long, 20 meters wide, 8 meters tall — clad entirely in polished mirror panels, reflecting the cedar forest so perfectly the building almost disappears, only the razor-sharp corners and a single large void punched through the building reveal its mass, a shallow reflecting pool at the base doubles the illusion",
+        "material_color": "perfect mirror-polished stainless steel, not a single seam visible — the building is made of forest, not steel",
+        "light": "morning side light, golden shafts between the dark cedar trunks, the mirror catches fragments of sky and vertical trunks, deep forest shadow behind",
+    },
+    {
+        "name_hint": "Emerge — Red Canyon",
+        "verb": "EMERGE",
+        "verb_intent": "Architecture erupts from the earth as if always buried — discovered, not built",
+        "environment": "deep red sandstone canyon, USA Southwest, sheer 60-meter walls of layered terracotta-red ancient rock, canyon floor of red dust and boulders",
+        "action": "a massive chalk-white concrete mass emerges from the canyon floor — two-thirds buried in the red earth, only the upper third exposed, 50 meters long, flat top flush with the canyon rim, the lower portion extends into the rock as if the building grew here millions of years ago, a single large rectangular void frames the deep blue sky above",
+        "material_color": "brilliant chalk-white pigmented concrete — blinding against the terracotta canyon walls, the void is the darkest shadow in the frame, the base stained red from the canyon earth",
+        "light": "midday sun directly overhead, deep blue sky visible through the rectangular void, harsh white geometry against terracotta ancient geology, hard shadows in the void",
+    },
+    {
+        "name_hint": "Anchor — Norwegian Fjord",
+        "verb": "ANCHOR",
+        "verb_intent": "Architecture pins itself to impossible terrain with absolute certainty — claiming the edge of the world",
+        "environment": "sheer Norwegian fjord cliff, 400-meter vertical drop to dark black-blue fjord water, snow-capped peaks across the fjord",
+        "action": "a U-shaped copper pavilion anchored at the absolute cliff edge — one arm cantilevering 20 meters over the void, the other arm biting deep into the cliff rock, three massive steel tension cables running from the cantilever tip back into the cliff face, the glass floor beneath the cantilever looks straight down 400 meters",
+        "material_color": "deep brown-green verdigris patinated copper — ancient-looking, impossibly warm against the cold fjord, raw galvanized steel cables, glass floor reflecting the dark water below",
+        "light": "golden sunrise, long warm raking light on the copper facade, deep cerulean blue sky, the shadow of the cantilever falls vertically down the cliff face 400 meters to the fjord",
+    },
+    {
+        "name_hint": "Crush — Sahara Dune",
+        "verb": "CRUSH",
+        "verb_intent": "Colossal mass presses into the earth — the landscape buckles and rises under impossible weight",
+        "environment": "vast Sahara sand dunes, warm golden-ochre sand undulating to every horizon, ancient and absolute",
+        "action": "a colossal near-black concrete block — 60 meters square, 15 meters tall — presses into the sand so heavily that dunes rise on all four sides as if the weight is displacing the earth, the building appears mid-sink, only the upper 8 meters visible, sand piled against all four faces, narrow horizontal windows the full length of each face glow amber from within",
+        "material_color": "near-black pigmented concrete, board-formed horizontal planks, the base stained dark ochre where sand meets concrete, interior windows glowing warm amber — the only warmth in a dark mass",
+        "light": "blazing golden sunset, sky gradient orange-magenta to deep blue zenith, the black mass absorbs all light, only the narrow windows glow, the sand faces are saturated gold",
+    },
+    {
+        "name_hint": "Bridge — Alpine Gorge",
+        "verb": "BRIDGE",
+        "verb_intent": "Architecture claims empty air as its territory — spanning the void, the void becoming the view",
+        "environment": "dramatic Swiss alpine gorge, sheer granite walls 200 meters apart, 300-meter drop to a white glacier river below, snow-capped peaks above",
+        "action": "a single building bridges the gorge — 200 meters span, 40 meters wide, 8 meters tall — resting only on the two cliff edges, the building IS the bridge, floor-to-ceiling glass on both gorge-facing sides looking straight down 300 meters to the glacier river, the roof is a flat garden of alpine grasses",
+        "material_color": "warm golden travertine stone cladding, structural glass sides, raw exposed concrete underside showing formwork lines, the shadow of the bridge falls in a perfect rectangle on the glacier river far below",
+        "light": "midday sun, deep cerulean blue sky, hard mountain light, the golden stone glows against blue sky, the gorge below is in deep shadow with the glacier river as a thin white line",
+    },
+    {
+        "name_hint": "Devour — Icelandic Lava",
+        "verb": "DEVOUR",
+        "verb_intent": "The landscape consumes the architecture — geology reclaiming what was built, frozen mid-engulf",
+        "environment": "ancient Icelandic black basalt lava field, rough jagged cooled lava to every horizon, steam vents in the far distance",
+        "action": "a long golden travertine building is being consumed by black lava on three sides — the lava has flowed up to and partially over the building, frozen in time, the warm stone facade half-buried, only the north face fully exposed, the rest disappearing into the black volcanic tide, a still reflecting pool running along the exposed facade",
+        "material_color": "warm golden travertine — book-matched stone slabs with fossil patterns — surrounded and half-buried by rough black basalt, geological time vs architectural time",
+        "light": "golden hour, deep saturated orange-magenta sky, zero clouds, the golden stone exactly matches the orange sky, the black lava is in deep shadow, steam vents glow in the distance",
+    },
+    {
+        "name_hint": "Erupt — Mojave Flat",
+        "verb": "ERUPT",
+        "verb_intent": "Architecture explodes upward from perfect flatness with frozen violent energy",
+        "environment": "flat Mojave desert, cracked grey-beige alkali flat, Joshua trees in the far distance, vast open sky",
+        "action": "five concrete shards — each 25-45 meters tall, 3-4 meters wide — erupt from the flat desert floor at different angles like a slow explosion frozen in time, each shard tilted 10-30 degrees from vertical, their bases clustered tight, their tips splaying into the sky, narrow slot openings between the shards are the only entries",
+        "material_color": "warm ochre-aggregate board-formed concrete, each shard a slightly different formwork texture, matte and desert-stained at the base, sharp and pale at the tip",
+        "light": "blazing midday sun, deep saturated blue sky, each shard casts a dramatic angular shadow on the flat white desert floor — the shadows are as explosive as the shards themselves",
+    },
+    {
+        "name_hint": "Sink — Finnish Lake",
+        "verb": "SINK",
+        "verb_intent": "Architecture submits to water — its presence defined by what has disappeared below the surface",
+        "environment": "dark mirror-still Finnish lake, silver birch forest on the far shore, pale grey-white winter light reflected in the black water",
+        "action": "a large square concrete platform appears to slowly sink into the lake — three-quarters submerged, only the top surface and a band of windows above the waterline visible, the lake water perfectly level with the platform edges, a narrow glass causeway connecting it to shore, the submerged portion ghostly visible in the dark still water",
+        "material_color": "dark slate-grey concrete, a permanent dark waterline stain on the concrete faces, the windows glowing warm amber from within — the only warmth in the cold grey scene",
+        "light": "dusk, pale blue-grey sky reflected perfectly in the still black water, the amber windows are the only warm light source, silver birch trunks reflected as vertical white lines in the dark water",
+    },
+    {
+        "name_hint": "Crown — Volcanic Summit",
+        "verb": "CROWN",
+        "verb_intent": "Architecture perches at the absolute summit — the highest point claimed with impossible geometric precision",
+        "environment": "volcanic peak above the clouds, Azores, the summit emerges from a sea of white cloud, deep cobalt blue sky above, pink cloud sea below at sunrise",
+        "action": "a circular concrete ring — 30-meter diameter, 6 meters tall, the building IS the ring, open to the sky at its centre — crowns the absolute tip of the volcanic summit, the raw volcanic rock of the summit pierces up through the open centre of the ring, the ring hovers above the cloud sea",
+        "material_color": "warm white limestone and polished concrete exterior, interior ring face of dark oxidized bronze, volcanic rock visible through the open centre",
+        "light": "golden sunrise, the ring lit from one side only, deep shadow on the other half, deep cerulean blue above, pink cloud sea glowing below — a crown of concrete in the sky",
+    },
+    {
+        "name_hint": "Lean — English Chalk Cliffs",
+        "verb": "LEAN",
+        "verb_intent": "Architecture tilts against gravity with visible tension — the angle reads as intention and force",
+        "environment": "white chalk sea cliffs, English Channel, the cliff edge crumbling into deep grey-green ocean below",
+        "action": "a large rectangular building leans deliberately 15 degrees toward the ocean — the land-side face a sheer wall of dark oxidized zinc, the ocean-facing wall full-height glass tilted over the void, the entire mass balanced on a single thick white concrete wall at grade — it leans because it must",
+        "material_color": "dark oxidized zinc on three faces — near-black charcoal — full floor-to-ceiling glass on the tilted ocean face, a single thick white concrete base wall",
+        "light": "pre-storm dramatic sky, one shaft of golden light breaking through to illuminate the white chalk cliff face, the zinc building reads as near-black silhouette against the pale chalk",
+    },
+    {
+        "name_hint": "Wrap — Giant Redwood",
+        "verb": "WRAP",
+        "verb_intent": "Architecture encircles a natural organism — the living thing becoming the building's core and reason for being",
+        "environment": "California coastal redwood forest, 90-meter-tall ancient sequoia trunks, fern-covered forest floor, dusty shafts of afternoon light",
+        "action": "a circular ramp building wraps around a single giant redwood — the tree penetrates through the building's centre from floor to open roof, 5 stories of spiraling concrete ramp embracing the 8-meter-diameter ancient trunk, the tree's canopy emerges far above the building's open top",
+        "material_color": "raw board-formed concrete ramps cast against cedar timber leaving wood grain impressions, the interior dark where it embraces the tree, the exterior pale where it faces the forest, lichen on the lower ramp faces",
+        "light": "shafts of afternoon light filtering through the redwood canopy high above, the concrete spiral catches and loses light as it turns, the tree trunk in deep shadow at the core",
+    },
+    {
+        "name_hint": "Split — Mojave Boulders",
+        "verb": "SPLIT",
+        "verb_intent": "Architecture inserts itself into geological joints — the building IS the gap between ancient stones",
+        "environment": "Mojave desert, a cluster of massive ancient granite boulders 5-15 meters in diameter, warm ochre and grey surfaces polished smooth by millennia",
+        "action": "a long low building runs directly through the boulder cluster — the boulders ARE the walls, the architecture is the gap between them, floor-to-ceiling glass infills every natural joint between the granite masses, the boulders become the walls, the glass becomes the facade, the roofline is the natural top of the boulder cluster",
+        "material_color": "warm grey-ochre granite boulders as walls, minimal dark steel framing holding structural glass joints, the glass joints glow with warm amber interior light",
+        "light": "low desert afternoon sun raking across the boulder surfaces, each glass joint bright against the deep shadow of the granite, the boulders glowing warm amber against a deep cobalt sky",
+    },
+]
+
+# 参照画像ベース生成で使う光条件
+_LIGHT_CONDITIONS = [
+    "blazing midday sun, deep cobalt blue sky, razor-sharp shadows",
+    "golden hour, warm amber raking light, long hard shadows",
+    "pre-dawn blue hour, deep indigo sky, thin amber line on the horizon",
+    "golden sunrise, deep saturated cerulean blue sky, first light",
+    "blazing golden sunset, sky deep saturated orange-magenta gradient",
+    "midday sun, deep saturated blue sky, stark hard shadows",
 ]
 
 
 def generate_concept_and_prompt(index, custom_hint=""):
-    """Geminiが建物コンセプトをゼロから発明し、プロンプトまで生成"""
+    """建築家×写真家のスタイルコンボからダイレクトにプロンプトを生成"""
     import time
 
-    climates = [
-        "Arctic tundra", "tropical rainforest", "Sahara desert", "Norwegian fjord",
-        "Japanese cedar forest", "Scottish highland", "Patagonian steppe", "Icelandic lava field",
-        "Maldivian atoll", "Swiss alpine", "Amazon river delta", "Mongolian steppe",
-        "New Zealand volcanic coast", "Chilean Atacama", "Canadian Rockies",
-        "Indonesian jungle", "Moroccan atlas mountains", "Australian outback",
-        "Finnish lake district", "Tibetan plateau",
-        "ancient Mediterranean cliffside with Roman-era stone ruins below",
-        "abandoned stone monastery valley in Scottish highland, mossy ruins",
-        "Moroccan desert plateau, crumbling ancient kasbah walls nearby",
-        "Japanese cedar forest with ancient stone shrine remnants half-buried",
-    ]
-    forms = [
-        "a single razor-thin horizontal slab cantilevered over a cliff edge, supported by one diagonal steel pillar",
-        "a perfect black sphere half-buried in the earth, only the upper hemisphere visible",
-        "a crescent-shaped curve that follows the contour of a hillside, one continuous flowing wall",
-        "a ring — a circular building with a courtyard void at its centre open to the sky",
-        "a bridge spanning two rock faces — the entire building IS the bridge, habitable interior within the span",
-        "a series of stacked shifting discs that rotate slightly at each level like a twisted stack of coins",
-        "a buried structure — only a cluster of triangular skylights protrude above ground level",
-        "a mirrored box that reflects the landscape so perfectly the building almost disappears",
-        "two massive parallel walls 40 meters apart, connected only by a glass ceiling — a canyon of architecture",
-        "a helix — a continuous ramp spiralling upward around a central void open to the sky",
-        "a single monolithic dark mass with deep carved voids — the negative space is the architecture",
-        "a cluster of irregular towers of different heights connected by slender glass bridges at various levels",
-        "folded planes like a crumpled sheet of metal, angular facets catching light differently on each face",
-        "a long low horizontal monolith half-buried into a hillside — only the facade visible, the rest swallowed by the earth",
-        "terraced platforms cascading down a steep hillside like geological strata",
-        "a severe monolithic mass inserted into ancient stone ruins — modern precision meets eroded history, old and new locked together",
-        "a long horizontal pavilion floating 1 meter above a mirror-still rectangular reflecting pool on barely visible hairline columns — the entire building doubled in perfect reflection below, sky and structure indistinguishable",
-        "a U-shaped courtyard sunk 8 meters below ground level — three walls of ancient rough-hewn stone, one wall entirely glass, a shallow water pool at the centre open to sky — architecture as excavation, not construction",
-        "a slender vertical slab of polished black stone rising from the exact centre of a still rectangular pool — its reflection completing a perfect vertical symmetry, the pool doubling its height into the earth",
-        "ancient stone colonnades still standing — a razor-thin glass volume inserted precisely between the columns, touching the old stones as lightly as possible — centuries of ruin and one day of precision in the same frame",
-        "a building whose roof is flush with the surrounding water — the structure entirely submerged below a shallow reflecting lake, only the roof plane visible at water level, a single stone staircase descending into the architecture below",
-        "two massive ancient stone walls centuries apart — a single suspended glass bridge connecting them at their crowns, the new structure spanning the void between old ruins like a thought between two memories",
-        "a low curved wave-form frozen mid-crest, its underside hollowed into a vaulted interior — a continuous shallow water trough at the base reflects rippling light onto the curved concrete ceiling above, the room lit entirely by reflected water",
-        "a series of rectangular stone and glass volumes cascading down to a still lake — each volume stepping lower until the final one sits half-submerged, its glass wall below the waterline looking into the lake from inside",
-    ]
-    materials = [
-        "entirely clad in weathered corten steel — deep rust orange-brown surface, oxidized texture",
-        "entirely in raw board-formed concrete — every formwork plank line visible, grey and mineral",
-        "entirely in black basalt stone — dark volcanic rock, matte and ancient",
-        "entirely in white hand-packed rammed earth — layered horizontal strata, warm ivory",
-        "entirely in dark oxidized zinc — matte charcoal grey, slightly iridescent in raking light",
-        "entirely in warm golden travertine — book-matched stone slabs, fossil-rich surface",
-        "entirely in weathered untreated cedar timber — silver-grey from exposure, grain hyper-visible",
-        "entirely in polished black granite — deep reflective surface mirroring sky and landscape",
-        "entirely in pale white limestone — rough-hewn blocks, carved texture, chalk-white",
-        "entirely in hand-laid dark slate — horizontal layers of thin stone, slate-grey and charcoal",
-        "entirely in rusted patinated copper — deep brown-green surface, verdigris patches"
-    ]
-    weathers = WEATHERS
+    combo = random.choice(STYLE_COMBOS)
 
-    climate = random.choice(climates)
-    form = random.choice(forms)
-    material = random.choice(materials)
-    weather = random.choice(weathers)
+    extra = f"\n- ADDITIONAL VISUAL REQUIREMENT (mandatory): {custom_hint}" if custom_hint else ""
+
+    base = "A grand monumental residential museum architecture, integrated into an epic raw nature, captured with high-contrast architectural photography. Wide shot, 16-24mm lens."
 
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(3):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""You are simultaneously a radical architect and a world-class architectural photographer. Your job: INVENT a completely original building and write a photorealistic image generation prompt for it.
+                    contents=f"""You are a world-class architectural image director. Your task: write a photorealistic image generation prompt that fuses two master styles into one striking image.
 
-INVENTION BRIEF — follow these seeds EXACTLY, do NOT substitute or default to grey concrete:
-- Climate/Location: {climate}
-- Architectural form: {form}
-- Primary material: {material} — THIS IS MANDATORY. The building MUST be made of this material. Do NOT change it to concrete unless the material seed says concrete.
-- Weather: {weather}
-{f"- ADDITIONAL REQUIREMENT (mandatory — make this a defining visual element of the building): {custom_hint}" if custom_hint else ""}
+BASE CONCEPT: {base}
 
-STEP 1 — Invent the building (design reference: @matitectura):
-- Name it (3-5 words, evocative)
-- The building's DESIGN must channel @matitectura: bold uncompromising geometry, severe beauty, monumental scale, raw honest use of material, institutional gravitas — the kind of building that appears in Wallpaper* or wins the Pritzker Prize
-- Think Tadao Ando, Peter Zumthor, Herzog & de Meuron — brutalist or minimalist, never decorative, never domestic
-- OPTIONAL but encouraged: a still reflecting pool or shallow water in the foreground; OR ancient stone ruins / eroded walls adjacent to the building — modern precision in dialogue with ancient decay
-- Monumental cultural institution — museum, arts pavilion, research centre. NOT a house, NOT a hotel.
-- The building CANNOT EXIST anywhere else on earth — the form is born from the terrain.
-- PHYSICS: every element visibly supported, cantilevers have structural logic, NO floating.
-- Scale: sprawling, multiple wings, 15+ people, massive presence.
-- The material seed IS the facade — use it with the same honesty and rawness as @matitectura uses concrete.
+STYLE FUSION — execute both DNAs simultaneously:
+- Architect DNA: {combo['architects']} — {combo['architect_style']}
+- Photography DNA: {combo['photographer']} — {combo['photo_style']}
+- Core mood: {combo['mood']}{extra}
 
-STEP 2 — Write the photorealistic image prompt:
-Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature. Neither dominates.
+STEP 1 — Name the building (3-5 evocative words that capture the style fusion).
 
-BUILDING AESTHETIC — @matitectura:
-- Monumental, severe, institutional — the building has the gravitas of MoMA or a Tadao Ando museum
-- Bold uncompromising geometry — the form is radical and site-specific
-- The material seed above IS the facade — describe its exact texture, grain, colour, aging in photographic detail
-- One small imperfection: lichen patch, oxide streak, a hairline crack, a weathering stain
-- The building looks like it has ALWAYS been here — inseparable from the terrain
+STEP 2 — Write the image prompt (200-250 words):
 
-LANDSCAPE AESTHETIC — @gorpcore.jpeg:
-- Raw, untouched wilderness at a scale that makes the building feel small
-- Earthy, muted-but-rich palette: weathered grey rock, dark moss, lichen-covered stone, deep forest green, raw ochre soil
-- Terrain feels ANCIENT and documentary — authentic worn textures, organic imperfections, NOT a postcard
-- Depth layers: sharp foreground rocks or vegetation → building in mid-ground → vast horizon (mountain range / ocean / forest canopy)
-- The landscape is indifferent to the building — it was here first
+ARCHITECTURE:
+- Embody the architect's signature vocabulary: their specific forms, materials, proportions, and structural logic
+- Monumental scale: museum, cultural institution, or arts pavilion — never a simple house
+- The building has ALWAYS existed here — born from this specific landscape
+- Large openings or glass walls — not a windowless bunker
+- One small imperfection: lichen patch, oxide streak, weathering stain, or hairline crack
 
-STRICT RULES:
-- ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces — exact weather above only
-- NO humans, NO people — zero human presence
-- PHYSICS: building sits on, into, or emerges from the ground — no floating
-- WINDOWS: building MUST have large, bold windows or openings — floor-to-ceiling glass walls, oversized punched openings, or dramatic full-width glazing preferred; absolutely NO windowless solid bunkers with zero openings
-- FACADE: building MUST NOT be predominantly glass — facade must be primarily solid material (concrete, stone, metal, timber, or earth); large glass inserts and full glass walls on select faces are encouraged, but the overall building must read as solid, not a glass box
-- Landscape fills 50%+ of frame
-- One strong directional light — hard shadows, deep blacks, rich saturated sky
+PHOTOGRAPHY:
+- Apply the photographer's exact visual style: their specific lighting quality, composition logic, and tonal treatment
 - Wide establishing shot, 16-24mm lens
+- Strong directional light creating hard shadows and deep blacks
+- NO clouds, NO overcast, NO rain — clear dramatic sky only
+- NO humans, NO people, NO figures — zero human presence
+
+LANDSCAPE:
+- Choose a raw untouched wilderness that amplifies the architectural contrast — earthy, ancient, documentary
+- Strong tonal or color contrast between building and landscape
+- Landscape fills 60%+ of frame — foreground detail → building mid-ground → vast horizon
+
+End the prompt with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
 
 OUTPUT FORMAT (exactly):
 NAME: [building name]
-PROMPT: [200-250 word photorealistic image prompt ending with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"]"""
+PROMPT: [200-250 word photorealistic image prompt]"""
                 )
                 text = response.text.strip()
                 name_match = re.search(r'NAME:\s*(.+)', text)
                 prompt_match = re.search(r'PROMPT:\s*([\s\S]+)', text)
-                name = name_match.group(1).strip() if name_match else f"Architecture {index+1}"
+                name = name_match.group(1).strip() if name_match else combo["name_hint"]
                 prompt = prompt_match.group(1).strip() if prompt_match else text
                 return name, prompt
             except Exception as e:
                 print(f"[Gemini] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
-    return f"Architecture {index+1}", "Museum-like architecture, natural landscape, photorealistic 8K"
+    return combo["name_hint"], base + f" in the style of {combo['architects']} and {combo['photographer']}, photorealistic 8K"
 
 
 def generate_concept_from_ref(analysis, index):
     """参照画像の分析結果から新しい建物コンセプトを生成"""
     import time
-    weather = random.choice(WEATHERS)
+    weather = random.choice(_LIGHT_CONDITIONS)
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(3):
             try:
@@ -850,4 +927,5 @@ def post():
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(os.path.join(base_dir, "static", "images"), exist_ok=True)
-    app.run(debug=False, port=5002, threaded=True)
+    port = int(os.environ.get("PORT", 5004))
+    app.run(debug=False, port=port, threaded=True)
