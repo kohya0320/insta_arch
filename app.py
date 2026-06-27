@@ -150,6 +150,12 @@ ARCHITECTURE:
 - Large openings or glass walls — not a windowless bunker
 - One small imperfection: lichen patch, oxide streak, weathering stain, or hairline crack
 
+PHYSICS — NON-NEGOTIABLE:
+- Every structural element must be visibly and credibly supported — no floating, no hovering
+- Thin stilts under massive volumes are FORBIDDEN — if a mass cantilevers, it must have obvious structural logic
+- The building sits ON, INTO, or EMERGES FROM the ground — it does not float above it
+- Cantilevers max 1/3 of total span, always with a visible counterweight or anchor mass
+
 PHOTOGRAPHY:
 - Apply the photographer's exact visual style: their specific lighting quality, composition logic, and tonal treatment
 - Wide establishing shot, 16-24mm lens
@@ -265,7 +271,7 @@ def generate_image(prompt):
     import time
     clean = re.sub(r'--ar \S+', '', prompt).strip()
     # 曇り・雨・人物を強制除外（negative_promptが使えないためプロンプトに明示）
-    clean = "ZERO clouds, clear sky only, NO overcast, NO rain, NO fog, NO wet surfaces, NO people, NO humans. " + clean
+    clean = "ZERO clouds, clear sky only, NO overcast, NO rain, NO fog, NO wet surfaces, NO people, NO humans. STRICT PHYSICS: building must sit on or into the ground, NO floating volumes, NO thin stilts supporting massive masses, every element visibly supported. " + clean
 
     # Imagen 4 Ultra → 通常モデルの順で試す
     IMAGE_MODELS = ["imagen-4.0-ultra-001", "imagen-4.0-generate-001"]
