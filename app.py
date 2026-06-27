@@ -19,6 +19,93 @@ os.makedirs(os.path.join(_base_dir, "static", "images"), exist_ok=True)
 # ジョブ管理
 jobs = {}
 
+# ━━━ スタイルコンボ ━━━
+# 「建築家×写真家」のDNAをハイブリッドさせる方式。
+# パラメータを細かく指定するのをやめ、AIが自律的に解釈できる「巨匠たちのスタイル」を渡す。
+STYLE_COMBOS = [
+    {
+        "name_hint": "Ando × Barragán",
+        "architects": "Tadao Ando",
+        "photographer": "Luis Barragán",
+        "architect_style": "brutalist board-formed concrete masses, raw grey surface, deep shadow recesses, monastic silence, precision geometric cuts, reflective water features",
+        "photo_style": "vivid saturated color plane walls — hot pink, sulphur yellow, or magenta — blazing Mexican sun, emotional chromatic contrast between concrete and color",
+        "mood": "silence meets color explosion — the most austere concrete architecture colliding with the most emotionally charged color",
+    },
+    {
+        "name_hint": "Bofill × Shulman",
+        "architects": "Ricardo Bofill",
+        "photographer": "Julius Shulman",
+        "architect_style": "postmodern monumental neoclassical — grand arched colonnades, symmetrical layered facades, theatrical public scale, La Muralla Roja grandeur",
+        "photo_style": "golden-age architectural photography — crisp modernism, strong diagonal compositions, dramatic mid-century California light, deep shadows under a cobalt sky",
+        "mood": "theatrical architectural grandeur captured with documentary precision — monumental form under cinematic light",
+    },
+    {
+        "name_hint": "Calatrava × matitectura",
+        "architects": "Santiago Calatrava",
+        "photographer": "@matitectura Instagram aesthetic",
+        "architect_style": "skeletal organic structural beauty — white bone-like ribbed forms, sweeping arches, engineering as sculpture, overwhelming structural expressionism",
+        "photo_style": "epic contrast between architecture and raw nature, ultra-wide dramatic compositions, maximum tonal range, building erupting from or dissolving into wilderness",
+        "mood": "structural sculpture emerging from a primordial landscape — man-made precision vs geological violence",
+    },
+    {
+        "name_hint": "Herzog & de Meuron × Iwan Baan",
+        "architects": "Herzog & de Meuron",
+        "photographer": "Iwan Baan",
+        "architect_style": "material alchemy — corten steel, oxidized copper, pixelated ceramic, raw industrial honesty, reductive severe beauty, facades that are entirely about surface and texture",
+        "photo_style": "documentary architectural photography — wide establishing shots, natural available light, buildings in their true landscape context, no glamour",
+        "mood": "material poetry documented with honest light — all substance, no spectacle",
+    },
+    {
+        "name_hint": "Zumthor × Hélène Binet",
+        "architects": "Peter Zumthor",
+        "photographer": "Hélène Binet",
+        "architect_style": "phenomenological minimalism — dark slate, poured concrete, thermal baths, absolute material honesty, buildings that exist purely to be experienced",
+        "photo_style": "extreme shadow contrast, light as architectural material, atmospheric chiaroscuro — sensory and existential over informational",
+        "mood": "the architecture of silence — darkness, weight, and the presence of materials under sacred directional light",
+    },
+    {
+        "name_hint": "Siza × Guerra",
+        "architects": "Álvaro Siza",
+        "photographer": "Fernando Guerra",
+        "architect_style": "white sculptural modernism — pure whitewashed stucco, flowing curved walls, deep incised openings, form shaped by Atlantic Portuguese light",
+        "photo_style": "sharp Mediterranean light — deep saturated blue sky, harsh hard shadows on white surfaces, documentary realism, crisp geometry",
+        "mood": "white architecture carved by southern European light — pure geometry defined by sun and shadow",
+    },
+    {
+        "name_hint": "Kengo Kuma × Daici Ano",
+        "architects": "Kengo Kuma",
+        "photographer": "Daici Ano",
+        "architect_style": "material dissolution — stone, timber, bamboo, and glass layered so the building de-materializes into its landscape, Japanese craft precision, extreme textural detail",
+        "photo_style": "quiet precision photography — soft diffused light, materials photographed at their most revealing, Japanese restraint and stillness",
+        "mood": "the building disappears into its landscape — architecture as a frame for nature, not its rival",
+    },
+    {
+        "name_hint": "SANAA × Delfino Legnani",
+        "architects": "SANAA (Sejima + Nishizawa)",
+        "photographer": "Delfino Sisto Legnani",
+        "architect_style": "ephemeral lightness — ultra-thin steel columns, translucent glass volumes, floating roofs, buildings with no apparent weight or thickness, pure geometric restraint",
+        "photo_style": "ultra-clean minimal photography — flat even light, pure geometry, the architecture IS the subject, every line matters",
+        "mood": "maximum lightness against maximum heaviness of landscape — gravity-defying precision on geological terrain",
+    },
+    {
+        "name_hint": "Scarpa × Ghirri",
+        "architects": "Carlo Scarpa",
+        "photographer": "Luigi Ghirri",
+        "architect_style": "craft-obsessed Italian modernism — exposed concrete inlaid with marble fragments, oxidized bronze, water channels, mosaic details, every joint a design decision",
+        "photo_style": "melancholic poetic photography — soft hazy Mediterranean light, pastel tones, quiet compositions, the beauty of impermanence and decay",
+        "mood": "architecture as accumulated craftsmanship, bathed in a light that makes everything look ancient and precious",
+    },
+    {
+        "name_hint": "Legorreta × Villaverde",
+        "architects": "Ricardo Legorreta",
+        "photographer": "Ramón Ramírez Villaverde",
+        "architect_style": "Mexican bold color modernism — massive deep-purple or cobalt-blue stucco walls, massive scale, jacaranda-yellow accents, deep shadow loggias, Luis Barragán legacy",
+        "photo_style": "saturated high-contrast Latin American light — deep sky, vivid shadow, the building reads as pure chromatic impact",
+        "mood": "pure color as architecture — the building IS a palette of emotional chromatic mass under an unforgiving sun",
+    },
+]
+
+# 参照画像ベース生成で使う光条件
 WEATHERS = [
     "deep saturated cobalt blue sky, harsh direct sun, razor-sharp shadows, absolutely zero clouds",
     "heavy snowfall, thick snowflakes mid-air, deep saturated navy blue sky, dry snow on surfaces",
@@ -31,133 +118,66 @@ WEATHERS = [
 
 
 def generate_concept_and_prompt(index, custom_hint=""):
-    """Geminiが建物コンセプトをゼロから発明し、プロンプトまで生成"""
+    """建築家×写真家のスタイルコンボからダイレクトにプロンプトを生成"""
     import time
 
-    climates = [
-        "Arctic tundra", "tropical rainforest", "Sahara desert", "Norwegian fjord",
-        "Japanese cedar forest", "Scottish highland", "Patagonian steppe", "Icelandic lava field",
-        "Maldivian atoll", "Swiss alpine", "Amazon river delta", "Mongolian steppe",
-        "New Zealand volcanic coast", "Chilean Atacama", "Canadian Rockies",
-        "Indonesian jungle", "Moroccan atlas mountains", "Australian outback",
-        "Finnish lake district", "Tibetan plateau",
-        "ancient Mediterranean cliffside with Roman-era stone ruins below",
-        "abandoned stone monastery valley in Scottish highland, mossy ruins",
-        "Moroccan desert plateau, crumbling ancient kasbah walls nearby",
-        "Japanese cedar forest with ancient stone shrine remnants half-buried",
-    ]
-    forms = [
-        "a single razor-thin horizontal slab cantilevered over a cliff edge, supported by one diagonal steel pillar",
-        "a perfect black sphere half-buried in the earth, only the upper hemisphere visible",
-        "a crescent-shaped curve that follows the contour of a hillside, one continuous flowing wall",
-        "a ring — a circular building with a courtyard void at its centre open to the sky",
-        "a bridge spanning two rock faces — the entire building IS the bridge, habitable interior within the span",
-        "a series of stacked shifting discs that rotate slightly at each level like a twisted stack of coins",
-        "a buried structure — only a cluster of triangular skylights protrude above ground level",
-        "a mirrored box that reflects the landscape so perfectly the building almost disappears",
-        "two massive parallel walls 40 meters apart, connected only by a glass ceiling — a canyon of architecture",
-        "a helix — a continuous ramp spiralling upward around a central void open to the sky",
-        "a single monolithic dark mass with deep carved voids — the negative space is the architecture",
-        "a cluster of irregular towers of different heights connected by slender glass bridges at various levels",
-        "folded planes like a crumpled sheet of metal, angular facets catching light differently on each face",
-        "a long low horizontal monolith half-buried into a hillside — only the facade visible, the rest swallowed by the earth",
-        "terraced platforms cascading down a steep hillside like geological strata",
-        "a severe monolithic mass inserted into ancient stone ruins — modern precision meets eroded history, old and new locked together",
-        "a long horizontal pavilion floating 1 meter above a mirror-still rectangular reflecting pool on barely visible hairline columns — the entire building doubled in perfect reflection below, sky and structure indistinguishable",
-        "a U-shaped courtyard sunk 8 meters below ground level — three walls of ancient rough-hewn stone, one wall entirely glass, a shallow water pool at the centre open to sky — architecture as excavation, not construction",
-        "a slender vertical slab of polished black stone rising from the exact centre of a still rectangular pool — its reflection completing a perfect vertical symmetry, the pool doubling its height into the earth",
-        "ancient stone colonnades still standing — a razor-thin glass volume inserted precisely between the columns, touching the old stones as lightly as possible — centuries of ruin and one day of precision in the same frame",
-        "a building whose roof is flush with the surrounding water — the structure entirely submerged below a shallow reflecting lake, only the roof plane visible at water level, a single stone staircase descending into the architecture below",
-        "two massive ancient stone walls centuries apart — a single suspended glass bridge connecting them at their crowns, the new structure spanning the void between old ruins like a thought between two memories",
-        "a low curved wave-form frozen mid-crest, its underside hollowed into a vaulted interior — a continuous shallow water trough at the base reflects rippling light onto the curved concrete ceiling above, the room lit entirely by reflected water",
-        "a series of rectangular stone and glass volumes cascading down to a still lake — each volume stepping lower until the final one sits half-submerged, its glass wall below the waterline looking into the lake from inside",
-    ]
-    materials = [
-        "entirely clad in weathered corten steel — deep rust orange-brown surface, oxidized texture",
-        "entirely in raw board-formed concrete — every formwork plank line visible, grey and mineral",
-        "entirely in black basalt stone — dark volcanic rock, matte and ancient",
-        "entirely in white hand-packed rammed earth — layered horizontal strata, warm ivory",
-        "entirely in dark oxidized zinc — matte charcoal grey, slightly iridescent in raking light",
-        "entirely in warm golden travertine — book-matched stone slabs, fossil-rich surface",
-        "entirely in weathered untreated cedar timber — silver-grey from exposure, grain hyper-visible",
-        "entirely in polished black granite — deep reflective surface mirroring sky and landscape",
-        "entirely in pale white limestone — rough-hewn blocks, carved texture, chalk-white",
-        "entirely in hand-laid dark slate — horizontal layers of thin stone, slate-grey and charcoal",
-        "entirely in rusted patinated copper — deep brown-green surface, verdigris patches"
-    ]
-    weathers = WEATHERS
-
-    climate = random.choice(climates)
-    form = random.choice(forms)
-    material = random.choice(materials)
-    weather = random.choice(weathers)
+    combo = random.choice(STYLE_COMBOS)
+    extra = f"\n- ADDITIONAL VISUAL REQUIREMENT (mandatory): {custom_hint}" if custom_hint else ""
+    base = "A grand monumental residential museum architecture, integrated into an epic raw nature, captured with high-contrast architectural photography. Wide shot, 16-24mm lens."
 
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(3):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""You are simultaneously a radical architect and a world-class architectural photographer. Your job: INVENT a completely original building and write a photorealistic image generation prompt for it.
+                    contents=f"""You are a world-class architectural image director. Your task: write a photorealistic image generation prompt that fuses two master styles into one striking image.
 
-INVENTION BRIEF — follow these seeds EXACTLY, do NOT substitute or default to grey concrete:
-- Climate/Location: {climate}
-- Architectural form: {form}
-- Primary material: {material} — THIS IS MANDATORY. The building MUST be made of this material. Do NOT change it to concrete unless the material seed says concrete.
-- Weather: {weather}
-{f"- ADDITIONAL REQUIREMENT (mandatory — make this a defining visual element of the building): {custom_hint}" if custom_hint else ""}
+BASE CONCEPT: {base}
 
-STEP 1 — Invent the building (design reference: @matitectura):
-- Name it (3-5 words, evocative)
-- The building's DESIGN must channel @matitectura: bold uncompromising geometry, severe beauty, monumental scale, raw honest use of material, institutional gravitas — the kind of building that appears in Wallpaper* or wins the Pritzker Prize
-- Think Tadao Ando, Peter Zumthor, Herzog & de Meuron — brutalist or minimalist, never decorative, never domestic
-- OPTIONAL but encouraged: a still reflecting pool or shallow water in the foreground; OR ancient stone ruins / eroded walls adjacent to the building — modern precision in dialogue with ancient decay
-- Monumental cultural institution — museum, arts pavilion, research centre. NOT a house, NOT a hotel.
-- The building CANNOT EXIST anywhere else on earth — the form is born from the terrain.
-- PHYSICS: every element visibly supported, cantilevers have structural logic, NO floating.
-- Scale: sprawling, multiple wings, 15+ people, massive presence.
-- The material seed IS the facade — use it with the same honesty and rawness as @matitectura uses concrete.
+STYLE FUSION — execute both DNAs simultaneously:
+- Architect DNA: {combo['architects']} — {combo['architect_style']}
+- Photography DNA: {combo['photographer']} — {combo['photo_style']}
+- Core mood: {combo['mood']}{extra}
 
-STEP 2 — Write the photorealistic image prompt:
-Core idea: CONTRAST AND HARMONY — precise man-made geometry against wild vast nature. Neither dominates.
+STEP 1 — Name the building (3-5 evocative words that capture the style fusion).
 
-BUILDING AESTHETIC — @matitectura:
-- Monumental, severe, institutional — the building has the gravitas of MoMA or a Tadao Ando museum
-- Bold uncompromising geometry — the form is radical and site-specific
-- The material seed above IS the facade — describe its exact texture, grain, colour, aging in photographic detail
-- One small imperfection: lichen patch, oxide streak, a hairline crack, a weathering stain
-- The building looks like it has ALWAYS been here — inseparable from the terrain
+STEP 2 — Write the image prompt (200-250 words):
 
-LANDSCAPE AESTHETIC — @gorpcore.jpeg:
-- Raw, untouched wilderness at a scale that makes the building feel small
-- Earthy, muted-but-rich palette: weathered grey rock, dark moss, lichen-covered stone, deep forest green, raw ochre soil
-- Terrain feels ANCIENT and documentary — authentic worn textures, organic imperfections, NOT a postcard
-- Depth layers: sharp foreground rocks or vegetation → building in mid-ground → vast horizon (mountain range / ocean / forest canopy)
-- The landscape is indifferent to the building — it was here first
+ARCHITECTURE:
+- Embody the architect's signature vocabulary: their specific forms, materials, proportions, and structural logic
+- Monumental scale: museum, cultural institution, or arts pavilion — never a simple house
+- The building has ALWAYS existed here — born from this specific landscape
+- Large openings or glass walls — not a windowless bunker
+- One small imperfection: lichen patch, oxide streak, weathering stain, or hairline crack
 
-STRICT RULES:
-- ABSOLUTELY NO clouds, NO overcast, NO grey sky, NO rain, NO wet surfaces — exact weather above only
-- NO humans, NO people — zero human presence
-- PHYSICS: building sits on, into, or emerges from the ground — no floating
-- WINDOWS: building MUST have large, bold windows or openings — floor-to-ceiling glass walls, oversized punched openings, or dramatic full-width glazing preferred; absolutely NO windowless solid bunkers with zero openings
-- FACADE: building MUST NOT be predominantly glass — facade must be primarily solid material (concrete, stone, metal, timber, or earth); large glass inserts and full glass walls on select faces are encouraged, but the overall building must read as solid, not a glass box
-- Landscape fills 50%+ of frame
-- One strong directional light — hard shadows, deep blacks, rich saturated sky
+PHOTOGRAPHY:
+- Apply the photographer's exact visual style: their specific lighting quality, composition logic, and tonal treatment
 - Wide establishing shot, 16-24mm lens
+- Strong directional light creating hard shadows and deep blacks
+- NO clouds, NO overcast, NO rain — clear dramatic sky only
+- NO humans, NO people, NO figures — zero human presence
+
+LANDSCAPE:
+- Choose a raw untouched wilderness that amplifies the architectural contrast — earthy, ancient, documentary
+- Strong tonal or color contrast between building and landscape
+- Landscape fills 60%+ of frame — foreground detail → building mid-ground → vast horizon
+
+End the prompt with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
 
 OUTPUT FORMAT (exactly):
 NAME: [building name]
-PROMPT: [200-250 word photorealistic image prompt ending with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"]"""
+PROMPT: [200-250 word photorealistic image prompt]"""
                 )
                 text = response.text.strip()
                 name_match = re.search(r'NAME:\s*(.+)', text)
                 prompt_match = re.search(r'PROMPT:\s*([\s\S]+)', text)
-                name = name_match.group(1).strip() if name_match else f"Architecture {index+1}"
+                name = name_match.group(1).strip() if name_match else combo["name_hint"]
                 prompt = prompt_match.group(1).strip() if prompt_match else text
                 return name, prompt
             except Exception as e:
                 print(f"[Gemini] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
-    return f"Architecture {index+1}", "Museum-like architecture, natural landscape, photorealistic 8K"
+    return combo["name_hint"], base + f" in the style of {combo['architects']} and {combo['photographer']}, photorealistic 8K"
 
 
 def generate_concept_from_ref(analysis, index):
@@ -850,4 +870,4 @@ def post():
 if __name__ == "__main__":
     base_dir = os.path.dirname(os.path.abspath(__file__))
     os.makedirs(os.path.join(base_dir, "static", "images"), exist_ok=True)
-    app.run(debug=False, port=5002, threaded=True)
+    app.run(debug=False, port=5004, threaded=True)
