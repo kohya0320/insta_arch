@@ -176,7 +176,7 @@ def generate_concept_and_prompt(index, custom_hint=""):
     """建築家×写真家のスタイルコンボからダイレクトにプロンプトを生成"""
     import time
 
-    combo = random.choice(STYLE_COMBOS)
+    scenario = random.choice(VERB_SCENARIOS)
 
     extra = f"\n- ADDITIONAL VISUAL REQUIREMENT (mandatory): {custom_hint}" if custom_hint else ""
 
