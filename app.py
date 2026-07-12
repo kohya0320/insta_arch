@@ -173,53 +173,52 @@ _LIGHT_CONDITIONS = [
 
 
 def generate_concept_and_prompt(index, custom_hint=""):
-    """建築家×写真家のスタイルコンボからダイレクトにプロンプトを生成"""
+    """動詞ベースシナリオから直接プロンプトを生成"""
     import time
 
-    scenario = random.choice(VERB_SCENARIOS)
+    scenario = VERB_SCENARIOS[index % len(VERB_SCENARIOS)]
 
     extra = f"\n- ADDITIONAL VISUAL REQUIREMENT (mandatory): {custom_hint}" if custom_hint else ""
-
-    base = "A grand monumental residential museum architecture, integrated into an epic raw nature, captured with high-contrast architectural photography. Wide shot, 16-24mm lens."
 
     for model in ["gemini-2.5-flash", "gemini-1.5-flash-latest"]:
         for attempt in range(3):
             try:
                 response = client.models.generate_content(
                     model=model,
-                    contents=f"""You are a world-class architectural image director. Your task: write a photorealistic image generation prompt that fuses two master styles into one striking image.
+                    contents=f"""You are a world-class architectural photographer and radical architect. Write a photorealistic image generation prompt from the scenario below.
 
-BASE CONCEPT: {base}
+VERB: {scenario['verb']} — {scenario['verb_intent']}
 
-STYLE FUSION — execute both DNAs simultaneously:
-- Architect DNA: {combo['architects']} — {combo['architect_style']}
-- Photography DNA: {combo['photographer']} — {combo['photo_style']}
-- Core mood: {combo['mood']}{extra}
+ENVIRONMENT: {scenario['environment']}
+ACTION: {scenario['action']}
+MATERIAL & COLOR: {scenario['material_color']}
+LIGHT: {scenario['light']}{extra}
 
-STEP 1 — Name the building (3-5 evocative words that capture the style fusion).
+STEP 1 — Name the building (3-5 evocative words).
 
 STEP 2 — Write the image prompt (200-250 words):
 
-ARCHITECTURE:
-- Embody the architect's signature vocabulary: their specific forms, materials, proportions, and structural logic
-- Monumental scale: museum, cultural institution, or arts pavilion — never a simple house
-- The building has ALWAYS existed here — born from this specific landscape
-- Large openings or glass walls — not a windowless bunker
-- One small imperfection: lichen patch, oxide streak, weathering stain, or hairline crack
+BUILDING:
+- Execute the action description exactly — material, form, scale, relationship to landscape
+- Bold uncompromising geometry, monumental scale, institutional gravitas
+- One small imperfection: lichen patch, oxide streak, hairline crack, or weathering stain
+- Building must have large openings or glass walls — NOT a windowless bunker
+- The building looks like it has always been here
+- PHYSICS: every element visibly supported, no floating, no thin stilts under massive volumes
+
+ENVIRONMENT:
+- Execute the environment description exactly — landscape type, colors, textures
+- Raw untouched wilderness, ancient and documentary — NOT a postcard
+- Depth: sharp foreground → building in mid-ground → vast horizon
+- Landscape fills 60%+ of frame
 
 PHOTOGRAPHY:
-- Apply the photographer's exact visual style: their specific lighting quality, composition logic, and tonal treatment
+- Execute the light description exactly
 - Wide establishing shot, 16-24mm lens
-- Strong directional light creating hard shadows and deep blacks
-- NO clouds, NO overcast, NO rain — clear dramatic sky only
-- NO humans, NO people, NO figures — zero human presence
+- One strong directional light source — hard shadows, deep blacks
+- NO clouds, NO humans, NO people
 
-LANDSCAPE:
-- Choose a raw untouched wilderness that amplifies the architectural contrast — earthy, ancient, documentary
-- Strong tonal or color contrast between building and landscape
-- Landscape fills 60%+ of frame — foreground detail → building mid-ground → vast horizon
-
-End the prompt with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
+End with: "editorial architectural photograph, Hasselblad X2D, 24mm f/8, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K"
 
 OUTPUT FORMAT (exactly):
 NAME: [building name]
@@ -228,13 +227,13 @@ PROMPT: [200-250 word photorealistic image prompt]"""
                 text = response.text.strip()
                 name_match = re.search(r'NAME:\s*(.+)', text)
                 prompt_match = re.search(r'PROMPT:\s*([\s\S]+)', text)
-                name = name_match.group(1).strip() if name_match else combo["name_hint"]
+                name = name_match.group(1).strip() if name_match else scenario["name_hint"]
                 prompt = prompt_match.group(1).strip() if prompt_match else text
                 return name, prompt
             except Exception as e:
                 print(f"[Gemini] {model} attempt {attempt+1} failed: {e}")
                 time.sleep(5)
-    return combo["name_hint"], base + f" in the style of {combo['architects']} and {combo['photographer']}, photorealistic 8K"
+    return scenario["name_hint"], "Museum-like architecture, dramatic natural landscape, photorealistic 8K"
 
 
 def generate_concept_from_ref(analysis, index):
