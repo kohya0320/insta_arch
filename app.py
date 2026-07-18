@@ -449,13 +449,13 @@ INTERIOR_ANGLES_POOL = [
     ),
     (
         "Material Detail — Light & Texture",
-        "extreme macro close-up of an interior surface — book-matched travertine wall with visible fossil and vein, OR aged oak with every grain hyper-visible, OR hand-plastered sand wall with every trowel mark — a single dramatic shaft of warm amber natural light raking across the surface at a very low angle, deep crisp shadow edge, a small imperfection: a hairline crack, a mineral deposit, a knot in the wood — the material is the entire subject",
-        "50mm macro, raking warm amber light, hyper-sharp material texture"
+        "extreme close-up of a raw concrete wall junction where two planes meet — the formwork plank lines running horizontally across both surfaces, a single narrow slot window casting one razor blade of warm amber sunlight across the surface at a 10-degree angle, the light reveals every grain, every mineral deposit, every hairline crack in the concrete — one small bronze bolt head flush with the surface, one oxide streak running vertically from a tie hole — the material and light are the entire subject, nothing else in frame",
+        "90mm, single raking amber light shaft, hyper-sharp concrete texture, shadow edge crisp"
     ),
     (
         "Private Screening Room",
-        "intimate screening room, 4-meter raw concrete ceiling, 18-meter long room, entire far wall is a seamless 8-meter projection screen glowing soft white, floor-to-ceiling acoustic panels in hand-woven dark linen, three rows of wide curved lounge chairs in warm cognac leather — deep and reclined, a single low travertine shelf running the side wall with two ceramic vessels, warm amber floor-wash lighting at the base of walls, absolute darkness above, cinematic silence",
-        "wide 24mm, dramatic low ambient light, cinema scale"
+        "subterranean private cinema of absolute luxury — a cave-like chamber, 3.5-meter raw concrete ceiling curving gently overhead, 16-meter long room, walls entirely clad in dark hand-stitched charcoal leather panels with a barely visible grid seam pattern, floor in honed black absolute granite — mirror polished, a single seamless 6-meter screen flush-mounted into a wall of dark perforated oxidized bronze, six individual reclining chairs in deep tobacco saddle leather — each chair isolated, separated by low wenge consoles, a single amber LED strip at floor level washing the side walls in warm gold, the screen glows soft white in total architectural darkness, NO people",
+        "35mm, total darkness broken only by amber floor strip and screen glow, extreme luxury material contrast"
     ),
     (
         "Indoor Lap Pool",
@@ -464,18 +464,18 @@ INTERIOR_ANGLES_POOL = [
     ),
     (
         "Wine Cellar & Vault",
-        "underground wine vault, 4-meter raw concrete barrel-vaulted ceiling, 20-meter long tunnel, floor-to-ceiling wine storage in aged oak and raw steel racks — thousands of bottles, a single long rough-hewn oak table at centre with two ceramic wine glasses, pendant lighting — single warm amber bulb on a long cord casting a dramatic pool of light, deep shadow in the arched ceiling, aged stone floor, the silence and gravity of an ancient cellar",
-        "35mm, single pendant warm light, barrel vault compression"
+        "subterranean gravity cellar of brutal luxury — a single vaulted chamber 5 meters wide, 4 meters tall, 18 meters long, carved entirely from raw pigmented concrete, walls and ceiling cast as one continuous barrel vault with visible formwork board lines, floor in honed dark basalt — polished so the vault above reflects faintly, wine stored in a single long credenza of dark wenge running the full length of one wall — bottles horizontal, lit from within by a concealed warm amber strip that glows like embers, at the chamber's end: a single vertical slot carved through 1 meter of concrete ceiling open to the sky above, a column of daylight falls to the stone floor, everything else in deep shadow, two ceramic decanters on a low travertine shelf, absolute gravity and silence, NO people",
+        "35mm, single vertical daylight column against deep shadow, barrel vault compression, luxury material"
     ),
     (
         "Atrium & Indoor Garden",
-        "soaring central atrium, 12-meter raw concrete walls rising to a full glass roof — sky and clouds above, interior garden below: ancient olive trees 6 meters tall in raw concrete planters, jasmine climbing a concrete wall, a shallow water channel cutting through honed limestone floor, warm golden sunlight falling vertically through the glass roof creating pools of light and shadow, a single curved bench in aged oak, the smell of earth and light implied in every detail",
-        "ultra-wide 14mm, vertical light from glass roof, atrium scale"
+        "soaring central atrium, 12-meter raw concrete walls rising to a full glass roof — clear blue sky visible above, zero clouds, interior garden below: two ancient olive trees 5 meters tall in raw concrete planters, a shallow reflecting channel of still water cutting through honed limestone floor, warm golden sunlight falling vertically through the glass roof in a perfect rectangular column of light that moves across the floor — pools of light and deep shadow alternating, a single curved bench in aged oak at the water's edge, the concrete walls show the passage of light as a slowly moving geometry, NO people",
+        "ultra-wide 14mm, vertical light column from glass roof, clear sky, atrium scale"
     ),
     (
         "Artist Studio & Workshop",
-        "vast studio, 6-meter raw concrete ceiling, north-facing full glass wall — flat diffused daylight, no shadows, floor in raw grey epoxy — marked with years of creative work, a massive 4-meter oak work table with scattered architectural drawings, clay maquettes, open reference books, two industrial task lights on articulated arms, a wall of raw steel shelving with art books and ceramic vessels, controlled daylight and creative chaos",
-        "wide 20mm, flat north light, creative workspace scale"
+        "vast north-lit studio of severe beauty — 6-meter raw concrete ceiling, a full glass wall facing north — flat even cool daylight, no shadows, pure working light, floor in raw grey concrete — worn and marked by years, a single 5-meter oak work table, its surface scarred and stained, three precise architectural models in white cardboard arranged with editorial care, two articulated brass task lamps, a wall of dark steel shelving with a curated row of art books and two ceramic vessels, the space has the discipline of a Tadao Ando studio — controlled, silent, purposeful, NO clutter, NO chaos, NO people",
+        "wide 20mm, flat cool north light, Tadao Ando studio severity"
     ),
     (
         "Fireplace Lounge",
@@ -489,8 +489,8 @@ INTERIOR_ANGLES_POOL = [
     ),
     (
         "Monumental Staircase",
-        "a single monumental staircase as architectural sculpture, raw concrete treads cantilevered from a concrete wall — no visible support, 6-meter void rising through 3 floors, a slot skylight at the top casting a blade of warm amber light down the full height of the void, honed limestone landing at base, the staircase is the entire subject — pure geometry, light, and shadow, deep shadow in recesses, NO people",
-        "24mm, vertical void, cantilevered concrete geometry"
+        "a single monumental staircase as pure architectural sculpture — raw concrete treads cantilevered from a thick concrete wall, each tread 2 meters wide with no railing, the wall itself 6 meters tall, a continuous vertical slot skylight cut into the wall above the staircase casting a single blade of warm amber light down the full height of the void, light lands as a razor strip on each tread and disappears into deep shadow between — the staircase rises through three floors, the concrete wall is the only structure, honed limestone landing at the base, the geometry of light and shadow IS the subject, NO people",
+        "24mm, vertical light blade on concrete treads, cantilevered geometry, deep shadow recesses"
     ),
     (
         "Guest Suite",
@@ -588,8 +588,10 @@ def generate_expand_prompt(building_spec, fingerprint, original_prompt, angle_na
 - OBJECTS: hand-thrown ceramics, dried botanicals, open art book
 - End: "editorial interior photograph, Hasselblad X2D, {camera_note}, correct exposure, rich saturated colors, ultra-sharp focus, natural film grain, NOT a 3D render NOT AI art, NOT a painting, photorealistic 8K\""""
     else:
-        style_rules = f"""EXTERIOR RULES:
-- Show the SAME building as specified above — exact same materials, form, window pattern
+        style_rules = f"""EXTERIOR RULES — BUILDING IDENTITY IS NON-NEGOTIABLE:
+- This is the SAME building shown from a different angle — the facade material, color, window pattern, structural form, and footprint MUST be identical to the spec
+- FINGERPRINT ELEMENTS that must be visible from this angle: {fingerprint}
+- Do NOT invent new materials, new windows, new colors, or new structural elements
 - LANDSCAPE (@gorpcore.jpeg): raw untouched wilderness, earthy muted-rich palette, ancient and documentary
 - Foreground terrain detail, building mid-ground, vast horizon
 - One strong directional light, hard shadows, deep blacks
