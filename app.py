@@ -271,7 +271,7 @@ def generate_image(prompt):
     import time
     clean = re.sub(r'--ar \S+', '', prompt).strip()
     # 曇り・雨・人物を強制除外（negative_promptが使えないためプロンプトに明示）
-    clean = "ZERO clouds, clear sky only, NO overcast, NO rain, NO fog, NO wet surfaces, NO people, NO humans. STRICT PHYSICS: building must sit on or into the ground, NO floating volumes, NO thin stilts supporting massive masses, every element visibly supported. " + clean
+    clean = "ZERO clouds, clear sky only, NO overcast, NO rain, NO fog, NO wet surfaces, NO people, NO humans. " + clean
 
     # Imagen 4 Ultra → 通常モデルの順で試す
     IMAGE_MODELS = ["imagen-4.0-ultra-001", "imagen-4.0-generate-001"]
