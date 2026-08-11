@@ -1,7 +1,7 @@
 from flask import Flask, render_template, jsonify, request
 from google import genai
 from google.genai import types as genai_types
-from PIL import Image, ImageFilter
+from PIL import Image, ImageFilter, ImageEnhance
 import io, os, uuid, requests, random, re, json, threading
 
 app = Flask(__name__)
@@ -247,12 +247,9 @@ def generate_image(prompt):
     # 曇り・雨・人物を強制除外（negative_promptが使えないためプロンプトに明示）
     clean = "ZERO clouds, clear sky only, NO overcast, NO rain, NO fog, NO wet surfaces, NO people, NO humans. " + clean
 
-    # Imagen 4 Ultra → 通常モデルの順で試す
-    IMAGE_MODELS = ["imagen-4.0-ultra-001", "imagen-4.0-generate-001"]
+    imagen_model = "imagen-4.0-generate-001"
 
     for attempt in range(3):
-        model_idx = min(attempt, len(IMAGE_MODELS) - 1)
-        imagen_model = IMAGE_MODELS[model_idx]
         try:
             print(f"[Image] {imagen_model} attempt {attempt+1}")
             response = client.models.generate_images(
@@ -292,6 +289,9 @@ def generate_image(prompt):
 
             # アンシャープマスクで精細感を強化
             img = img.filter(ImageFilter.UnsharpMask(radius=0.8, percent=120, threshold=2))
+
+            # コントラスト強化（iPhone写真アプリ +30 相当）
+            img = ImageEnhance.Contrast(img).enhance(1.3)
 
             img.save(path, "PNG", optimize=False, compress_level=0)
             print(f"[Image OK] {filename} → {TARGET_W}x{TARGET_H} (native: {native_w}x{native_h}, scale: {scale:.3f})")
